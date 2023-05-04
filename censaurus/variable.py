@@ -5,6 +5,8 @@ from pyvis.network import Network
 import webbrowser
 import os
 
+from .graph_utils import visualize_graph
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -240,48 +242,17 @@ class VariableCollection:
         hierarchical: bool = False,
         filename: str = 'variable_graph.html'
     ):
-        g = Network(layout=hierarchical)
-        nodes = set()
-        edges = set()
-
         if variables is None:
-            variables = list(self._variable_map.values())
+            if label_type == 'name':
+                names = {k: k for k in self._variable_map}
+            elif label_type == 'difference':
+                names = {k: v.index_path[-1] for k, v in self._variable_map.items()}
         elif isinstance(variables, VariableCollection):
-            variables = [variables[v] for v in variables]
+            # variables = [variables[v] for v in variables]
+            raise NotImplementedError
         elif isinstance(variables, typing.List[Variable]):
-            pass
+            raise NotImplementedError
         else:
             raise Exception
 
-        variables = set(variables)
-        variable_names = set(v.name for v in variables)
-        root_names = variable_names.copy()
-
-        for v in variables:
-            color = 'gray'
-            if len(self._variable_tree[v.name]) > 0:
-                color = 'blue'
-                
-            if label_type == 'name':
-                label = v.name
-            elif label_type == 'difference':
-                label = v.index_path[-1]
-
-            if hierarchical:
-                g.add_node(v.name, title=str(v), color=color, label=label, level=len(v.path))
-            else:
-                g.add_node(v.name, title=str(v), color=color, label=label)
-
-        for v in variables:
-            for child in self._variable_tree[v.name]:
-                if child in variable_names and (v.name, child) not in edges:
-                    g.add_edge(v.name, child)
-                    edges.add((v.name, child))
-                if child in root_names:
-                    root_names.remove(child)
-
-        for v in root_names:
-            g.get_node(v)['color'] = 'red'
-
-        g.show(filename)
-        webbrowser.open('file://' + dir_path + f'/{filename}')
+        visualize_graph(self._variable_tree, names, hierarchical, filename=filename)

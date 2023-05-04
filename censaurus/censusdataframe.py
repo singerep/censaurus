@@ -3,7 +3,7 @@ from geopandas import GeoDataFrame
 
 # from .censusseries import CensusSeries
 # from .dataset import Dataset
-import censaurus.dataset
+# import censaurus.dataset
 
 
 class CensusSeries(Series):

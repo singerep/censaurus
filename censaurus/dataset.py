@@ -2,6 +2,9 @@ import requests
 from pandas import DataFrame, Series
 import json
 import typing
+import os
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # from censaurus import CensusDataFrame, Variable, VariableCollection, GeographyCollection
 # from censaurus.censusdataframe import CensusDataFrame
@@ -15,7 +18,7 @@ class UnknownDataset(Exception):
 
 
 # TODO: change this to a request later, but too slow for testing
-with open('data/datasets.json') as file:
+with open(dir_path + '/data/datasets.json') as file:
     datasets_json = json.load(file)['dataset']
 
 def build_dataset_key(dataset_json):
@@ -256,17 +259,3 @@ class Decennial(Dataset):
     def _make_base_url(year, product):
         url = f'https://api.census.gov/data/{year}/dec/{product}'
         return url
-
-
-acs = ACS5()
-# print(acs.variables._build_variable_string(variables=acs.variables.get_group('B01001')))
-
-cdf = acs.from_geography(
-    name='county',
-    filters={
-        'state': '06'
-    },
-    variables=acs.variables.get_group('B01001')
-)
-
-print(cdf)

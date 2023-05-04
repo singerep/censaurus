@@ -2,6 +2,7 @@ import warnings
 from collections import defaultdict
 import typing
 
+from .graph_utils import visualize_graph
 
 class UnknownGeography(Exception):
     pass
@@ -60,6 +61,8 @@ class Geography:
                 self.ordered_others += [g]
 
         self.readable_path = ' -> '.join(self.requires) + ' -> ' + self.name if self.requires else self.name
+        self.index_path = tuple(self.requires) + (self.name,)
+        self.index_parent_path = self.index_path[:-1]
 
     def __repr__(self) -> str:
         return f'\n{self.name}\n  requires: {self.requires}\n  wildcards: {self.wildcard}\n  path: [{self.readable_path}]'
@@ -92,28 +95,47 @@ class Geography:
 
 class GeographyCollection:
     def __init__(self, supported_geographies_json) -> None:
-        self.supported_geographies = defaultdict(list)
+        self._path_to_name_map = {}
+        self._geography_map = defaultdict(list)
+        self._geography_tree = defaultdict(set)
 
         for g in supported_geographies_json:
-            self.supported_geographies[g['name']].append(Geography(g))
+            geo = Geography(g)
+            self._geography_map[geo.readable_path] = geo
+            self._path_to_name_map[geo.index_path] = geo.readable_path
+
+        for name, geo in self._geography_map.items():
+            if geo.index_parent_path in self._path_to_name_map:
+                self._geography_tree[self._path_to_name_map[geo.index_parent_path]].add(name)
 
     def __repr__(self):
-        return str(list(self.supported_geographies.values()))
+        return str(list(self._supported_geographies.values()))
 
     def __len__(self):
-        return len(self.supported_geographies)
+        return len(self._supported_geographies)
 
     def _build_geography_string(self, name, filters):
-        options = self.search(name)
-        for opt in options:
+        matches = self.search(name)
+        for match in matches:
             try:
-                return opt, opt._build_geography_string(filters)
+                return match, match._build_geography_string(filters)
             except InvalidGeographyHierarchy:
                 pass
         raise InvalidGeographyHierarchy # TODO: need a helpful message here
 
     def search(self, name) -> typing.List[Geography]:
-        if name in self.supported_geographies:
-            return self.supported_geographies[name]
+        matches = [geo for path, geo in self._geography_map.items() if geo.index_path[-1] == name]
+        if len(matches) > 0:
+            return matches
         else:
             raise UnknownGeography(name)
+
+    def visualize(
+        self,
+        hierarchical: bool = False,
+        filename: str = 'geography_graph.html'
+    ):
+
+        names = {k: v.name for k, v in self._geography_map.items()}
+        titles = {k: str(v) for k, v in self._geography_map.items()}
+        visualize_graph(self._geography_tree, names, titles, hierarchical, filename=filename)

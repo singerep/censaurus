@@ -1,7 +1,6 @@
-from pandas import DataFrame, Series
-from censaurus import CensusDataFrame, CensusSeries
+from censaurus.dataset import ACS5, Decennial
 
-df = DataFrame({
-    'A': [1, 2, 3],
-    'B': [4, 5, 6]
-})
+d = ACS5()
+df = d.from_geography(name='tract', filters={'county': '*', 'state': '06'}, variables=d.variables.get_group('B01001'))
+print(df)
+# d.from_geography(name='')
