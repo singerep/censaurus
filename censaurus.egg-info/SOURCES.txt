@@ -1,0 +1,9 @@
+setup.py
+censaurus/__init__.py
+censaurus/censusdataframe.py
+censaurus/censusseries.py
+censaurus.egg-info/PKG-INFO
+censaurus.egg-info/SOURCES.txt
+censaurus.egg-info/dependency_links.txt
+censaurus.egg-info/top_level.txt
+censaurus/tests/testing.py

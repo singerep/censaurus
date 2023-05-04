@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: censaurus
+Version: 0.0.1
+Summary: A Python library for downloading and managing Census data
+Author: Ethan Singer
+Author-email: singerep@bu.edu
+Description-Content-Type: text/markdown
