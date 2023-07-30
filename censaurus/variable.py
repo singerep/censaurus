@@ -1,102 +1,176 @@
-import typing
+from typing import List, Dict, Set, Union, Callable, Tuple
 from collections import defaultdict
 import queue
-from pyvis.network import Network
-import webbrowser
 import os
+import re
+import pandas as pd
 
 from .graph_utils import visualize_graph
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
-class UnknownVariable(Exception):
+class UnknownGroup(Exception):
+    ...
+
+
+class Group:
+    def __init__(self, name: str, concept: str, variables: List[str]) -> None:
+        self.name = name
+        self.concept = concept
+        self.variables = sorted(variables)
+
+    def __repr__(self) -> str:
+        if self.name and len(self.name) > 30:
+            name_str =  self.name[:30] + '...'
+        else:
+            name_str = self.name
+        if self.concept is None:
+            concept_str = 'None'
+        elif len(self.concept) > 100:
+            concept_str =  self.name[:100] + '...'
+        else:
+            concept_str = self.concept
+        if len(self.variables) <= 3:
+            var_str = '[' + ', '.join(self.variables) + ']'
+        else:
+            var_str = f'[{self.variables[0]}, ..., {self.variables[-1]}]'
+        return f'{name_str}\n  concept: {concept_str}\n  variables ({len(self.variables)}): {var_str}\n'
+
+
+class GroupCollection:
+    def __init__(self) -> None:
+        self._group_map : Dict[str, Group] = {}
+
+    def __iter__(self):
+        return iter(self._group_map.values())
+
+    def __len__(self):
+        return len(self._group_map.keys())
+
+    def __repr__(self) -> str:
+        gs = self._group_map.values()
+        return_str = ''
+        for g in gs:
+            return_str += str(g)
+        return return_str
+
+    def get(self, group: str) -> Group:
+        if group in self._group_map:
+            return self._group_map[group]
+
+        else:
+            raise UnknownGroup(f"The group '{group}' does not exist.")
+
+    def add(self, group: Group):
+        self._group_map[group.name] = group
+
+    def _mask(self, groups: List[str]) -> 'GroupCollection':
+        gc = GroupCollection()
+        for g_name in groups:
+            gc._group_map[g_name] = self.get(group=g_name)
+        return gc
+
+    def filter_by_term(self, term: str):
+        term = term.lower()
+        g_names = [g_name for g_name in self._group_map if self._group_map[g_name].concept is not None and term in self._group_map[g_name].concept.lower()]
+        return self._mask(g_names)
+
+    def to_df(self) -> pd.DataFrame:
+        group_dicts = []
+        for g_name, g in self._group_map.items():
+            g_dict = {
+                'name': g_name,
+                'concept': g.concept,
+                'variables': g.variables
+            }
+            group_dicts += [g_dict]
+
+        return pd.DataFrame(group_dicts)
+
+    def to_list(self) -> List[Group]:
+        return list(self._group_map.values())
+
+
+class RegroupedVariable:
+    def __init__(self, path: Tuple[str], variables: List['Variable']) -> None:
+        self.path = path
+        self.group = variables[0].group
+        self.concept = variables[0].concept
+        self.variables = variables
+
+
+class VariableError(Exception):
     pass
 
 
-class Concept:
-    def __init__(self, group, description) -> None:
-        self.group = group
-        self.description = description
-
-    def __repr__(self) -> str:
-        return f'\n{self.group}\n  description: {self.description}'
-
-
-class ConceptCollection:
-    def __init__(self) -> None:
-        self.groups = set()
-        self.concepts = []
-
-    def add(self, concept: Concept):
-        if concept.group not in self.groups:
-            self.groups.add(concept.group)
-            self.concepts += [concept]
-
-    def __repr__(self):
-        return str(self.concepts)
-
-# TODO: need to be able to distinguish between E, AE, M, AM etc.
-    # should also distinguish between variables that have multiple extensions, like 'Number' or 'Percent' in ACS5/2018/EEO
 class Variable:
-    def __init__(self, name, info) -> None:
+    def __init__(self, name: str, info: dict) -> None:
         self.name = name
         self.info = info
-        self.label = info['label']
-        self.group = info['group']
-        self.concept = info['concept'] if 'concept' in info else 'none'
+        self.label = info['label'].lower() if 'label' in info else None
+        self.group = info['group'] if 'group' in info else None
+        if self.group == 'n/a':
+            self.group = None
+        self.concept = info['concept'].lower() if 'concept' in info else None
+        if self.concept == 'n/a':
+            self.concept = None
 
-        label_parts = self.info['label'].split('!!')
-        self.type = label_parts[0]
-        self.path = tuple([self.info['group']] + [p.replace(':', '') for p in label_parts[1:]])
-        self.readable_path = ' -> '.join(g.replace('!', '') for g in self.path)
+        if name == 'GEO_ID':
+            self.label = 'GEO_ID'
+            self.group = None
+            self.concept = None
+        
+        # TODO: need to search these
+        self.attributes = info.get('attributes', None)
 
-        self.index_path = self.parse_path(self.path)
-        self.index_parent_path = self.index_path[:-1]
+        self.path = None
+        self.parent_path = None
+        self.readable_path = None
+
+        label_parts = self.label.split('!!')
+        self.parse_label_parts(label_parts=label_parts)
 
     def __repr__(self) -> str:
-        return f'\n{self.name}\n  group: {self.group}\n  concept: {self.concept}\n  path: [{self.readable_path}]'
+        return f'{self.name}\n  group: {self.group}\n  concept: {self.concept}\n  path: [{self.readable_path}]\n'
 
-    @staticmethod
-    def parse_path(path: tuple):
-        path = tuple([p for p in path if '--' not in p])
-        if path[-1] in ['Number', 'Percent']:
-            path = (path[-1],) + path[:-1]
-        return path
+    def parse_label_parts(self, label_parts: List[str]) -> None:
+        # TODO: this could get handed down from the initial call so that datasets could have custom parsing
+        self.path = tuple([p.replace(':', '') for p in label_parts])
+        if self.concept is not None:
+            self.path = (self.concept,) + self.path
+        self.parent_path = self.path[:-1]
+        self.readable_path = ' -> '.join(g.replace('!', '') for g in self.path)
 
-# TODO: add functionality for seeing stuff in a table? but not sure if that is necessary
-# TODO: need to be able to allow pseudo-children, like the crosstab tables -- letter extension
+
 class VariableCollection:
-    def __init__(self, variables_json: dict) -> None:
-        self._variables_json = variables_json
-        self._variable_map = {}
-        self._path_to_name_map = {}
-        # TODO: need to be careful because when you access a node that doesn't exist, this indicate that it does exist but just has no children
-        self._variable_tree = defaultdict(set)
-        self._concepts = ConceptCollection()
+    def __init__(self, variables_json: Dict[str, dict]) -> None:
+        self._variable_map : Dict[str, Variable] = {}
+        self._path_to_name_map : Dict[tuple, str] = {}
+        self._variable_tree : Dict[tuple, Set[tuple]] = {}
 
-        for name, info in variables_json.items():
-            v = Variable(name, info)
-            self._concepts.add(Concept(v.group, v.concept))
-            self._variable_map[name] = v
-            self._path_to_name_map[v.index_path] = name
+        self._group_map = defaultdict(set)
+        self._group_collection = GroupCollection()
 
-        self.name_to_path_map = {v: k for k, v in self._path_to_name_map.items()}
+        variable_names = variables_json.keys()
+        for v_name in sorted(variable_names):
+            v_info = variables_json[v_name]
+            v = Variable(name=v_name, info=v_info)
+            self._variable_map[v_name] = v
+            self._path_to_name_map[v.path] = v_name
+            self._variable_tree[v.path] = set()
+            
+            if v.parent_path in self._variable_tree:
+                self._variable_tree[v.parent_path].add(v.path)
 
-        for name, variable in self._variable_map.items():
-            if variable.index_parent_path in self._path_to_name_map:
-                self._variable_tree[self._path_to_name_map[variable.index_parent_path]].add(name)
-
-    def __getitem__(self, key):
-        if key in self._variable_map:
-            return self._variable_map[key]
-        elif key in self._path_to_name_map:
-            return self._variable_map[self._path_to_name_map[key]]
-        else:
-            raise UnknownVariable(f"variable '{key}' does not exist")
+            self._group_map[(v.group, v.concept)].add(v_name)
+# 
+        for (group, concept), variables in self._group_map.items():
+            g = Group(name=group, concept=concept, variables=variables)
+            self._group_collection.add(group=g)
 
     def __iter__(self):
-        return iter(self._variable_map)
+        return iter(self._variable_map.values())
 
     def __len__(self):
         return len(self._variable_map)
@@ -104,52 +178,82 @@ class VariableCollection:
     def __add__(self, other):
         if isinstance(other, list):
             return list(self._variable_map.values()) + other
+        elif isinstance(other, VariableCollection):
+            return list(self._variable_map.keys()) + list(other._variable_map.keys())
+        else:
+            raise Exception('Can only add objects of type list or VariableCollection to another VariableCollection')
 
     def __radd__(self, other):
         if isinstance(other, list):
             return  other + list(self._variable_map.values())
 
-    def __repr__(self):
-        return str(list(self._variable_map.values()))
+        if isinstance(other, list):
+            return other + list(self._variable_map.values())
+        elif isinstance(other, VariableCollection):
+            return list(other._variable_map.keys()) + list(self._variable_map.keys())
+        else:
+            raise Exception('Can only add objects of type list or VariableCollection to another VariableCollection')
 
-    def _build_variable_string(
-        self, 
-        variables: typing.Union[typing.List[str], typing.List[Variable], typing.List[typing.Union[str, Variable]], 'VariableCollection', typing.Dict[str, str]] = [],
-        groups: typing.List[str] = []
-    ):
+    def __repr__(self):
+        vs = self._variable_map.values()
+        return_str = ''
+        for v in vs:
+            return_str += str(v)
+        return return_str
+
+    def _build_variable_params(self, variables: Union['VariableCollection', List[str], List[Variable], List[Union[str, Variable]], Dict[str, str]] = [], groups: List[str] = []):
         variable_names = []
-        rename_map = None
+
+        rename_map = {}
         if isinstance(variables, VariableCollection):
             variable_names += variables.names
-        elif all(isinstance(v, str) for v in variables):
+        elif isinstance(variables, list) and all(isinstance(v, str) for v in variables):
             variable_names += variables
-        elif all(isinstance(v, Variable) for v in variables):
+        elif isinstance(variables, Variable) and all(isinstance(v, Variable) for v in variables):
             variable_names += [v.name for v in variables]
-        elif all(isinstance(v, str) or isinstance(v, Variable) for v in variables):
-            print('here')
+        elif isinstance(variables, list) and all(isinstance(v, str) or isinstance(v, Variable) for v in variables):
             variable_names += [v if isinstance(v, str) else v.name for v in variables]
         elif isinstance(variables, dict) and all((isinstance(k, str) and isinstance(v, str)) for k, v in variables.items()):
-            variable_names += [variables.keys()]
+            variable_names += list(variables.keys())
             rename_map = variables
         else:
             raise TypeError("the 'variables' argument only accepts one of:\n\t-a list of variable names as strings, \n\t-a list of 'Variable' objects\n\t-a mixed list of variable names as strings and 'Variable' objects\n\t-a 'VariableCollection' object\n\t-a dict of variable names as strings and strings to rename the columns")
 
         valid, missing = self._validate_variables(variable_names)
         if not valid:
-            raise UnknownVariable(missing)
+            raise VariableError(f'The following variables do not exist: {missing}')
 
-        variables = self._mask(variable_names)
+        variable_names_set = set()
+        unique_variable_names = []
+        for v_n in variable_names:
+            if v_n not in variable_names_set:
+                variable_names_set.add(v_n)
+                unique_variable_names.append(v_n)
+            
+        variables = self._mask(unique_variable_names)
 
-        # items += [f'g({g})' for g in groups] TODO: validate groups/tables as well
-        return variables, ','.join(variable_names), rename_map
+        if 'NAME' not in unique_variable_names:
+            unique_variable_names.append('NAME')
+        if 'GEO_ID' not in unique_variable_names:
+            unique_variable_names.append('GEO_ID')
 
-    def _validate_variables(self, variable_names: typing.List[str]):
+        chunk_size = 49
+        chunks = [unique_variable_names[i:i + chunk_size] for i in range(0, len(unique_variable_names), chunk_size)]
+        variable_params_list = []
+        for chunk in chunks:
+            if 'GEO_ID' not in chunk:
+                chunk.append('GEO_ID')
+            variable_params_list.append({'get': ','.join(chunk)})
+
+        return variables, variable_params_list, rename_map
+
+    def _validate_variables(self, variable_names: List[str]):
         valid = all(v in self._variable_map for v in variable_names)
         if valid:
             return True, None
         return False, [v for v in variable_names if v not in self._variable_map]
     
-    def _mask(self, variables) -> 'VariableCollection':
+    def _mask(self, variables: List[str]) -> 'VariableCollection':
         variables_json = {}
         for v in variables:
             variables_json[v] = self._variable_map[v].info
@@ -157,102 +261,112 @@ class VariableCollection:
         return VariableCollection(variables_json)
 
     @property
-    def names(self):
+    def names(self) -> List[str]:
         return list(self._variable_map.keys())
 
     @property
-    def variables(self):
-        return list(self._variable_map.values())
+    def groups(self) -> GroupCollection:
+        return self._group_collection
 
-    def get_group(self, group):
-        return self._mask([v for v in self._variable_map if str(self._variable_map[v].group) == str(group)])
+    def get(self, variable: str) -> Variable:
+        return self._variable_map.get(variable, None)
 
-    def parent_of(self, variable) -> Variable:
-        if self._variable_map[variable].index_parent_path in self._path_to_name_map:
-            if self._path_to_name_map[self[variable].index_parent_path] in self._variable_map:
-                return self[self._path_to_name_map[self[variable].index_parent_path]]
+    def parent_of(self, variable: str) -> Variable:
+        v = self.get(variable=variable)
+        if v.parent_path in self._path_to_name_map:
+            p_name = self._path_to_name_map[v.parent_path]
+            return self.get(p_name)
+        
         return None
     
-    def siblings_of(self, variable) -> 'VariableCollection':
+    def siblings_of(self, variable: str, include_root: bool = False) -> 'VariableCollection':
+        v = self.get(variable=variable)
         parent = self.parent_of(variable)
         if parent:
-            return self._mask([v for v in self._variable_tree[parent.name]])
+            v_paths = [v_path for v_path in self._variable_tree[parent.path] if (v_path != v.path) or include_root]
+            v_names = [self._path_to_name_map[v_path] for v_path in v_paths]
+            return self._mask(v_names)
         else:
             return self._mask([])
 
-    def children_of(self, variable, include_root: bool = True) -> 'VariableCollection':
-        children = [v for v in self._variable_tree[variable]]
+    def children_of(self, variable: str, include_root: bool = False) -> 'VariableCollection':
+        v = self.get(variable=variable)
+        v_paths = [v_path for v_path in self._variable_tree[v.path]]
+        v_names = [self._path_to_name_map[v_path] for v_path in v_paths]
         if include_root:
-            children += [variable]
-        return self._mask(children)
+            v_names = [variable] + v_names
+        return self._mask(v_names)
 
-    def descendants_of(self, variable, include_root: bool = True) -> 'VariableCollection':
+    def descendants_of(self, variable: str, include_root: bool = False) -> 'VariableCollection':
         '''
         Returns a list of Variable objects that descend from 'variable' in BFS order
         '''
         visited_set = set()
-        visited_list = []
         q = queue.Queue()
 
         q.put(variable)
 
         while not q.empty():
-            v0 = q.get()
-            visited_set.add(v0)
-            visited_list.append(v0)
-            for v1 in self._variable_tree[v0]:
-                if v1 not in visited_set:
-                    q.put(v1)
+            v_name = q.get()
+            visited_set.add(v_name)
 
-        return self._mask([v for v in visited_list if v != variable or include_root])
+            v = self.get(v_name)
+            for c_path in self._variable_tree[v.path]:
+                c_name = self._path_to_name_map[c_path]
+                if c_name not in visited_set:
+                    q.put(c_name)
 
-    def ancestors_of(self, variable, include_root: bool = True) -> 'VariableCollection':
-        parents = [self._variable_map[variable]] if include_root else []
-        while self.parent_of(variable) is not None:
-            parents.append(self.parent_of(variable))
-            variable = self.parent_of(variable).name
-        return self._mask([v.name for v in parents])
-    
-    def search_variables(self, term: str, by: str = 'concept') -> 'VariableCollection':
-        # TODO: should add stuff to make this exact vs non-exact, and multiple terms
+        return self._mask([v for v in visited_set if (v != variable) or include_root])
+
+    def ancestors_of(self, variable: str, include_root: bool = False) -> 'VariableCollection':
+        if include_root:
+            parents = [variable]
+        else:
+            parents = []
+        while self.parent_of(variable=variable) is not None:
+            p = self.parent_of(variable)
+            parents.append(p.name)
+            variable = p.name
+
+        return self._mask(parents)
+
+    def filter_by_term(self, term: str, by: str = 'label') -> 'VariableCollection':
         term = term.lower()
-        if by == 'concept':
-            return self._mask([v for v in self._variable_map if term in self._variable_map[v].concept.lower()])
-        elif by == 'label':
-            return self._mask([v for v in self._variable_map if term in self._variable_map[v].label.lower()])
-        elif by == 'name':
-            return self._mask([v for v in self._variable_map if term in self._variable_map[v].name.lower()])
-        else:
-            raise Exception('can only search variables by concept, label, or name')
+        if by == 'label':
+            v_names = [v_name for v_name in self._variable_map if term in self._variable_map[v_name].label.lower()]
+            return self._mask(v_names)
+        elif by == 'concept':
+            v_names = [v_name for v_name in self._variable_map if self._variable_map[v_name].concept is not None and term in self._variable_map[v_name].concept.lower()]
+            return self._mask(v_names)
 
-    # TODO: should return a concept collection
-    def search_concepts(self, term: str, by: str = 'description'):
-        term = term.lower()
-        if by == 'description':
-            return [c for c in self._concepts.concepts if term in c.description.lower()]
-        elif by == 'name':
-            return [c for c in self._concepts.concepts if term in c.group.lower()]
-        else:
-            raise Exception('can only search concepts by description or name')
+    def filter_by_group(self, group: str) -> 'VariableCollection':
+        g = self.groups.get(group=group)
+        v_names = [v_name for v_name in self._variable_map if self._variable_map[v_name].group == g.name]
+        return self._mask(v_names)
 
-    def visualize(
-        self, 
-        variables: typing.Union['VariableCollection', typing.List['Variable']] = None,
-        label_type: str = 'name',
-        hierarchical: bool = False,
-        filename: str = 'variable_graph.html'
-    ):
-        if variables is None:
-            if label_type == 'name':
-                names = {k: k for k in self._variable_map}
-            elif label_type == 'difference':
-                names = {k: v.index_path[-1] for k, v in self._variable_map.items()}
-        elif isinstance(variables, VariableCollection):
-            # variables = [variables[v] for v in variables]
-            raise NotImplementedError
-        elif isinstance(variables, typing.List[Variable]):
-            raise NotImplementedError
-        else:
-            raise Exception
+    def visualize(self, label_type: str = 'name', hierarchical: bool = False, filename: str = 'variable_graph.html'):
+        if label_type == 'name':
+            labels = self._path_to_name_map
+        elif label_type == 'difference':
+            labels = {v.path: v.path[-1] for k, v in self._variable_map.items()}
 
-        visualize_graph(self._variable_tree, names, hierarchical, filename=filename)
+        titles = {v_path: str(self.get(self._path_to_name_map[v_path])) for v_path in self._variable_tree}
+
+        visualize_graph(tree=self._variable_tree, titles=titles, labels=labels, hierarchical=hierarchical, filename=filename)
+
+    def to_df(self) -> pd.DataFrame:
+        var_dicts = []
+        for v_name, v in self._variable_map.items():
+            v_dict = {
+                'name': v_name,
+                'label': v.readable_path,
+                'group': v.group,
+                'concept': v.concept,
+                'attributes': v.attributes
+            }
+            var_dicts += [v_dict]
+
+        return pd.DataFrame(var_dicts)
+
+    def to_list(self) -> List[Variable]:
+        return list(self._variable_map.values())
