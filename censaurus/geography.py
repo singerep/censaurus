@@ -1,11 +1,11 @@
 import warnings
 from collections import defaultdict
-from typing import Dict, List, Set, Tuple, Union
+from typing import Dict, List, Set, Tuple, Union, Any
 import json
 from geopandas import GeoDataFrame
 
 from censaurus.graph_utils import visualize_graph
-from censaurus.tiger import AreaCollection, Area
+from censaurus.tiger import AreaCollection, Area, US_CARTOGRAPHIC
 from censaurus.constants import LAYER_NAME_MAP
 
 class UnknownGeography(Exception):
@@ -17,7 +17,14 @@ class InvalidGeographyHierarchy(Exception):
 
 
 def pad_geography_filters(geo_filters: Dict[str, str]):
-    # more stuff can happen here, like checking if names are given as postal codes or state names etc.
+    """
+    Pads (with zeros) a set of geography filters to their appropriate lengths.
+
+    Parameters
+    ==========
+    geo_filters : :obj:`dict` of :obj:`str`: :obj:`str`
+        The geography filters to pad.
+    """
     for g, value in geo_filters.items():
         if value != '*':
             if g == 'state':
@@ -46,40 +53,46 @@ def pad_geography_filters(geo_filters: Dict[str, str]):
     return geo_filters
 
 
-class In:
-    def __init__(self, geography, value) -> None:
-        self.geography = geography
-        self.value = self.validate(geography, value)
-
-    @staticmethod
-    def validate(geography, value):
-        if isinstance(value, int):
-            return str(value)
-        elif isinstance(value, str):
-            return value
-        else:
-            raise TypeError('geography value must be str or int types')
-
-
-class Ins:
-    def __init__(self, has_wc: bool = False) -> None:
-        self.ins = {}
-        self.has_wc = has_wc
-
-    def add(self, i: In):
-        if i.value != '*':
-            if self.has_wc:
-                raise InvalidGeographyHierarchy(f"cannot specify '{i.geography}' if one of {list(self.ins.keys())} is already unspecified")
-        else:
-            self.has_wc = True
-        self.ins[i.geography] = i.value
-
-    def to_string(self):
-        return '&'.join([f'in={g}:{v}' for g, v in self.ins.items()])
-
-
 class Geography:
-    def __init__(self, params: dict) -> None:
+    """
+    An object representing a single Census geography hierarchy.
+
+    Parameters
+    ==========
+    params : :obj:`dict` of :obj:`str`: :obj:`Any`
+        A set of parameters detailing the attributes of the Census geography hierarchy.
+
+    Attributes
+    ==========
+    name : :obj:`str` or None
+        The name of the geography hierarchy. For example, ``us``, ``region``,
+        ``division``, ``state``, etc.
+    level : :obj:`int` or None
+        The level (represented as an integer) or the geography hierarchy.
+    requires : :obj:`list` of :obj:`str` or None
+        A list of other Census geography hierarchies that this hierarchy depends on.
+        For example, ``county`` may require ``state``.
+    wildcard : :obj:`list` of :obj:`str` or None
+        A list of other Census geography hierarchies that this hierarchy depends on
+        that can be used as a wildcard. For example, ``state`` can be a wildcard when
+        requesting counties.
+    optional_wildcard : :obj:`list` of :obj:`str` or None
+        The lowest level optional wildcards.
+    ordered_others : :obj:`list` of :obj:`str` or None
+        A list of all required hierarchies in hierarchical order.
+    path : :obj:`tuple` of :obj:`str`
+        A path representing the geography hierarchy. For example, 
+        ``(state, county, tract)``.
+    parent_path : :obj:`tuple` of :obj:`str`
+        A path representing the geography hierarchy's parent. For example, the parent of
+        the geography hierarchy with path ``(state, county, tract)`` is the hierarchy
+        with path ``(state, county)``.
+    readable_path : :obj:`str`
+        The elements of the path of this variable joined by " -> ". For example, the
+        geography hierarchy with path ``(state, county, tract)`` has a ``readable_path``
+        of ``state -> county -> tract``.
+    """
+    def __init__(self, params: Dict[str, Any]) -> None:
         self.params = params
         self.name = params.get('name', None)
         self.level = params.get('geoLevelDisplay', None)
@@ -151,7 +164,15 @@ class Geography:
 
 
 class GeographyCollection:
-    def __init__(self, supported_geographies_json) -> None:
+    """
+    An object representing a collection of available Census geography hierarchies.
+
+    Parameters
+    ==========
+    supported_geographies_json : dict of :obj:`str`: (dict of :obj:`str`: :obj:`str`)
+        A dictionary detailing the attributes of each geography hierarchy.
+    """
+    def __init__(self, supported_geographies_json: Dict[str, str]) -> None:
         self._path_to_name_map : Dict[tuple, str] = {}
         self._geography_map : Dict[str, Geography] = {}
         self._geography_tree : Dict[tuple, Set[tuple]] = {}
@@ -180,6 +201,22 @@ class GeographyCollection:
         return return_str
 
     def get(self, level: str = None, name: str = None) -> Union[Geography, List[Geography]]:
+        """
+        Returns the requested :class:`.Geography` object if it exists, or a list of 
+        :class:`.Geography` objects if there are multiple matches. Otherwise, raises
+        an :class:`.UnknownGeography` exception. Can search by level or name.
+
+        Parameters
+        ==========
+        level : :obj:`str`
+            The requested geography hierarchy represented by its level.
+        name : :obj:`str`
+            The requested geography hierarchy represented by its name. Note that since
+            the same name may refer to multiple geographies, specifying a name may
+            return a list.
+        """
+        if not ((level and not name) or (not level and name)):
+            raise ValueError("must only provide a 'level' or a 'name'.")
         if level:
             matches = [g for g in self._geography_map.values() if g.level == level]
             if len(matches) > 0:
@@ -221,14 +258,13 @@ class GeographyCollection:
         best_param_set = geography_params_sets[0][1]
         return best_geography, [json.loads(p) for p in best_param_set]         
 
-    def _build_geography_params(self, areas: AreaCollection, within: Union[Area, List[Area]], target: str, target_layer_name: Union[Area, List[Area]], return_geometry: bool):
+    def _build_geography_params(self, areas: AreaCollection, within: Union[Area, List[Area]], target: str, target_layer_name: Union[str, List[str]], return_geometry: bool, area_threshold: float):
+        if within is None:
+            within = US_CARTOGRAPHIC
+        
         if isinstance(within, list) and len(within) == 1:
             within = within[0]
-
-        # TODO: error handling here for making sure that within is of a good type -- should also show how to do it?
         
-        # theoretically, could do each of the areas individually if within is a list
-        # what to do if return_geometry = True and within = US_xxx
         if return_geometry is False and isinstance(within, Area):
             geographies = self.get(name=target)
             if isinstance(geographies, Geography):
@@ -238,8 +274,9 @@ class GeographyCollection:
                 for r in geography.requires:
                     if r in within.attributes:
                         geo_filters[r] = within.attributes[r]
-                if within.layer_name != 'US' and LAYER_NAME_MAP[within.layer_name] not in geo_filters:
-                    # TODO: make sure that this is right -- generally, it makes sure that you are using the within geometry
+                if within.name == 'United States (cartographic boundary)' or (within.layer_name is not None and LAYER_NAME_MAP[within.layer_name] in geo_filters):
+                    pass
+                else:
                     continue
                 try:
                     geography_params = geography._build_geography_params(geo_filters=geo_filters)
@@ -248,11 +285,10 @@ class GeographyCollection:
                 except InvalidGeographyHierarchy:
                     continue
         
-        # TODO: missing area threshold here, need to figure out how to pass it
-        if target_layer_name is None:
-            raise ValueError('Since the geographic level you requested cannot be resolved inside a default Census hierarchy (or because you set return_geometry = True), you must specify the name of the geographic layer you want to query. To see the available options, see AreaCollection.available_layers.')
+        if target_layer_name is None and target != 'us':
+            raise ValueError('Since the geographic level you requested cannot be resolved inside a default Census hierarchy (or because you set return_geometry = True), you must specify the name of the geographic layer you want to query. To see the available options, see Dataset.areas.available_layers.')
 
-        features_within = areas.get_features_within(within=within, layer_name=target_layer_name)
+        features_within = areas.get_features_within(within=within, layer_name=target_layer_name, area_threshold=area_threshold)
         geography, geography_params_list = self._build_geography_params_from_features_within(features_within=features_within, target=target)
         return geography, geography_params_list, features_within
     
@@ -281,15 +317,45 @@ class GeographyCollection:
 
             raise InvalidGeographyHierarchy(exception_str)
 
-    def visualize(self, label_type: str = 'difference', hierarchical: bool = False, filename: str = 'geography_graph.html'):
-        if label_type == 'name':
+    def to_list(self):
+        """
+        Converts the :class:`.GeographyCollection` into a :obj:`list` of 
+        :class:`.Geography` objects.
+        """
+        return list(self._geography_map.values())
+
+    def visualize(self, label_type: str = 'difference', hierarchical: bool = False, filename: str = 'geography_graph.html', show: bool = True, keep_file: bool = False):
+        """
+        Visualizes the :class:`.GeographyCollection` as a tree in your default
+        webbrowser.
+
+        Parameters
+        ==========
+        label_type : :obj:`str` = 'path'
+            Controls the labels of each geography hierarchy (node). If ``label_type`` 
+            equals 'path', then the label of each variable is its path (``(state)``,
+            ``(state, county)``, ``(state, county, tract)``, etc.). If ``label_type`` 
+            equals 'difference', then the label of each hierarchy is the last element of
+            its path (``state``, ``county``, ``tract``, etc.). 'difference' shows the
+            difference between each hierarchy and its parent.
+        hierarchical : :obj:`bool` = False
+            Determines whether the geography hierarchies (nodes) are presented in a 
+            hierarchical layout (with root nodes at the top), as opposed to a layout 
+            that looks more like spokes on a wheel.
+        filename : :obj:`str` = 'geography_graph.html'
+            The path (from within the current working directory) the save the generated
+            file at.
+        show : :obj:`bool` = True
+            Determines whether or not to open the generated file in your default
+            webbrowser.
+        keep_file : :obj:`bool` = False
+            Determines whether or not to delete the generated file after opening it.
+        """
+        if label_type == 'path':
             labels = {g.path: g.readable_path for g in self._geography_map.values()}
         elif label_type == 'difference':
             labels = {g.path: g.path[-1] for g in self._geography_map.values()}
 
         titles = {g.path: str(g) for g in self._geography_map.values()}
 
-        visualize_graph(tree=self._geography_tree, titles=titles, labels=labels, hierarchical=hierarchical, filename=filename)
-
-    def to_list(self):
-        return list(self._geography_map.values())
+        visualize_graph(tree=self._geography_tree, titles=titles, labels=labels, hierarchical=hierarchical, filename=filename, show=show, keep_file=keep_file)

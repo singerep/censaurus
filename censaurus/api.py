@@ -1,5 +1,4 @@
-from typing import Dict, List, Tuple
-
+from typing import Dict, List, Tuple, Iterable
 import httpx
 import asyncio
 
@@ -11,13 +10,22 @@ class CensusAPIKeyError(Exception):
     def __init__(self) -> None:
         super().__init__('Looks like you are missing an API key! You can obtain one at https://api.census.gov/data/key_signup.html. You can set it by passing it into the api_key parameter.')
 
+
 class CensusAPIError(Exception):
     def __init__(self, status_code: int, message: str) -> None:
         super().__init__(f'The Census API had an error (status code {status_code}) and returned the following message:\n\n{message}')
 
-class TIGERError(Exception):
+
+class TIGERWebError(Exception):
+    ...
+
+
+class TIGERWebAPIError(Exception):
     def __init__(self, status_code: int, message: str) -> None:
-        super().__init__(f'The Census API had an error (status code {status_code}) and returned the following message:\n\n{message}')
+        if status_code:
+            super().__init__(f'The TIGER API had an error (status code {status_code}) and returned the following message:\n\n{message}')
+        else:
+            super().__init__(message)
 
 
 class CensusClient(httpx.AsyncClient):
@@ -28,7 +36,7 @@ class CensusClient(httpx.AsyncClient):
         self.root = f'https://api.census.gov/data/{url_extension}'
         self.api_key = api_key
         self.chunk_size = 50
-        self.retry_limit = kwargs.pop('retry_limit', 5)
+        self.retry_limit = kwargs.pop('retry_limit', 2)
 
     def get_sync(self, url: str = '', params: Dict[str, str] = {}) -> httpx.Response:
         return loop.run_until_complete(self.get(url=url, params=params))
@@ -60,10 +68,10 @@ class CensusClient(httpx.AsyncClient):
             # TODO: figure out what missing api key status code is
             if response.status_code == 0:
                 raise CensusAPIKeyError()
-            
+
         raise CensusAPIError(status_code=response.status_code, message=response.text)
 
-    async def get_many(self, url_params_list: List[Tuple[str, Dict[str, str]]] = []) -> List[httpx.Response]:
+    async def get_many(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = []) -> List[httpx.Response]:
         tasks = []
         for url, params in url_params_list:
             tasks.append(loop.create_task(self.get(url, params=params)))
@@ -78,12 +86,11 @@ class CensusClient(httpx.AsyncClient):
 
 
 class TIGERClient(httpx.AsyncClient):
-    def __init__(self, map_service: str = 'TIGERweb/tigerWMS_Current', **kwargs):
+    def __init__(self, map_service: str = 'tigerWMS_Current', **kwargs):
         timeout = httpx.Timeout(30.0, connect=30.0)
         super().__init__(base_url=f'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/{map_service}/MapServer', timeout=timeout)
-        
         self.chunk_size = 100
-        self.retry_limit = kwargs.pop('retry_limit', 5)
+        self.retry_limit = kwargs.pop('retry_limit', 2)
 
     def get_sync(self, url: str = '', params: Dict[str, str] = {}, return_type = 'json') -> httpx.Response:
         return loop.run_until_complete(self.get(url=url, params=params, return_type=return_type))
@@ -93,7 +100,6 @@ class TIGERClient(httpx.AsyncClient):
 
     async def get(self, url: str = '', params: Dict[str, str] = {}, return_type = 'json') -> httpx.Response:
         params.update({'f': return_type})
-        response = await super().get(url=url, params=params)
 
         retry_count = 0
         while self.retry_limit is None or retry_count < self.retry_limit:
@@ -104,16 +110,22 @@ class TIGERClient(httpx.AsyncClient):
                 response = None
 
             if response is None:
-                # self.logger.log(message=f'httpx error; trying again')
                 await asyncio.sleep(2)
                 continue
 
+            if 'The requested URL was rejected' in response.text:
+                raise TIGERWebAPIError(200, 'The requested URL was rejected.')
+            if 'Invalid URL' in response.text:
+                raise TIGERWebAPIError(400, 'Invalid URL.')
+            if 'Error performing query operation' in response.text:
+                raise TIGERWebAPIError(500, 'Error performing query operation.')
+
             if response.status_code == 200:
                 return response
-            
-        raise TIGERError(status_code=response.status_code, message=response.text)
 
-    async def get_many(self, url_params_list: List[Tuple[str, Dict[str, str]]] = [], return_type = 'json') -> List[httpx.Response]:
+        raise TIGERWebAPIError(status_code=None, message='Your TIGERWeb request failed.')
+
+    async def get_many(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = [], return_type = 'json') -> List[httpx.Response]:
         tasks = []
         for url, params in url_params_list:
             tasks.append(loop.create_task(self.get(url, params=params, return_type=return_type)))

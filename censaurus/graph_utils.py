@@ -3,6 +3,7 @@ from pyvis.network import Network
 import webbrowser
 import os
 import queue
+import time
 
 def get_roots(tree: Dict[tuple, set]):
     return [r for r in tree if all(r not in tree[n] for n in tree)]
@@ -22,7 +23,7 @@ def bfs(tree: dict, roots: list):
 
     return depths
 
-def visualize_graph(tree: dict, titles: dict, labels: dict, hierarchical: bool = False, filename: str = ''):
+def visualize_graph(tree: dict, titles: dict, labels: dict, hierarchical: bool, filename: str, show: bool, keep_file: bool):
     if len(tree) == 0:
         print('Cannot visualize a tree with no nodes.')
         return None
@@ -58,4 +59,10 @@ def visualize_graph(tree: dict, titles: dict, labels: dict, hierarchical: bool =
             g.add_edge(v_title, c_title)
 
     g.show(filename)
-    webbrowser.open('file://' + cwd + f'/{filename}')
+
+    if show is True:
+        webbrowser.open('file://' + cwd + f'/{filename}')
+    
+    if keep_file is False:
+        time.sleep(5)
+        os.remove(cwd + f'/{filename}')

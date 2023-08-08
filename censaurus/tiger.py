@@ -1,22 +1,26 @@
 from typing import Dict, List, Union, Iterable, Set, Callable, Tuple
+from types import MethodType
 from shapely import intersection
 from shapely.geometry import shape
 from shapely.geometry.polygon import Polygon
 from shapely.geometry.multipolygon import MultiPolygon
 import pandas as pd
 import geopandas as gpd
-import matplotlib.pyplot as plt
-from thefuzz import process, fuzz
+from thefuzz import process
 from shapely import union_all
 import re
 from Levenshtein import distance, ratio
 from scipy.optimize import linear_sum_assignment
-import time
 from collections import defaultdict
 from numpy import log
+import json
+import requests
+from fiona._err import CPLE_OpenFailedError
+from fiona.errors import DriverError
+import matplotlib.pyplot as plt
 
-from censaurus.api import TIGERClient
-from censaurus.constants import LAYER_RESULT_COUNT_MAP, FEATURE_ATTRIBUTE_MAP, FIPS_TO_ABBR, ABBR_TO_FULL, FIPS_TO_FULL, ABBR_TO_FULL_REGEX
+from censaurus.api import TIGERClient, TIGERWebAPIError, TIGERWebError
+from censaurus.constants import LAYER_RESULT_COUNT_MAP, FEATURE_ATTRIBUTE_MAP, ABBR_TO_FULL, FIPS_TO_FULL, ABBR_TO_FULL_REGEX
 
 def parse_name(name: str) -> str:
     for match in re.finditer(pattern=ABBR_TO_FULL_REGEX, string=name):
@@ -85,84 +89,113 @@ def build_custom_scorer(count_map: Dict[str, float], N: int) -> Tuple[Callable[[
 
 
 class Area:
-    def __init__(self, geo_id: str, layer_id: int, layer_name: str, tiger_client: TIGERClient, cb: bool = True) -> None:
-        self.geo_id : str = geo_id
+    def __init__(self) -> None:
         self.name : str = None
-        self.base_name : str = None
+        self._attributes_are_set = False
+        self.layer_name : str = None
         self.attributes : Dict[str, str] = {}
-        self.layer_id = layer_id
-        self.layer_name = layer_name
         self.geometry : Union[Polygon, MultiPolygon] = None
-        self.tiger_client = tiger_client
-        self.cb = cb
 
     def __repr__(self) -> str:
-        return f'{self.name} (GEOID={self.geo_id})'
+        if self._attributes_are_set is False:
+            self._set_attributes()
+        area_str = f'Name: {self.name}\nAttributes:\n'
+        if len(self.attributes) == 0:
+            area_str += '  None'
+        for attr, val in self.attributes.items():
+            area_str += f'  - {attr}: {val}\n'
+        return area_str
 
-    def _set_attributes_from_tiger(self):
-        params = {
-            'where': f"GEOID='{self.geo_id}'",
-            'outFields': '*',
-            'returnGeometry': 'false'
-        }
-        area_resp = self.tiger_client.get_sync(f'{self.layer_id}/query', params=params, return_type='geojson')
-        feature = area_resp.json()['features'][0]
+    def _set_attributes(self) -> None:
+        ...
 
-        for attr, val in feature['properties'].items():
-            if attr == 'NAME' or attr == 'BASENAME':
-                continue
-            
-            attr = FEATURE_ATTRIBUTE_MAP.get(attr, attr)
-            self.attributes[attr] = val
-
-        self.name = feature['properties']['NAME']
-        self.base_name = feature['properties']['BASENAME']
-        
-
-    def _set_geometry_from_tiger(self):
-        if self.geometry is not None:
-            return
-        
-        params = {
-            'where': f"GEOID='{self.geo_id}'",
-            'outFields': '',
-            'returnGeometry': 'true',
-            'geometryPrecision': '6',
-            'outSR': '4236'
-        }
-        area_resp = self.tiger_client.get_sync(f'{self.layer_id}/query', params=params, return_type='geojson')
-        feature = area_resp.json()['features'][0]
-
-        self.geometry = shape(feature['geometry'])
-        if self.cb:
-            self.geometry = intersection(US_CARTOGRAPHIC.geometry, self.geometry)
-
-    def plot(self) -> None:
-        if self.geometry is None:
-            self._set_geometry_from_tiger()
-        
-        if self.name == 'Maryland':
-            fc = 'b'
-        else:
-            fc = 'r'
-        if self.geometry is None:
-            self._set_geometry_from_tiger()
+    def plot(self, **kwargs) -> None:
+        if self._attributes_are_set is False:
+            self._set_attributes()
         if type(self.geometry) == Polygon:
             x, y = self.geometry.exterior.xy
-            plt.fill(x, y, alpha=0.5, fc=fc, ec='none')
+            plt.fill(x, y, **kwargs)
         elif type(self.geometry) == MultiPolygon:
             for g in self.geometry.geoms:
                 x, y = g.exterior.xy
-                plt.fill(x, y, alpha=0.5, fc=fc, ec='none')
-        # plt.axis('equal')
-        # plt.show()
+                plt.fill(x, y, **kwargs)
+        plt.axis('equal')
+
+    def intersect_with_cb(self) -> None:
+        if self._attributes_are_set is False:
+            self._set_attributes()
+        self.geometry = intersection(self.geometry, US_CARTOGRAPHIC.geometry)
+
+    @classmethod
+    def from_tiger(cls, geo_id: str, layer_id: int, layer_name: str, tiger_client: TIGERClient, intersect_with_cb: bool = True) -> 'Area':
+        def _set_attributes(self: Area):
+            params = {
+                'where': f"GEOID='{geo_id}'",
+                'outFields': '*',
+                'returnGeometry': 'true',
+                'geometryPrecision': '6',
+                'outSR': '4236'
+            }
+            area_resp = tiger_client.get_sync(f'{layer_id}/query', params=params, return_type='geojson')
+            feature = area_resp.json()['features'][0]
+
+            for attr, val in feature['properties'].items():
+                if attr == 'NAME' or attr == 'BASENAME':
+                    if attr == 'NAME':
+                        self.name = val
+                    continue
+                
+                attr = FEATURE_ATTRIBUTE_MAP.get(attr, attr)
+                self.attributes[attr] = val
+
+            self.layer_name = layer_name
+
+            self.geometry = shape(feature['geometry'])
+            if intersect_with_cb is True:
+                self.intersect_with_cb()
+            self._attributes_are_set = True
+
+        area = cls()
+        area._set_attributes = MethodType(_set_attributes, area)
+
+        return area
+
+    @classmethod
+    def from_url(cls, name: str, url: str, geo_col: str = 'geometry', intersect_with_cb: bool = True) -> 'Area':
+        return cls._from_file_or_url(name=name, path=url, kind='URL', geo_col=geo_col, intersect_with_cb=intersect_with_cb)
+
+    @classmethod
+    def from_file(cls, name: str, filename: str, geo_col: str = 'geometry', intersect_with_cb: bool = True) -> 'Area':
+        return cls._from_file_or_url(name=name, path=filename, kind='filename', geo_col=geo_col, intersect_with_cb=intersect_with_cb)
+
+    @classmethod
+    def _from_file_or_url(cls, name: str, path: str, kind: str, geo_col: str = 'geometry', intersect_with_cb: bool = True) -> 'Area':
+        def _set_attributes(self: Area):
+            try:
+                gdf = gpd.GeoDataFrame.from_file(path)
+            except (CPLE_OpenFailedError, DriverError):
+                raise ValueError(f"The {kind} you provided must point to a file of any file format recognized by 'fiona' (see http://fiona.readthedocs.io/en/latest/manual.html).")
+
+            if len(gdf) != 1:
+                raise ValueError(f'The {kind} you provided must point to a file that has exactly one object.')
+
+            if geo_col not in gdf:
+                raise ValueError(f"The {kind} you provided must point to a file with the geometry column '{geo_col}'. The columns of the file your URL pointed to were: {gdf.columns}")
+
+            self.name = name
+            self.geometry = gdf[geo_col].values[0]
+            if intersect_with_cb is True:
+                self.intersect_with_cb()
+            self.attributes = gdf.to_dict(orient='index')[0]
+            del self.attributes[geo_col]
+            self._attributes_are_set = True
+        
+        area = cls()
+        area._set_attributes = MethodType(_set_attributes, area)
+        return area
 
 
-US_CARTOGRAPHIC = Area(geo_id='US', layer_id=None, layer_name=None, tiger_client=None, cb=True)
-US_CARTOGRAPHIC.name = 'United States'
-US_CARTOGRAPHIC.base_name = 'United States'
-US_CARTOGRAPHIC.layer_name = 'US'
-# US_CARTOGRAPHIC.geometry = gpd.read_file('https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_us_nation_5m.zip')['geometry'].values[0]
+US_CARTOGRAPHIC = Area.from_url(name='United States (cartographic boundary)', url='https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_us_nation_5m.zip', intersect_with_cb=False)
 
 
 class Layer:
@@ -192,11 +225,11 @@ class Layer:
 
         features_resp = self.tiger_client.get_sync(url=f'{self.id}/query', params=params, return_type='geojson')
         features = features_resp.json()['features']
-        return gpd.GeoDataFrame.from_features(features=features)
+        gdf = gpd.GeoDataFrame.from_features(features=features)
+        gdf.set_crs(crs='4236')
+        return gdf
 
     def _get_feature_geometry(self, bbox: Iterable[float] = None, feature_count: int = None, cb: bool = True) -> gpd.GeoDataFrame:
-        params_list = []
-
         params = {
             'where': '1=1',
             'outFields': 'GEOID',
@@ -214,35 +247,50 @@ class Layer:
             })
 
         if feature_count is None:
-            # TODO: send a canary with the returnCountOnly param set to true
-            raise NotImplementedError
+            canary_params = {
+                'where': '1=1',
+                'returnCountOnly': 'true'
+            }
+            feature_count = self.tiger_client.get_sync(url=f'{self.id}/query', params=canary_params).json()['count']
 
         if self.name in LAYER_RESULT_COUNT_MAP:
             result_record_count = LAYER_RESULT_COUNT_MAP[self.name]
         else:
             result_record_count = 100
 
-        for i in range(1 + (feature_count//result_record_count)):
-            result_offset = i*result_record_count
-            params = params.copy()
-            params['resultRecordCount'] = result_record_count
-            params['resultOffset'] = result_offset
-            params_list.append(params)
+        tries = 0
+        while True:
+            try:
+                tries += 1
+                params_list = []
+                for i in range(1 + (feature_count//result_record_count)):
+                    result_offset = i*result_record_count
+                    params = params.copy()
+                    params['resultRecordCount'] = result_record_count
+                    params['resultOffset'] = result_offset
+                    params_list.append(params)
 
-        urls_list = [f'{self.id}/query']*len(params_list)
-        url_params_list = zip(urls_list, params_list)
-        
-        features_responses = self.tiger_client.get_many_sync(url_params_list=url_params_list, return_type='geojson')
+                urls_list = [f'{self.id}/query']*len(params_list)
+                url_params_list = zip(urls_list, params_list)
+                
+                features_responses = self.tiger_client.get_many_sync(url_params_list=url_params_list, return_type='geojson')
 
-        gdfs = []
-        for features_resp in features_responses:
-            features = features_resp.json()['features']
-            gdf = gpd.GeoDataFrame.from_features(features=features)
-            gdfs.append(gdf)
+                gdfs = []
+                for features_resp in features_responses:
+                    features = features_resp.json()['features']
+                    gdf = gpd.GeoDataFrame.from_features(features=features)
+                    gdfs.append(gdf)
 
-        features = gpd.GeoDataFrame(pd.concat(gdfs))
-        features = features.reset_index()
-        return features
+                features = gpd.GeoDataFrame(pd.concat(gdfs))
+                features = features.reset_index()
+                return features
+            except TIGERWebAPIError:
+                if tries <= 2:
+                    result_record_count = result_record_count // 2
+                else:
+                    raise TIGERWebError('There was a problem generating TIGERWeb API calls. Please try again or request a smaller geography set.')
+            except json.decoder.JSONDecodeError:
+                raise TIGERWebError('There was a problem decoding the result of your TIGER API call. Please try again or request a different geography.')
 
     def get_features(self, bbox: Iterable[float] = None, out_fields: str = '*', return_geometry: bool = False, cb: bool = True) -> gpd.GeoDataFrame:
         features = self._get_feature_attributes(bbox=bbox, out_fields=out_fields)
@@ -258,10 +306,9 @@ class Layer:
         geoids = features['GEOID'].values
         if geoid in geoids:
             print(f"successfully matched GEOID = {geoid} in layer '{self.name}'")
-            # area = Area(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, cb=cb)
-            # area._set_attributes_from_tiger()
-            # return area
-            return
+            area = Area.from_tiger(geo_id=geoid, layer_id=self.id, tiger_client=self.tiger_client, intersect_with_cb=cb)
+            area._set_attributes()
+            return area
         
         exception_string = f"The GEOID '{geoid}' does not have any matches within the layer '{self.name}'. Please ensure you are searching at the correct geographic level. For reference, here are some examples of GEOIDs within this layer.\n"
         for geoid in geoids[:5]:
@@ -298,15 +345,17 @@ class Layer:
             geoid = best_matches[0][2]
             area_name = best_matches[0][0]
             print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-            area = Area(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, cb=cb)
-            area._set_attributes_from_tiger()
+            area = Area.from_tiger(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, intersect_with_cb=cb)
+            area._set_attributes()
             return area
         
         elif best_matches[0][1] > 0.95 and best_matches[0][1] - best_matches[1][1] > 0.05:
             geoid = best_matches[0][2]
             area_name = best_matches[0][0]
-            print(f"matched to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-            return
+            print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
+            area = Area.from_tiger(geo_id=geoid, layer_id=self.id, tiger_client=self.tiger_client, intersect_with_cb=cb)
+            area._set_attributes()
+            return area
         else:
             best_match_token_sets = [geoid_token_set_dict[bm[2]] for bm in best_matches]
             best_match_geoid_name_dict = {bm[2]: geoid_name_dict[bm[2]] for bm in best_matches}
@@ -325,9 +374,9 @@ class Layer:
                     new_matches_found += 1
             
             if new_matches_found == 1:
-                print(f"matched to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-                area = Area(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, cb=cb)
-                area._set_attributes_from_tiger()
+                print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
+                area = Area.from_tiger(geo_id=geoid, layer_id=self.id, tiger_client=self.tiger_client, intersect_with_cb=cb)
+                area._set_attributes()
                 return area
 
         exception_string = f"The name '{name}' is ambiguous. Is there a typo? Could you be more specific? Did you mean any of the following (in no particular order)?\n"
@@ -342,7 +391,7 @@ class AreaCollection:
         self.tiger_client = TIGERClient(map_service=map_service)
         self.available_layers = self._find_available_layers()
 
-    def _find_available_layers(self) -> None:
+    def _find_available_layers(self) -> Dict[str, Layer]:
         available_layers = {}
         layers_response = self.tiger_client.get_sync(f'layers')
         layers = layers_response.json()['layers']
@@ -359,8 +408,8 @@ class AreaCollection:
         else:
             raise ValueError(f"The layer '{layer_name}' is not available for this dataset. To see the available layers, see AreaCollection.available_layers.")
 
-    def get_features_within(self, within: Union[Area, List[Area]], layer_name: Union[str, List[str]], area_threshold: float = 0.001):
-        if within == US_CARTOGRAPHIC:
+    def get_features_within(self, within: Union[Area, List[Area]], layer_name: Union[str, List[str]], area_threshold: float):
+        if within == US_CARTOGRAPHIC and layer_name is None:
             features = pd.DataFrame([{'GEOID': '0100000US'}])
             features['geometry'] = within.geometry
             return gpd.GeoDataFrame(features)
@@ -368,11 +417,12 @@ class AreaCollection:
         if isinstance(within, Area):
             within = [within]
 
+        for area in within:
+            if area._attributes_are_set is False:
+                area._set_attributes()
+
         if isinstance(layer_name, str):
             layer_name = [layer_name]
-
-        for area in within:
-            area._set_geometry_from_tiger()
         
         within_union = union_all(geometries=[a.geometry for a in within])
 
@@ -386,8 +436,8 @@ class AreaCollection:
         features_within_bounds = pd.concat(features_dfs).drop_duplicates(subset=['GEOID'])
 
         intersections = features_within_bounds.intersection(other=within_union)
-        features_within_bounds['geometry'] = intersections
         intersecting_mask = intersections.area/features_within_bounds.area >= area_threshold
+        features_within_bounds['geometry'] = intersections
         features_within = features_within_bounds[intersecting_mask]
         features_within = features_within.reset_index()
         return features_within

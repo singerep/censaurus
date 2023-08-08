@@ -49,10 +49,6 @@ class Regrouper:
 
         return data
 
-FOUR_RACE_REGROUPER = Regrouper(groupings={
-    'other': ['some other race alone', 'asian alone', 'two or more races', 'american indian and alaska native alone', 'native hawaiian and other pacific islander alone']
-})
-
 FIVE_RACE_REGROUPER = Regrouper(groupings={
     'other': ['some other race alone', 'two or more races', 'american indian and alaska native alone', 'native hawaiian and other pacific islander alone']
 })

@@ -1,23 +1,25 @@
 from censaurus.dataset import ACS5
-from censaurus.rename import SIMPLE_RENAMER
-from censaurus.regroup import AgeRegrouper
-from censaurus.recode import StateRecoder
-import matplotlib.pyplot as plt
+# from censaurus.rename import SIMPLE_RENAMER
+# from censaurus.regroup import FIVE_RACE_REGROUPER
+# import matplotlib.pyplot as plt
 
 dataset = ACS5()
-data = dataset.counties(variables=dataset.variables.filter_by_group('B05006'))
-print(data)
-# data = dataset.states(variables=['B01001_001E'])
+dataset.variables.filter_by_term(term='race', by='concept').visualize()
+# print(len(dataset.variables.descendants_of('B01001_001E')))
+# print(dataset)
 
-# recoder = StateRecoder()
-# data = recoder.to_NAME(data=data)
-
-# dataset.geographies.visualize()
-# data = dataset.states(variables=['EMP', 'PAYANN'], extra_census_params={'NAICS2017': '54'})
+# dataset.variables.cousins_of('B01001_004E').visualize()
+# print
+# data = dataset.places(variables=['B17001_001E', 'B17001_002E', 'B25077_001E'] + dataset.variables.filter_by_group('B03002'), return_geometry=True)
+# data = dataset.states(variables=['B01001_001E', 'B01001_001M'])
 # print(data)
 
-# dataset = Decennial(year=2010, product='cd116')
-# print(dataset.variables.groups)
-# dataset.variables.filter_by_group('P49').visualize(hierarchical=True, label_type='difference')
-# data = dataset.counties(variables=dataset.variables.filter_by_group('B01001'))
-# print(dataset.variables.to_df())
+# data = FIVE_RACE_REGROUPER.regroup(data=data)
+
+# SIMPLE_RENAMER.add_group_prefixes({'B17001': 'pov', 'B25077': 'med', 'B03002': 'pop'})
+# SIMPLE_RENAMER.separator = '_'
+# data = SIMPLE_RENAMER.rename(data=data)
+
+# data['density'] = data['pop_total']/data.area
+# print(data['density'])
+# print(data)
