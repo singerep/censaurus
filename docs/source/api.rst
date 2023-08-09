@@ -7,8 +7,12 @@ API documentation
 
 .. automodule:: censaurus.variable
    :members:
-   :undoc-members:
 
 .. automodule:: censaurus.geography
    :members:
-   :undoc-members:
+
+.. automodule:: censaurus.tiger
+   :members:
+
+.. automodule:: censaurus.api
+   :members:
