@@ -54,6 +54,10 @@ class Dataset:
        + American Community Survey Migration Flows: :class:`.ACSFlows`
        + American Community Survey Language Statistics: :class:`.ACSLanguage`
 
+    * Public Use Microdata Sample :class:`.PUMS`
+
+    * Current Population Survey :class:`.CPS`
+
     * Economic Census: :class:`.Economic`
 
        + Economic Census Key Statistics: :class:`.EconomicKeyStatistics`
@@ -225,6 +229,14 @@ class Dataset:
             if variable is not None:
                 if variable.type == int:
                     df[col_name] = df[col_name].apply(to_numeric, errors='coerce').fillna(df[col_name])
+
+        for col_name in df.columns:
+            if rename_map != {}:
+                var_name = reverse_rename_map.get(col_name, col_name)
+            else:
+                var_name = col_name
+            variable = self.variables.get(variable=var_name)
+            if variable is not None:
                 df[col_name].census.variable = variable
 
         return df

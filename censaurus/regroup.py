@@ -3,22 +3,44 @@ from pandas import DataFrame
 from collections import defaultdict
 import re
 
-from censaurus.variable import VariableCollection, RegroupedVariable
+from censaurus.variable import RegroupedVariable
 from censaurus.rename import AGE_REGEX
 
 
 class Regrouper:
+    """
+    An object to handle regrouping Census variables.
+
+    Parameters
+    ==========
+    groupings : :obj:`dict` of :obj:`str`: array-like of :obj:`str`
+        Each key in this dictionary is the name of a new group. Each corresponding value
+        should be a list of elements that fall into that group. For example,
+        ``groupings={"white_or_black": ["white alone", "black or african american alone"]}``
+        would aggregate all columns that have the token ``white alone`` or the token
+        ``black or african american alone``, and create a new column with those tokens
+        replaces as ``white_or_black``.
+    """
     def __init__(self, groupings: Dict[str, Iterable[str]] = {}) -> None:
         self.groupings = groupings
 
     def regroup(self, data: DataFrame):
+        """
+        Regroups the columns of the dataset. Note that you should probably rename
+        the data after a regrouping with a :class:`.Renamer` object to avoid long
+        column names.
+
+        Parameters
+        ==========
+        data : :class:`pandas.DataFrame`
+            The data to regroup.
+        """
         variables = data.census.variables
 
         variable_map = {}
         column_map = {}
-        grouped_cols = defaultdict(list)
+        grouped_cols = defaultdict(set)
         grouped_variables = defaultdict(list)
-        # variables_to_drop = set()
         
         for c in data.columns:
             variable = data[c].census.variable
@@ -33,15 +55,19 @@ class Regrouper:
                                 grouped_path = list_path.copy()
                                 grouped_path[i] = group
                                 grouped_path = tuple(grouped_path)
-                                grouped_cols[grouped_path].append(c)
+                                grouped_cols[grouped_path].add(c)
                                 grouped_variables[grouped_path].append(variable)
 
         for group, cols in grouped_cols.items():
+            col_places = zip(cols, range(0, len(cols)))
+            last_col = sorted(col_places, key=lambda c : c[1], reverse=True)[0][0]
             col_name = 'g:' + ','.join(cols)
-            data[col_name] = data[cols].aggregate(func='sum', axis=1)
+            data[last_col] = data[list(cols)].aggregate(func='sum', axis=1)
+            data.rename(columns={last_col: col_name}, inplace=True)
+            cols.remove(last_col)
             variables = grouped_variables[group]
             variable_map[col_name] = RegroupedVariable(path=group, variables=variables)
-            data.drop(labels=cols, axis=1, inplace=True)
+            data.drop(labels=list(cols), axis=1, inplace=True)
 
         for c, variable in variable_map.items():
             if c in data.columns:
@@ -52,14 +78,39 @@ class Regrouper:
 FIVE_RACE_REGROUPER = Regrouper(groupings={
     'other': ['some other race alone', 'two or more races', 'american indian and alaska native alone', 'native hawaiian and other pacific islander alone']
 })
+"""A :class:`.Regrouper` object that aggregates ``some other race alone``, ``two or more 
+races``, ``american indian and alaska native alone``, ``native hawaiian and other pacific
+islander alone`` into a group called ``other``."""
 
 MAX_AGE = 120
 
 class AgeRegrouper(Regrouper):
+    """
+    A subclass of the :class:`.Regouper` class that specifically handles regrouping
+    into new age buckets.
+
+    Parameters
+    ==========
+    age_brackets : :obj:`list` of :obj:`str`
+        The new age brackets to group into. Must be of the form 
+        ``"<start_year>-<end_year>"``, except for the oldest age bracket, which should
+        be of the form ``<start_year>+``. For example, 
+        ``age_brackets=["0-17", "18-29", "30-49", "50-64", "65+"]``.
+    """
     def __init__(self, age_brackets: List[str]) -> None:
         self.age_brackets = age_brackets
 
     def regroup(self, data: DataFrame) -> DataFrame:
+        """
+        Regroups the columns of the dataset. Note that you should probably rename
+        the data after a regrouping with a :class:`.Renamer` object to avoid long
+        column names.
+
+        Parameters
+        ==========
+        data : :class:`pandas.DataFrame`
+            The data to regroup.
+        """
         age_assignments = {}
         for bracket in self.age_brackets:
             if bracket[-1] == '+':
@@ -69,13 +120,13 @@ class AgeRegrouper(Regrouper):
                 ages = bracket.split('-')
                 start, stop = int(ages[0]), int(ages[1])
             else:
-                raise Exception
+                raise ValueError('Each age bracket should be formatted like <start>-<stop> or <start>+')
 
             for i in range(start, stop + 1):
                 if i not in age_assignments:
                     age_assignments[i] = bracket
                 else:
-                    raise Exception
+                    raise ValueError(f"The age {i} has been assigned to more than one age bracket")
 
         def assign_bracket(census_bracket: str, start: int = None, stop: int = None):
             try:

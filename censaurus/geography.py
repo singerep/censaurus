@@ -3,6 +3,7 @@ from collections import defaultdict
 from typing import Dict, List, Set, Tuple, Union, Any
 import json
 from geopandas import GeoDataFrame
+import pandas as pd
 
 from censaurus.graph_utils import visualize_graph
 from censaurus.tiger import AreaCollection, Area, US_CARTOGRAPHIC
@@ -194,11 +195,19 @@ class GeographyCollection:
         return len(self._geography_map)
 
     def __repr__(self):
-        gs = self._geography_map.values()
-        return_str = ''
-        for g in gs:
-            return_str += str(g)
-        return return_str
+        geo_collection_str = f'GeographyCollection of {len(self)} geographies:\n'
+        if len(self) > 5:
+            for g in self.to_list()[:2]:
+                geo_collection_str += f'{g}'
+
+            geo_collection_str += '\n...\n\n'
+
+            for g in self.to_list()[-2:]:
+                geo_collection_str += f'{g}'
+        elif len(self) > 0:
+            for g in self.to_list():
+                geo_collection_str += f'{g}'
+        return geo_collection_str
 
     def get(self, level: str = None, name: str = None) -> Union[Geography, List[Geography]]:
         """
@@ -225,6 +234,8 @@ class GeographyCollection:
                 raise UnknownGeography(f'The requested geographic level ({level}) is not available for this dataset.')
         elif name:
             matches = [g for g in self._geography_map.values() if g.name == name]
+            if len(matches) == 1:
+                return matches[0]
             if len(matches) > 0:
                 return matches
             else:
@@ -317,6 +328,22 @@ class GeographyCollection:
 
             raise InvalidGeographyHierarchy(exception_str)
 
+    def to_df(self) -> pd.DataFrame:
+        """
+        Converts the :class:`.GeographyCollection` into a :class:`pandas.DataFrame` 
+        object detailing each geography's name, level, and requirements.
+        """
+        geo_dicts = []
+        for g_name, g in self._geography_map.items():
+            g_dict = {
+                'name': g.name,
+                'level': g.level,
+                'requirements': g.requires
+            }
+            geo_dicts += [g_dict]
+
+        return pd.DataFrame(geo_dicts).sort_values(by='level').reset_index(drop=True)
+
     def to_list(self):
         """
         Converts the :class:`.GeographyCollection` into a :obj:`list` of 
@@ -324,7 +351,7 @@ class GeographyCollection:
         """
         return list(self._geography_map.values())
 
-    def visualize(self, label_type: str = 'difference', hierarchical: bool = False, filename: str = 'geography_graph.html', show: bool = True, keep_file: bool = False):
+    def visualize(self, label_type: str = 'difference', hierarchical: bool = False, filename: str = 'geography_graph.html', show: bool = True, keep_file: bool = False, **kwargs):
         """
         Visualizes the :class:`.GeographyCollection` as a tree in your default
         webbrowser.
@@ -358,4 +385,4 @@ class GeographyCollection:
 
         titles = {g.path: str(g) for g in self._geography_map.values()}
 
-        visualize_graph(tree=self._geography_tree, titles=titles, labels=labels, hierarchical=hierarchical, filename=filename, show=show, keep_file=keep_file)
+        visualize_graph(tree=self._geography_tree, titles=titles, labels=labels, hierarchical=hierarchical, filename=filename, show=show, keep_file=keep_file, **kwargs)

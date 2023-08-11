@@ -4,6 +4,7 @@ import queue
 import os
 import re
 import pandas as pd
+from itertools import zip_longest
 
 from .graph_utils import visualize_graph
 
@@ -64,11 +65,19 @@ class GroupCollection:
         return len(self._group_map.keys())
 
     def __repr__(self) -> str:
-        gs = self._group_map.values()
-        return_str = ''
-        for g in gs:
-            return_str += str(g)
-        return return_str
+        group_collection_str = f'GroupCollection of {len(self)} groups:\n'
+        if len(self) > 5:
+            for g in self.to_list()[:2]:
+                group_collection_str += f'{g}'
+
+            group_collection_str += '\n...\n\n'
+
+            for g in self.to_list()[-2:]:
+                group_collection_str += f'{g}'
+        elif len(self) > 0:
+            for g in self.to_list():
+                group_collection_str += f'{g}'
+        return group_collection_str
 
     def __contains__(self, group: str) -> bool:
         return group in self._group_map
@@ -133,14 +142,14 @@ class GroupCollection:
             }
             group_dicts += [g_dict]
 
-        return pd.DataFrame(group_dicts)
+        return pd.DataFrame(group_dicts).sort_values(by='name').reset_index(drop=True)
 
     def to_list(self) -> List[Group]:
         """
         Converts the :class:`.GroupCollection` into a :obj:`list` of :class:`.Group`
         objects.
         """
-        return list(self._group_map.values())
+        return sorted(list(self._group_map.values()), key=lambda g : g.name)
 
 
 class RegroupedVariable:
@@ -229,8 +238,6 @@ class Variable:
             self.label = 'GEO_ID'
             self.group = None
             self.concept = None
-        
-        self.attributes = info.get('attributes', None)
 
         self.path = None
         self.parent_path = None
@@ -238,6 +245,12 @@ class Variable:
 
         label_parts = self.label.split('!!')
         self._parse_label_parts(label_parts=label_parts)
+
+        self.attributes = info.get('attributes', None)
+        self._attribute_map : Dict[str, AttributeVariable] = {}
+        if self.attributes is not None:
+            for attr in self.attributes.split(','):
+                self._attribute_map[attr] = AttributeVariable(name=attr, owner=self)
 
     def __repr__(self) -> str:
         var_str = f'{self.name}\n  group: {self.group}\n  concept: {self.concept}\n  path: [{self.readable_path}]\n'
@@ -256,6 +269,35 @@ class Variable:
         self.parent_path = self.path[:-1]
         self.readable_path = ' -> '.join(g.replace('!', '') for g in self.path)
 
+
+class AttributeVariable(Variable):
+    def __init__(self, name: str, owner: Variable) -> None:
+        for i, (n_c, o_c) in enumerate(zip_longest(name, owner.name)):
+            if n_c != o_c:
+                break
+        self.attribute_type = name[i:]
+        if self.attribute_type == 'A':
+            self.attribute_type = 'annotation'
+        elif self.attribute_type == 'M':
+            self.attribute_type = 'margin of error'
+        elif self.attribute_type == 'MA':
+            self.attribute_type = 'annotation of margin of error'
+
+        self.name = name
+        self.label = owner.label
+        self.group = owner.group
+        self.concept = owner.concept
+        self.type = owner.type
+        self.items = owner.items
+        self.path = owner.path + (self.attribute_type,)
+        self.parent_path = owner.parent_path
+        self.readable_path = owner.readable_path + f' -> {self.attribute_type}'
+
+        if self.name == 'NAME':
+            self.label = 'NAME'
+            self.path = ('NAME',)
+            self.readable_path = 'NAME'
+        
 
 class VariableCollection:
     """
@@ -322,11 +364,19 @@ class VariableCollection:
             raise Exception('Can only add objects of type list or VariableCollection to another VariableCollection')
 
     def __repr__(self):
-        vs = self._variable_map.values()
-        return_str = ''
-        for v in vs:
-            return_str += str(v)
-        return return_str
+        var_collection_str = f'VariableCollection of {len(self)} variables:\n'
+        if len(self) > 5:
+            for v in self.to_list()[:2]:
+                var_collection_str += f'{v}'
+
+            var_collection_str += '\n...\n\n'
+
+            for v in self.to_list()[-2:]:
+                var_collection_str += f'{v}'
+        elif len(self) > 0:
+            for v in self.to_list():
+                var_collection_str += f'{v}'
+        return var_collection_str
 
     def _build_variable_params(self, variables: Union['VariableCollection', List[str], List[Variable], List[Union[str, Variable]], Dict[str, str]] = [], groups: List[str] = []):
         variable_names = []
@@ -428,14 +478,13 @@ class VariableCollection:
         variable : :obj:`str` or :class:`.Variable`
             The requested variable.
         """
-        # TODO: should this raise error
         if isinstance(variable, Variable):
             variable = variable.name
 
         if variable in self._variable_map:
             return self._variable_map.get(variable)
         elif variable in self._attribute_map:
-            return self._variable_map.get(self._attribute_map.get(variable))
+            return self._variable_map.get(self._attribute_map.get(variable))._attribute_map.get(variable)
         return None
 
     def parent_of(self, variable: Union[str, Variable]) -> Variable:
@@ -648,7 +697,7 @@ class VariableCollection:
 
         return self._mask(parents)
 
-    def filter_by_term(self, term: str, by: str = 'label') -> 'VariableCollection':
+    def filter_by_term(self, term: Union[str, List[str]], by: str = 'label') -> 'VariableCollection':
         """
         Returns a new :class:`.VariableCollection` consisting of all variables
         that match the search. Can filter by each variable's label or by the
@@ -663,15 +712,18 @@ class VariableCollection:
             Otherwise, ``by`` should be 'concept', and variables will be filtered
             by the concepts of their groups.
         """
-        term = term.lower()
+        if isinstance(term, str):
+            term = [term]
+        
+        terms = [t.lower() for t in term]
         if by == 'label':
-            v_names = [v_name for v_name in self._variable_map if term in self._variable_map[v_name].label.lower()]
+            v_names = [v_name for v_name in self._variable_map if all(t in self._variable_map[v_name].label.lower() for t in terms)]
             return self._mask(v_names)
         elif by == 'concept':
-            v_names = [v_name for v_name in self._variable_map if self._variable_map[v_name].concept is not None and term in self._variable_map[v_name].concept.lower()]
+            v_names = [v_name for v_name in self._variable_map if all(self._variable_map[v_name].concept is not None and t in self._variable_map[v_name].concept.lower() for t in terms)]
             return self._mask(v_names)
         else:
-            raise ValueError("'by' should either by 'label' or 'concept'")
+            raise ValueError("'by' should either be 'label' or 'concept'")
 
     def filter_by_group(self, group: Union[str, Group]) -> 'VariableCollection':
         """
@@ -716,7 +768,7 @@ class VariableCollection:
         """
         return list(self._variable_map.values())
 
-    def visualize(self, label_type: str = 'name', hierarchical: bool = False, filename: str = 'variable_graph.html', show: bool = True, keep_file: bool = False):
+    def visualize(self, label_type: str = 'name', hierarchical: bool = False, filename: str = 'variable_graph.html', show: bool = True, keep_file: bool = False, **kwargs):
         """
         Visualizes the :class:`.VariableCollection` as a tree in your default
         webbrowser.
@@ -752,4 +804,4 @@ class VariableCollection:
 
         titles = {v_path: str(self.get(self._path_to_name_map[v_path])) for v_path in self._variable_tree}
 
-        visualize_graph(tree=self._variable_tree, titles=titles, labels=labels, hierarchical=hierarchical, filename=filename, show=show, keep_file=keep_file)
+        visualize_graph(tree=self._variable_tree, titles=titles, labels=labels, hierarchical=hierarchical, filename=filename, show=show, keep_file=keep_file, **kwargs)

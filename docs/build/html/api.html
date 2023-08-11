@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Getting started" href="getting_started.html" /> 
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,8 +42,19 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.dataset">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.variable">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.geography">Geography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.census_accessors">Custom <code class="docutils literal notranslate"><span class="pre">pandas</span></code> functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.tiger">TIGER and Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.rename">Renaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.regroup">Regrouping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.recode">Recoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.api">Census and TIGERWeb APIs</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -70,8 +81,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-censaurus.dataset">
-<span id="api-documentation"></span><h1>API documentation<a class="headerlink" href="#module-censaurus.dataset" title="Permalink to this heading"></a></h1>
+  <section id="api-documentation">
+<h1>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this heading"></a></h1>
+<section id="module-censaurus.dataset">
+<span id="datasets"></span><h2>Datasets<a class="headerlink" href="#module-censaurus.dataset" title="Permalink to this heading"></a></h2>
 <dl class="py exception">
 <dt class="sig sig-object py" id="censaurus.dataset.DatasetError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">DatasetError</span></span><a class="headerlink" href="#censaurus.dataset.DatasetError" title="Permalink to this definition"></a></dt>
@@ -106,6 +119,8 @@ use those instead.</p>
 </ul>
 </div></blockquote>
 </li>
+<li><p>Public Use Microdata Sample <a class="reference internal" href="#censaurus.dataset.PUMS" title="censaurus.dataset.PUMS"><code class="xref py py-class docutils literal notranslate"><span class="pre">PUMS</span></code></a></p></li>
+<li><p>Current Population Survey <a class="reference internal" href="#censaurus.dataset.CPS" title="censaurus.dataset.CPS"><code class="xref py py-class docutils literal notranslate"><span class="pre">CPS</span></code></a></p></li>
 <li><p>Economic Census: <a class="reference internal" href="#censaurus.dataset.Economic" title="censaurus.dataset.Economic"><code class="xref py py-class docutils literal notranslate"><span class="pre">Economic</span></code></a></p>
 <blockquote>
 <div><ul class="simple">
@@ -1071,7 +1086,10 @@ above are for 2017 Population Projections.</p>
 </dl>
 </dd></dl>
 
-<span class="target" id="module-censaurus.variable"></span><dl class="py exception">
+</section>
+<section id="module-censaurus.variable">
+<span id="variables"></span><h2>Variables<a class="headerlink" href="#module-censaurus.variable" title="Permalink to this heading"></a></h2>
+<dl class="py exception">
 <dt class="sig sig-object py" id="censaurus.variable.UnknownGroup">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.variable.</span></span><span class="sig-name descname"><span class="pre">UnknownGroup</span></span><a class="headerlink" href="#censaurus.variable.UnknownGroup" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -1141,7 +1159,7 @@ objects.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.variable.</span></span><span class="sig-name descname"><span class="pre">RegroupedVariable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.variable.RegroupedVariable" title="Permalink to this definition"></a></dt>
 <dd><p>An object that represents a group of <a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a> objects after a regrouping
 has occurred. Not to be confused with an actual Census group. To learn more about
-custom regrouping, see <code class="xref py py-class docutils literal notranslate"><span class="pre">Regrouper</span></code>.</p>
+custom regrouping, see <a class="reference internal" href="#censaurus.regroup.Regrouper" title="censaurus.regroup.Regrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Regrouper</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1288,6 +1306,11 @@ has a <code class="docutils literal notranslate"><span class="pre">readable_path
 </dd></dl>
 
 </dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="censaurus.variable.AttributeVariable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.variable.</span></span><span class="sig-name descname"><span class="pre">AttributeVariable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.variable.AttributeVariable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.variable.VariableCollection">
@@ -1498,7 +1521,7 @@ returned <a class="reference internal" href="#censaurus.variable.VariableCollect
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.variable.VariableCollection.filter_by_term">
-<span class="sig-name descname"><span class="pre">filter_by_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'label'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a></span></span><a class="headerlink" href="#censaurus.variable.VariableCollection.filter_by_term" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">filter_by_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'label'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a></span></span><a class="headerlink" href="#censaurus.variable.VariableCollection.filter_by_term" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a new <a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableCollection</span></code></a> consisting of all variables
 that match the search. Can filter by each variable’s label or by the
 concept of each variable’s group.</p>
@@ -1543,7 +1566,7 @@ objects.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.variable.VariableCollection.visualize">
-<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'variable_graph.html'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.variable.VariableCollection.visualize" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'variable_graph.html'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.variable.VariableCollection.visualize" title="Permalink to this definition"></a></dt>
 <dd><p>Visualizes the <a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableCollection</span></code></a> as a tree in your default
 webbrowser.</p>
 <dl class="field-list simple">
@@ -1570,7 +1593,10 @@ webbrowser.</p></li>
 
 </dd></dl>
 
-<span class="target" id="module-censaurus.geography"></span><dl class="py exception">
+</section>
+<section id="module-censaurus.geography">
+<span id="geography"></span><h2>Geography<a class="headerlink" href="#module-censaurus.geography" title="Permalink to this heading"></a></h2>
+<dl class="py exception">
 <dt class="sig sig-object py" id="censaurus.geography.UnknownGeography">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.geography.</span></span><span class="sig-name descname"><span class="pre">UnknownGeography</span></span><a class="headerlink" href="#censaurus.geography.UnknownGeography" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -1738,6 +1764,13 @@ return a list.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="censaurus.geography.GeographyCollection.to_df">
+<span class="sig-name descname"><span class="pre">to_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#censaurus.geography.GeographyCollection.to_df" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the <a class="reference internal" href="#censaurus.geography.GeographyCollection" title="censaurus.geography.GeographyCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeographyCollection</span></code></a> into a <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>
+object detailing each geography’s name, level, and requirements.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="censaurus.geography.GeographyCollection.to_list">
 <span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.geography.GeographyCollection.to_list" title="Permalink to this definition"></a></dt>
 <dd><p>Converts the <a class="reference internal" href="#censaurus.geography.GeographyCollection" title="censaurus.geography.GeographyCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeographyCollection</span></code></a> into a <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of
@@ -1746,7 +1779,7 @@ return a list.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.geography.GeographyCollection.visualize">
-<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'difference'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'geography_graph.html'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.geography.GeographyCollection.visualize" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'difference'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'geography_graph.html'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.geography.GeographyCollection.visualize" title="Permalink to this definition"></a></dt>
 <dd><p>Visualizes the <a class="reference internal" href="#censaurus.geography.GeographyCollection" title="censaurus.geography.GeographyCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeographyCollection</span></code></a> as a tree in your default
 webbrowser.</p>
 <dl class="field-list simple">
@@ -1773,7 +1806,49 @@ webbrowser.</p></li>
 
 </dd></dl>
 
-<span class="target" id="module-censaurus.tiger"></span><dl class="py function">
+</section>
+<section id="module-censaurus.census_accessors">
+<span id="custom-pandas-functionality"></span><h2>Custom <code class="docutils literal notranslate"><span class="pre">pandas</span></code> functionality<a class="headerlink" href="#module-censaurus.census_accessors" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="censaurus.census_accessors.DataFrameCensusAccessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.census_accessors.</span></span><span class="sig-name descname"><span class="pre">DataFrameCensusAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pandas_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.census_accessors.DataFrameCensusAccessor" title="Permalink to this definition"></a></dt>
+<dd><p>Custom <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> accessors. Allows users to access the geography and
+variables associated with a <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> object that was generated
+by <code class="docutils literal notranslate"><span class="pre">censaurus</span></code>. Properties can be accessed by calling
+<code class="docutils literal notranslate"><span class="pre">dataset.census.&lt;property&gt;</span></code>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="censaurus.census_accessors.DataFrameCensusAccessor.geography">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">geography</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.geography.Geography" title="censaurus.geography.Geography"><span class="pre">Geography</span></a></em><a class="headerlink" href="#censaurus.census_accessors.DataFrameCensusAccessor.geography" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the geography hierarchy associated with the <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="censaurus.census_accessors.DataFrameCensusAccessor.variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a></em><a class="headerlink" href="#censaurus.census_accessors.DataFrameCensusAccessor.variables" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the variable collection associated with the <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="censaurus.census_accessors.SeriesCensusAccessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.census_accessors.</span></span><span class="sig-name descname"><span class="pre">SeriesCensusAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pandas_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.census_accessors.SeriesCensusAccessor" title="Permalink to this definition"></a></dt>
+<dd><p>Custom <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Series</span></code> accessors. Allows users to access the variable
+associated with a <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Series</span></code> object from within a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> that was generated by <code class="docutils literal notranslate"><span class="pre">censaurus</span></code>. Properties can be
+accessed by calling <code class="docutils literal notranslate"><span class="pre">dataset[&quot;column&quot;].census.&lt;property&gt;</span></code>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="censaurus.census_accessors.SeriesCensusAccessor.variable">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a></em><a class="headerlink" href="#censaurus.census_accessors.SeriesCensusAccessor.variable" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the variable associated with the <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Series</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-censaurus.tiger">
+<span id="tiger-and-geometry"></span><h2>TIGER and Geometry<a class="headerlink" href="#module-censaurus.tiger" title="Permalink to this heading"></a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="censaurus.tiger.parse_name">
 <span class="sig-prename descclassname"><span class="pre">censaurus.tiger.</span></span><span class="sig-name descname"><span class="pre">parse_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#censaurus.tiger.parse_name" title="Permalink to this definition"></a></dt>
 <dd><p>Parses the name of a geographic area. Replaces state abbreviations with full state
@@ -2426,7 +2501,234 @@ intersected with the cartographic boundary of the United States.</p></li>
 
 </dd></dl>
 
-<span class="target" id="module-censaurus.api"></span><dl class="py exception">
+</section>
+<section id="module-censaurus.rename">
+<span id="renaming"></span><h2>Renaming<a class="headerlink" href="#module-censaurus.rename" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="censaurus.rename.Renamer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.rename.</span></span><span class="sig-name descname"><span class="pre">Renamer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">separator:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'|',</span> <span class="pre">default_rename_function:</span> <span class="pre">~typing.Callable[[str],</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">Renamer.&lt;lambda&gt;&gt;,</span> <span class="pre">replacements:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">{},</span> <span class="pre">custom_match_functions:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~typing.Callable[[~re.Match,</span> <span class="pre">str],</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">{},</span> <span class="pre">group_prefixes:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.rename.Renamer" title="Permalink to this definition"></a></dt>
+<dd><p>An object that handles renaming Census variable names in datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>separator</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘|’) – The string to use to join individual tokens from the label of a
+<a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a>.</p></li>
+<li><p><strong>default_rename_function</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">function</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> -&gt; <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = <code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">x</span> <span class="pre">:</span> <span class="pre">x</span></code>) – The default function to pass individual tokens from the label of a
+<a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a> into. Defaults to simply returning the token.</p></li>
+<li><p><strong>replacements</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>:<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Individual tokens to search for (keys of the dictionary) and replace (values of
+the dictionary).</p></li>
+<li><p><strong>custom_match_functions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">function</span></code> of (<code class="xref py py-class docutils literal notranslate"><span class="pre">re.Match</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) -&gt; <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – A dictionary where each key represents to a renaming function that takes as an
+input a match and a string and returns a string. The individual tokens from the
+label of a <a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a> are checked against each key in this dictionary:
+if there is a match, the corresponding renaming function is used.</p></li>
+<li><p><strong>group_prefixes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – If a <a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a> is in a group that matches to a key in this dictionary,
+the prefix of the column name after the renaming will be the corresponding
+value in the dictionary as opposed to that group’s concept (the default
+behavior).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.rename.Renamer.add_group_prefixes">
+<span class="sig-name descname"><span class="pre">add_group_prefixes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_prefixes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#censaurus.rename.Renamer.add_group_prefixes" title="Permalink to this definition"></a></dt>
+<dd><p>Adds additional group prefixes to an existing <a class="reference internal" href="#censaurus.rename.Renamer" title="censaurus.rename.Renamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>group_prefixes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – The groups and prefixes to add.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.rename.Renamer.rename">
+<span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.rename.Renamer.rename" title="Permalink to this definition"></a></dt>
+<dd><p>Renames the columns of the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data to rename.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="censaurus.rename.SIMPLE_RENAMER">
+<span class="sig-prename descclassname"><span class="pre">censaurus.rename.</span></span><span class="sig-name descname"><span class="pre">SIMPLE_RENAMER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;censaurus.rename.Renamer</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#censaurus.rename.SIMPLE_RENAMER" title="Permalink to this definition"></a></dt>
+<dd><p>A <a class="reference internal" href="#censaurus.rename.Renamer" title="censaurus.rename.Renamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code></a> object that renames variables in a simple way. Has custom match
+functions to handle: age, race, variable types, inflation, and incomes.</p>
+</dd></dl>
+
+</section>
+<section id="module-censaurus.regroup">
+<span id="regrouping"></span><h2>Regrouping<a class="headerlink" href="#module-censaurus.regroup" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="censaurus.regroup.Regrouper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.regroup.</span></span><span class="sig-name descname"><span class="pre">Regrouper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">groupings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.regroup.Regrouper" title="Permalink to this definition"></a></dt>
+<dd><p>An object to handle regrouping Census variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>groupings</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: array-like of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – Each key in this dictionary is the name of a new group. Each corresponding value
+should be a list of elements that fall into that group. For example,
+<code class="docutils literal notranslate"><span class="pre">groupings={&quot;white_or_black&quot;:</span> <span class="pre">[&quot;white</span> <span class="pre">alone&quot;,</span> <span class="pre">&quot;black</span> <span class="pre">or</span> <span class="pre">african</span> <span class="pre">american</span> <span class="pre">alone&quot;]}</span></code>
+would aggregate all columns that have the token <code class="docutils literal notranslate"><span class="pre">white</span> <span class="pre">alone</span></code> or the token
+<code class="docutils literal notranslate"><span class="pre">black</span> <span class="pre">or</span> <span class="pre">african</span> <span class="pre">american</span> <span class="pre">alone</span></code>, and create a new column with those tokens
+replaces as <code class="docutils literal notranslate"><span class="pre">white_or_black</span></code>.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.regroup.Regrouper.regroup">
+<span class="sig-name descname"><span class="pre">regroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.regroup.Regrouper.regroup" title="Permalink to this definition"></a></dt>
+<dd><p>Regroups the columns of the dataset. Note that you should probably rename
+the data after a regrouping with a <a class="reference internal" href="#censaurus.rename.Renamer" title="censaurus.rename.Renamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code></a> object to avoid long
+column names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data to regroup.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="censaurus.regroup.FIVE_RACE_REGROUPER">
+<span class="sig-prename descclassname"><span class="pre">censaurus.regroup.</span></span><span class="sig-name descname"><span class="pre">FIVE_RACE_REGROUPER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;censaurus.regroup.Regrouper</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#censaurus.regroup.FIVE_RACE_REGROUPER" title="Permalink to this definition"></a></dt>
+<dd><p>A <a class="reference internal" href="#censaurus.regroup.Regrouper" title="censaurus.regroup.Regrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Regrouper</span></code></a> object that aggregates <code class="docutils literal notranslate"><span class="pre">some</span> <span class="pre">other</span> <span class="pre">race</span> <span class="pre">alone</span></code>, <code class="docutils literal notranslate"><span class="pre">two</span> <span class="pre">or</span> <span class="pre">more</span>
+<span class="pre">races</span></code>, <code class="docutils literal notranslate"><span class="pre">american</span> <span class="pre">indian</span> <span class="pre">and</span> <span class="pre">alaska</span> <span class="pre">native</span> <span class="pre">alone</span></code>, <code class="docutils literal notranslate"><span class="pre">native</span> <span class="pre">hawaiian</span> <span class="pre">and</span> <span class="pre">other</span> <span class="pre">pacific</span>
+<span class="pre">islander</span> <span class="pre">alone</span></code> into a group called <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="censaurus.regroup.AgeRegrouper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.regroup.</span></span><span class="sig-name descname"><span class="pre">AgeRegrouper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_brackets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.regroup.AgeRegrouper" title="Permalink to this definition"></a></dt>
+<dd><p>A subclass of the <code class="xref py py-class docutils literal notranslate"><span class="pre">Regouper</span></code> class that specifically handles regrouping
+into new age buckets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>age_brackets</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The new age brackets to group into. Must be of the form
+<code class="docutils literal notranslate"><span class="pre">&quot;&lt;start_year&gt;-&lt;end_year&gt;&quot;</span></code>, except for the oldest age bracket, which should
+be of the form <code class="docutils literal notranslate"><span class="pre">&lt;start_year&gt;+</span></code>. For example,
+<code class="docutils literal notranslate"><span class="pre">age_brackets=[&quot;0-17&quot;,</span> <span class="pre">&quot;18-29&quot;,</span> <span class="pre">&quot;30-49&quot;,</span> <span class="pre">&quot;50-64&quot;,</span> <span class="pre">&quot;65+&quot;]</span></code>.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.regroup.AgeRegrouper.regroup">
+<span class="sig-name descname"><span class="pre">regroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#censaurus.regroup.AgeRegrouper.regroup" title="Permalink to this definition"></a></dt>
+<dd><p>Regroups the columns of the dataset. Note that you should probably rename
+the data after a regrouping with a <a class="reference internal" href="#censaurus.rename.Renamer" title="censaurus.rename.Renamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code></a> object to avoid long
+column names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data to regroup.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-censaurus.recode">
+<span id="recoding"></span><h2>Recoding<a class="headerlink" href="#module-censaurus.recode" title="Permalink to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="censaurus.recode.RecodeError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.recode.</span></span><span class="sig-name descname"><span class="pre">RecodeError</span></span><a class="headerlink" href="#censaurus.recode.RecodeError" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="censaurus.recode.StateRecoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.recode.</span></span><span class="sig-name descname"><span class="pre">StateRecoder</span></span><a class="headerlink" href="#censaurus.recode.StateRecoder" title="Permalink to this definition"></a></dt>
+<dd><p>An object that handles recoding state to various formats. The available formats are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">FIPS</span></code>: state FIPS codes with no zero-padding (1, 2, 4, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FIPS_PADDED</span></code>: state FIPS codes with two-digit zero-padding (01, 02, 04, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ABBR</span></code>: state abbreviations (AL, AK, AZ, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NAME</span></code>: full state names (Alabama, Alaska, Arizona, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GNIS</span></code>: Geographic Names Information System codes (01779775, 01785533, 01779777 etc.)</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.recode.StateRecoder.to_FIPS">
+<span class="sig-name descname"><span class="pre">to_FIPS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.recode.StateRecoder.to_FIPS" title="Permalink to this definition"></a></dt>
+<dd><p>Recodes states as FIPS codes (1, 2, 4, etc.). Attempts to infer the
+original state format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
+<li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.recode.StateRecoder.to_FIPS_PADDED">
+<span class="sig-name descname"><span class="pre">to_FIPS_PADDED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.recode.StateRecoder.to_FIPS_PADDED" title="Permalink to this definition"></a></dt>
+<dd><p>Recodes states as two-digit zero-padded FIPS codes (01, 02, 04, etc.).
+Attempts to infer the original state format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
+<li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.recode.StateRecoder.to_ABBR">
+<span class="sig-name descname"><span class="pre">to_ABBR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.recode.StateRecoder.to_ABBR" title="Permalink to this definition"></a></dt>
+<dd><p>Recodes states as abbreviations (AL, AK, AZ, etc.). Attempts to infer the
+original state format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
+<li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.recode.StateRecoder.to_NAME">
+<span class="sig-name descname"><span class="pre">to_NAME</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.recode.StateRecoder.to_NAME" title="Permalink to this definition"></a></dt>
+<dd><p>Recodes states as full names (Alabama, Alaska, Arizona, etc.). Attempts to infer
+the original state format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
+<li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.recode.StateRecoder.to_GNIS">
+<span class="sig-name descname"><span class="pre">to_GNIS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.recode.StateRecoder.to_GNIS" title="Permalink to this definition"></a></dt>
+<dd><p>Recodes states as GNIS codes (01779775, 01785533, 01779777 etc.). Attempts to
+infer the original state format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
+<li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-censaurus.api">
+<span id="census-and-tigerweb-apis"></span><h2>Census and TIGERWeb APIs<a class="headerlink" href="#module-censaurus.api" title="Permalink to this heading"></a></h2>
+<dl class="py exception">
 <dt class="sig sig-object py" id="censaurus.api.CensusAPIKeyError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.api.</span></span><span class="sig-name descname"><span class="pre">CensusAPIKeyError</span></span><a class="headerlink" href="#censaurus.api.CensusAPIKeyError" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -2591,12 +2893,13 @@ set of query parameters to supply to the TIGERWeb API.</p>
 </dd></dl>
 
 </section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

@@ -8,6 +8,31 @@ from censaurus.dataset import Dataset
 
 
 class Renamer:
+    """
+    An object that handles renaming Census variable names in datasets.
+
+    Parameters
+    ==========
+    separator : :obj:`str` = '|'
+        The string to use to join individual tokens from the label of a 
+        :class:`.Variable`.
+    default_rename_function : :obj:`function` of :obj:`str` -> :obj:`str` = ``lambda x : x``
+        The default function to pass individual tokens from the label of a 
+        :class:`.Variable` into. Defaults to simply returning the token.
+    replacements : :obj:`dict` of :obj:`str`::obj:`str` = {}
+        Individual tokens to search for (keys of the dictionary) and replace (values of
+        the dictionary).
+    custom_match_functions : :obj:`dict` of :obj:`str`: :obj:`function` of (:class:`re.Match`, :obj:`str`) -> :obj:`str` = {}
+        A dictionary where each key represents to a renaming function that takes as an
+        input a match and a string and returns a string. The individual tokens from the 
+        label of a :class:`.Variable` are checked against each key in this dictionary:
+        if there is a match, the corresponding renaming function is used.
+    group_prefixes : :obj:`dict` of :obj:`str`: :obj:`str` = {}
+        If a :class:`.Variable` is in a group that matches to a key in this dictionary,
+        the prefix of the column name after the renaming will be the corresponding
+        value in the dictionary as opposed to that group's concept (the default 
+        behavior).
+    """
     def __init__(self, separator: str = '|', default_rename_function: Callable[[str], str] = lambda x : x, replacements: Dict[str, str] = {}, custom_match_functions: Dict[str, Callable[[re.Match, str], str]] = {}, group_prefixes: Dict[str, str] = {}) -> None:
         self._separator = separator
         self.replacements = replacements
@@ -24,9 +49,17 @@ class Renamer:
         self._separator = separator
 
     def add_group_prefixes(self, group_prefixes: Dict[str, str]) -> None:
+        """
+        Adds additional group prefixes to an existing :class:`.Renamer`.
+
+        Parameters
+        ==========
+        group_prefixes : :obj:`dict` of :obj:`str`: :obj:`str` = {}
+            The groups and prefixes to add.
+        """
         self.group_prefixes.update(group_prefixes)
 
-    def rename_variable(self, variable: Variable) -> str:
+    def _rename_variable(self, variable: Variable) -> str:
         group = variable.group
         concept = variable.concept
         if group is not None:
@@ -54,6 +87,14 @@ class Renamer:
         return self.separator.join([t for t in tokens if t])
 
     def rename(self, data: DataFrame):
+        """
+        Renames the columns of the dataset.
+
+        Parameters
+        ==========
+        data : :class:`pandas.DataFrame`
+            The data to rename.
+        """
         new_name_map = {}
         old_name_map = {}
         variable_map = {}
@@ -61,7 +102,7 @@ class Renamer:
             v = data[c].census.variable
             variable_map[c] = v
             if v is not None:
-                new_name = self.rename_variable(variable=v)
+                new_name = self._rename_variable(variable=v)
                 new_name_map[c] = new_name
                 old_name_map[new_name] = c
 
@@ -72,7 +113,7 @@ class Renamer:
 
         return data
 
-def age_renamer(match: re.Match, token: str) -> str:
+def _age_renamer(match: re.Match, token: str) -> str:
     start, stop = match.span()
     original_match = match.string[start:stop]
     if match['under'] is not None:
@@ -94,7 +135,7 @@ def age_renamer(match: re.Match, token: str) -> str:
         return token.replace(original_match, f'{one_start}')
     return None
 
-def type_renamer(match: re.Match, token: str) -> str:
+def _type_renamer(match: re.Match, token: str) -> str:
     if token == 'estimate':
         return None
     elif token == 'margin of error':
@@ -105,7 +146,7 @@ def type_renamer(match: re.Match, token: str) -> str:
         return 'amoe'
     return None
 
-def race_renamer(match: re.Match, token: str) -> str:
+def _race_renamer(match: re.Match, token: str) -> str:
     start, stop = match.span()
     original_match = match.string[start:stop]
     if match['white'] is not None:
@@ -133,13 +174,13 @@ def race_renamer(match: re.Match, token: str) -> str:
     else:
         return token
 
-def inflation_renamer(match: re.Match, token: str) -> str:
+def _inflation_renamer(match: re.Match, token: str) -> str:
     start, stop = match.span()
     original_match = match.string[start:stop]
     year = match['year']
     return token.replace(original_match, f'${year}')
 
-def income_renamer(match: re.Match, token: str) -> str:
+def _income_renamer(match: re.Match, token: str) -> str:
     start, stop = match.span()
     original_match = match.string[start:stop]
     if match['less_than'] is not None:
@@ -162,10 +203,12 @@ INCOME_REGEX = r'((?P<less_than>less than \$(?P<less_than_stop>[0-9,]+))|(?P<to>
 SIMPLE_RENAMER = Renamer(
     default_rename_function=lambda x : ' '.join(x.split()) if x is not None else None, 
     custom_match_functions={
-        AGE_REGEX: age_renamer,
-        RACE_REGEX: race_renamer,
-        TYPE_REGEX: type_renamer,
-        INFLATION_REGEX: inflation_renamer,
-        INCOME_REGEX: income_renamer
+        AGE_REGEX: _age_renamer,
+        RACE_REGEX: _race_renamer,
+        TYPE_REGEX: _type_renamer,
+        INFLATION_REGEX: _inflation_renamer,
+        INCOME_REGEX: _income_renamer
     }
 )
+"""A :class:`.Renamer` object that renames variables in a simple way. Has custom match
+functions to handle: age, race, variable types, inflation, and incomes."""
