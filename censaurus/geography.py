@@ -1,9 +1,8 @@
-import warnings
 from collections import defaultdict
 from typing import Dict, List, Set, Tuple, Union, Any
-import json
+from json import dumps, loads
 from geopandas import GeoDataFrame
-import pandas as pd
+from pandas import DataFrame
 
 from censaurus.graph_utils import visualize_graph
 from censaurus.tiger import AreaCollection, Area, US_CARTOGRAPHIC
@@ -254,7 +253,7 @@ class GeographyCollection:
                 feature_attributes = feature.to_dict()
                 broadest_params = geography._build_broadest_params(feature_attributes=feature_attributes)
                 if broadest_params is not False:
-                    params_set.add(json.dumps(broadest_params, sort_keys=True))
+                    params_set.add(dumps(broadest_params, sort_keys=True))
                 else:
                     is_possible = False
                     break
@@ -267,7 +266,7 @@ class GeographyCollection:
         geography_params_sets = sorted(geography_params_sets, key=lambda lps : len(lps[1]))
         best_geography = geography_params_sets[0][0]
         best_param_set = geography_params_sets[0][1]
-        return best_geography, [json.loads(p) for p in best_param_set]         
+        return best_geography, [loads(p) for p in best_param_set]         
 
     def _build_geography_params(self, areas: AreaCollection, within: Union[Area, List[Area]], target: str, target_layer_name: Union[str, List[str]], return_geometry: bool, area_threshold: float):
         if within is None:
@@ -275,6 +274,13 @@ class GeographyCollection:
         
         if isinstance(within, list) and len(within) == 1:
             within = within[0]
+
+
+        if isinstance(within, Area):
+            within._set_attributes()
+        else:
+            for area in within:
+                area._set_attributes()
         
         if return_geometry is False and isinstance(within, Area):
             geographies = self.get(name=target)
@@ -328,7 +334,7 @@ class GeographyCollection:
 
             raise InvalidGeographyHierarchy(exception_str)
 
-    def to_df(self) -> pd.DataFrame:
+    def to_df(self) -> DataFrame:
         """
         Converts the :class:`.GeographyCollection` into a :class:`pandas.DataFrame` 
         object detailing each geography's name, level, and requirements.
@@ -342,7 +348,7 @@ class GeographyCollection:
             }
             geo_dicts += [g_dict]
 
-        return pd.DataFrame(geo_dicts).sort_values(by='level').reset_index(drop=True)
+        return DataFrame(geo_dicts).sort_values(by='level').reset_index(drop=True)
 
     def to_list(self):
         """

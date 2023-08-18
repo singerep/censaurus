@@ -1,7 +1,7 @@
-from typing import Dict, List, Tuple, Iterable, Union
+from typing import Dict, List, Iterable
 from pandas import DataFrame
 from collections import defaultdict
-import re
+from re import match
 
 from censaurus.variable import RegroupedVariable
 from censaurus.rename import AGE_REGEX
@@ -149,7 +149,7 @@ class AgeRegrouper(Regrouper):
             variable = data[c].census.variable
             if variable is not None:
                 for element in variable.path:
-                    match = re.match(AGE_REGEX, element)
+                    match = match(AGE_REGEX, element)
                     if match is not None:
                         if match['under'] is not None:
                             under_end = int(match['under_end'])

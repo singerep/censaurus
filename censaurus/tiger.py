@@ -4,20 +4,19 @@ from shapely import intersection
 from shapely.geometry import shape
 from shapely.geometry.polygon import Polygon
 from shapely.geometry.multipolygon import MultiPolygon
-import pandas as pd
-import geopandas as gpd
+from pandas import DataFrame, Series, concat
+from geopandas import GeoDataFrame
 from thefuzz import process
 from shapely import union_all
-import re
+from re import finditer, split, sub
 from Levenshtein import distance, ratio
 from scipy.optimize import linear_sum_assignment
 from collections import defaultdict
 from numpy import log
-import json
-import requests
+from json.decoder import JSONDecodeError
 from fiona._err import CPLE_OpenFailedError
 from fiona.errors import DriverError
-import matplotlib.pyplot as plt
+from matplotlib.pyplot import fill, axis
 
 from censaurus.api import TIGERClient, TIGERWebAPIError, TIGERWebError
 from censaurus.constants import LAYER_RESULT_COUNT_MAP, FEATURE_ATTRIBUTE_MAP, ABBR_TO_FULL, FIPS_TO_FULL, ABBR_TO_FULL_REGEX
@@ -32,15 +31,15 @@ def parse_name(name: str) -> str:
     name : :obj:`str`
         The name to parse.
     """
-    for match in re.finditer(pattern=ABBR_TO_FULL_REGEX, string=name):
+    for match in finditer(pattern=ABBR_TO_FULL_REGEX, string=name):
         state_abbr = match.string[match.start():match.end()]
         name = name.replace(state_abbr, ABBR_TO_FULL[state_abbr.upper()])
 
-    name = re.sub(pattern='(?<!\d)0+(?=\d)', repl='', string=name)
+    name = sub(pattern='(?<!\d)0+(?=\d)', repl='', string=name)
     
     return name
 
-def generate_detailed_name(feature: pd.Series, layer_name: str) -> str:
+def generate_detailed_name(feature: Series, layer_name: str) -> str:
     """
     Generates a detailed name of a geographic area. Parses the name and adds the state,
     if necessary.
@@ -72,7 +71,7 @@ def tokenize_feature_name(feature_name: str) -> set:
     feature_name : :obj:`str`
         The name to tokenize.
     """
-    return set(re.split(pattern='\W+', string=feature_name))
+    return set(split(pattern='\W+', string=feature_name))
 
 def build_custom_scorer(count_map: Dict[str, int], N: int) -> Tuple[Callable[[str, str], float], Dict[str, float]]:
     """
@@ -216,7 +215,10 @@ class Area:
             Determines whether the geometric boundary of the area should be intersected
             with the cartographic boundary of the United States.
         """
-        def _tiger_set_attributes(self: Area):
+        def _set_attributes(self: Area):
+            if self._attributes_are_set is True:
+                return
+            
             params = {
                 'where': f"GEOID='{geo_id}'",
                 'outFields': '*',
@@ -244,7 +246,7 @@ class Area:
             self._attributes_are_set = True
 
         area = cls()
-        area._set_attributes = MethodType(_tiger_set_attributes, area)
+        area._set_attributes = MethodType(_set_attributes, area)
 
         return area
 
@@ -291,8 +293,11 @@ class Area:
     @classmethod
     def _from_file_or_url(cls, name: str, path: str, kind: str, geo_col: str = 'geometry', intersect_with_cb: bool = True) -> 'Area':
         def _set_attributes(self: Area):
+            if self._attributes_are_set is True:
+                return
+            
             try:
-                gdf = gpd.GeoDataFrame.from_file(path)
+                gdf = GeoDataFrame.from_file(path)
             except (CPLE_OpenFailedError, DriverError):
                 raise ValueError(f"The {kind} you provided must point to a file of any file format recognized by 'fiona' (see http://fiona.readthedocs.io/en/latest/manual.html).")
 
@@ -347,7 +352,7 @@ class Layer:
     def __repr__(self) -> str:
         return f'MapService Layer ({self.name})'
 
-    def _get_feature_attributes(self, bbox: Iterable[float] = None, out_fields: str = '*') -> gpd.GeoDataFrame:
+    def _get_feature_attributes(self, bbox: Iterable[float] = None, out_fields: str = '*') -> GeoDataFrame:
         params = {
             'where': '1=1',
             'outFields': out_fields,
@@ -363,11 +368,11 @@ class Layer:
 
         features_resp = self.tiger_client.get_sync(url=f'{self.id}/query', params=params, return_type='geojson')
         features = features_resp.json()['features']
-        gdf = gpd.GeoDataFrame.from_features(features=features)
+        gdf = GeoDataFrame.from_features(features=features)
         gdf.set_crs(crs='4236')
         return gdf
 
-    def _get_feature_geometry(self, bbox: Iterable[float] = None, feature_count: int = None, cb: bool = True) -> gpd.GeoDataFrame:
+    def _get_feature_geometry(self, bbox: Iterable[float] = None, feature_count: int = None, cb: bool = True) -> GeoDataFrame:
         params = {
             'where': '1=1',
             'outFields': 'GEOID',
@@ -416,10 +421,10 @@ class Layer:
                 gdfs = []
                 for features_resp in features_responses:
                     features = features_resp.json()['features']
-                    gdf = gpd.GeoDataFrame.from_features(features=features)
+                    gdf = GeoDataFrame.from_features(features=features)
                     gdfs.append(gdf)
 
-                features = gpd.GeoDataFrame(pd.concat(gdfs))
+                features = GeoDataFrame(concat(gdfs))
                 features = features.reset_index()
                 return features
             except TIGERWebAPIError:
@@ -427,10 +432,10 @@ class Layer:
                     result_record_count = result_record_count // 2
                 else:
                     raise TIGERWebError('There was a problem generating TIGERWeb API calls. Please try again or request a smaller geography set.')
-            except json.decoder.JSONDecodeError:
+            except JSONDecodeError:
                 raise TIGERWebError('There was a problem decoding the result of your TIGER API call. Please try again or request a different geography.')
 
-    def get_features(self, bbox: Iterable[float] = None, out_fields: str = '*', return_geometry: bool = False, cb: bool = True) -> gpd.GeoDataFrame:
+    def get_features(self, bbox: Iterable[float] = None, out_fields: str = '*', return_geometry: bool = False, cb: bool = True) -> GeoDataFrame:
         """
         Get a set of features in this layer.
 
@@ -451,7 +456,7 @@ class Layer:
         features = self._get_feature_attributes(bbox=bbox, out_fields=out_fields)
         if return_geometry:
             geometries = self._get_feature_geometry(bbox=bbox, feature_count=len(features), cb=cb)
-            features = gpd.GeoDataFrame(features.drop(labels=['geometry'], axis=1).merge(geometries, on='GEOID', how='inner'))
+            features = GeoDataFrame(features.drop(labels=['geometry'], axis=1).merge(geometries, on='GEOID', how='inner'))
         features = features.rename(columns=FEATURE_ATTRIBUTE_MAP)
         return features
 
@@ -631,9 +636,9 @@ class AreaCollection:
             area).
         """
         if within == US_CARTOGRAPHIC and layer_name is None:
-            features = pd.DataFrame([{'GEOID': '0100000US'}])
+            features = DataFrame([{'GEOID': '0100000US'}])
             features['geometry'] = within.geometry
-            return gpd.GeoDataFrame(features)
+            return GeoDataFrame(features)
 
         if isinstance(within, Area):
             within = [within]
@@ -654,7 +659,7 @@ class AreaCollection:
                 layer = self.get_layer(layer_name=name)
                 features_within_bounds = layer.get_features(bbox=bounds, return_geometry=True, cb=False)
                 features_dfs.append(features_within_bounds)
-        features_within_bounds = pd.concat(features_dfs).drop_duplicates(subset=['GEOID'])
+        features_within_bounds = concat(features_dfs).drop_duplicates(subset=['GEOID'])
 
         intersections = features_within_bounds.intersection(other=within_union)
         intersecting_mask = intersections.area/features_within_bounds.area >= area_threshold

@@ -1,35 +1,38 @@
 from typing import Union, Dict, List, Tuple
 from pandas import DataFrame, to_numeric
-import json
-import os
+from json.decoder import JSONDecodeError
+from os import path
 from geopandas import GeoDataFrame
 from collections import defaultdict
-import httpx
+from httpx import get
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
+dir_path = path.dirname(path.realpath(__file__))
 
 from censaurus.census_accessors import *
-from censaurus.api import CensusClient
+from censaurus.api import CensusClient, CensusAPIError
 from censaurus.variable import Group, GroupCollection, Variable, VariableCollection
 from censaurus.geography import GeographyCollection
 from censaurus.tiger import AreaCollection, Area
 from censaurus.constants import BAD_VALUES
 
-def build_dataset_key(dataset_json):
-    key = ()
-    if 'c_vintage' in dataset_json:
-        key += (int(dataset_json['c_vintage']),)
-    if 'c_dataset' in dataset_json:
-        key += tuple(dataset_json['c_dataset'])
-
-    return key
-
-datasets_resp = httpx.get('https://api.census.gov/data.json')
-valid_dataset_keys = set(build_dataset_key(d) for d in datasets_resp.json()['dataset'])
-
 
 class DatasetError(Exception):
     pass
+
+
+class DatasetExplorer:
+    def __init__(self) -> None:
+        def build_dataset_key(dataset_json):
+            key = ()
+            if 'c_vintage' in dataset_json:
+                key += (int(dataset_json['c_vintage']),)
+            if 'c_dataset' in dataset_json:
+                key += tuple(dataset_json['c_dataset'])
+
+            return key
+
+        datasets_resp = get('https://api.census.gov/data.json')
+        valid_dataset_keys = set(build_dataset_key(d) for d in datasets_resp.json()['dataset'])
 
 
 class Dataset:
@@ -39,13 +42,13 @@ class Dataset:
     The following datasets **do** have :class:`.Dataset` subclasses, and so you should
     use those instead.
 
-    * Decennial Census: :class:`.Decennial`
+        * Decennial Census (general): :class:`.Decennial`
 
        + Decennial Census Redistricting Data: :class:`.DecennialPL`
        + Decennial Census Summary File 1: :class:`.DecennialSF1`
        + Decennial Census Summary File 2: :class:`.DecennialSF2`
 
-    * American Community Survey Census: :class:`.ACS`
+    * American Community Survey Census (general): :class:`.ACS`
 
        + American Community Survey 1-Year Data: :class:`.ACS1`
        + American Community Survey 1-Year Supplemental Data: :class:`.ACSSupplemental`
@@ -54,55 +57,56 @@ class Dataset:
        + American Community Survey Migration Flows: :class:`.ACSFlows`
        + American Community Survey Language Statistics: :class:`.ACSLanguage`
 
-    * Public Use Microdata Sample :class:`.PUMS`
+    * Public Use Microdata Sample (general): :class:`.PUMS`
 
-    * Current Population Survey :class:`.CPS`
+    * Current Population Survey (general): :class:`.CPS`
 
-    * Economic Census: :class:`.Economic`
+    * Economic Census (general): :class:`.Economic`
 
        + Economic Census Key Statistics: :class:`.EconomicKeyStatistics`
 
-    * Population Estimates: :class:`.Estimates`
+    * Population Estimates (general): :class:`.Estimates`
 
-    * Population Projections: :class:`.Projections`
+    * Population Projections (general): :class:`.Projections`
 
     Parameters
     ==========
-    product_key : :obj:`tuple` of :obj:`int` and/or :obj:`str`
-        A unique key representing the dataset. Typically of the form 
-        ``(<year>, <product>, <extension>)``. For example, ``(2021, "acs", "acs1")`` is 
-        the key for the American Community Survey 1-Year Estimates published in 2021.
     url_extension : :obj:`str`
-        A url path that accesses the content for this dataset. Appended to
-        ``https://api.census.gov``. Typically, this looks like the elements of the 
-        ``product_key`` joined by a '/'. For example, ``2021/acs/acs1`` is the extension
-        for the American Community Survey 1-Year Estimates published in 2021.
+        A unique url path that accesses the content for this dataset. Appended to
+        ``https://api.census.gov``. Typically of the form 
+        ``<year>/<product>/<extension>``, though there are occasionally additional
+        elements. For example, ``2021/acs/acs1`` is the extension for the American 
+        Community Survey 1-Year Estimates published in 2021.
     map_service : :obj:`str`
         The name of the TIGERWeb mapservice to use as the geographic basis for this
         dataset.
     """
-    # TODO: do i need names or years?
     def __init__(
         self,
-        product_key: Tuple[Union[int, str]],
         url_extension: str,
         map_service: str,
     ) -> None:
 
-        if product_key not in valid_dataset_keys:
-            raise DatasetError(f"{product_key} is not a valid product key")
-
-        self.product_key = product_key
         self.url_extension = url_extension
         self.census_client = CensusClient(url_extension=url_extension)
+
+        try:
+            self._geographies = self._find_supported_geographies()
+            self._variables = self._find_variables()
+        except CensusAPIError as e:
+            if e.status_code == 404:
+                raise DatasetError(f"The dataset you requested - '{self.url_extension}' - does not exist.")
+            raise e
+
         self.areas = AreaCollection(map_service=map_service)
 
-        self._geographies = self._find_supported_geographies()
-        self._variables = self._find_variables()
-
     def __repr__(self):
-        dataset_str = f'{self.__class__.__name__} dataset object\n'
-        dataset_str += f'  Product key: {self.product_key}\n'
+        class_name = self.__class__.__name__
+        if class_name == 'Dataset':
+            dataset_str = 'Abstract Dataset object\n'
+        else:
+            dataset_str = f'{self.__class__.__name__} dataset object\n'
+        dataset_str += f'  URL extension: {self.url_extension}\n'
         dataset_str += f'  {len(self.geographies)} supported geographies\n'
         dataset_str += f'  {len(self.variables)} variables'
         return dataset_str
@@ -132,10 +136,6 @@ class Dataset:
         this dataset.
         '''
         return self.variables.groups
-
-    @staticmethod
-    def _make_product_key(**kwargs):
-        raise NotImplementedError('all children of the Dataset class must implement this function')
 
     @staticmethod
     def _make_url_extension(**kwargs):
@@ -173,6 +173,8 @@ class Dataset:
         url_params_list = zip(url_list, params_list)
         responses = self.census_client.get_many_sync(url_params_list=url_params_list)
 
+        print('made requests')
+
         if all(resp.status_code == 200 for resp in responses):
             try:
                 dfs : List[DataFrame] = []
@@ -192,7 +194,7 @@ class Dataset:
                         geo_id_map[geo_id].update(record)
                 df = DataFrame.from_records(list(geo_id_map.values()))
                 
-            except json.decoder.JSONDecodeError:
+            except JSONDecodeError:
                 raise DatasetError(f'There was a problem decoding the result of your Census API call.')
         elif any(resp.status_code == 204 for resp in responses):
             # TODO: THIS IS NOT NECESSARILY DESIRED BEHAVIOR -- POSSIBLY ONLY SOME REQUESTS HAVE NO DATA
@@ -979,22 +981,13 @@ class ACS(Dataset):
         **kwargs
     ) -> None:
 
-        product_key = self._make_product_key(year=year, product=product, extension=extension)
         url_extension = self._make_url_extension(year=year, product=product, extension=extension)
 
         super().__init__(
-            product_key=product_key,
             url_extension=url_extension,
             map_service=f'tigerWMS_ACS{year}',
             **kwargs
         )
-
-    @staticmethod
-    def _make_product_key(year, product, extension):
-        key = (int(year), 'acs', product)
-        if extension:
-            key += (extension,)
-        return key
 
     @staticmethod
     def _make_url_extension(year, product, extension):
@@ -1138,10 +1131,6 @@ class ACSLanguage(ACS):
         )
 
     @staticmethod
-    def _make_product_key(year, product, **kwargs):
-        return (int(year), product)
-
-    @staticmethod
     def _make_url_extension(year, product, **kwargs):
         return f'{year}/{product}'
 
@@ -1200,20 +1189,24 @@ class CPS(Dataset):
         However, the available products depend on the year and month requested.
     """
     def __init__(self, year: int = 2023, month: int = 'jan', product: str = 'basic', **kwargs) -> None:
+        months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+        if isinstance(month, str): 
+            if month.lower() in months:
+                month = month.lower()
+            elif month[:3].lower() in months:
+                month = month[:3].lower()
+        elif isinstance(month, int) and month in range(1, 13):
+            month = months[month - 1]
 
-        product_key = self._make_product_key(year=year, month=month, product=product)
+        if month not in months:
+            raise ValueError("the 'month' you provided was invalid. 'month' should either be a full month name (January, February, etc.), a 3-letter abbreviated month name (Jan, Feb, etc.), or an integer 1-12. If you are using a full or 3-letter abbreviated month name, capitalization does not matter.")
         url_extension = self._make_url_extension(year=year, month=month, product=product)
 
         super().__init__(
-            product_key=product_key,
             url_extension=url_extension,
             map_service = 'tigerWMS_Current',
             **kwargs
         )
-
-    @staticmethod
-    def _make_product_key(year, month, product):
-        return (int(year), 'cps', product, month)
 
     @staticmethod
     def _make_url_extension(year, month, product):
@@ -1257,20 +1250,13 @@ class Decennial(Dataset):
         **kwargs
     ) -> None:
 
-        product_key = self._make_product_key(year=year, product=product)
         url_extension = self._make_url_extension(year=year, product=product)
 
         super().__init__(
-            product_key=product_key,
             url_extension=url_extension,
             map_service=f'tigerWMS_Census{year}',
             **kwargs
         )
-
-    @staticmethod
-    def _make_product_key(year, product):
-        key = (int(year), 'dec', product)
-        return key
 
     @staticmethod
     def _make_url_extension(year, product):
@@ -1356,20 +1342,13 @@ class Economic(Dataset):
         **kwargs
     ) -> None:
 
-        product_key = self._make_product_key(year=year, product=product)
         url_extension = self._make_url_extension(year=year, product=product)
 
         super().__init__(
-            product_key=product_key,
             url_extension=url_extension,
             map_service=f'tigerWMS_Current',
             **kwargs
         )
-
-    @staticmethod
-    def _make_product_key(year, product):
-        key = (int(year),) + tuple(product.split('/'))
-        return key
 
     @staticmethod
     def _make_url_extension(year, product):
@@ -1413,24 +1392,13 @@ class Estimates(Dataset):
     """
     def __init__(self, year: int = 2021, monthly: bool = False, **kwargs) -> None:
 
-        product_key = self._make_product_key(year=year, monthly=monthly)
         url_extension = self._make_url_extension(year=year, monthly=monthly)
 
         super().__init__(
-            product_key=product_key,
             url_extension=url_extension,
             map_service = 'tigerWMS_Current',
             **kwargs
         )
-
-    @staticmethod
-    def _make_product_key(year, monthly: bool = False):
-        key = (int(year), 'pep')
-        if monthly:
-            key = key + ('natmonthly',)
-        else:
-            key = key + ('population',)
-        return key
 
     @staticmethod
     def _make_url_extension(year, monthly: bool = False):
@@ -1467,19 +1435,13 @@ class Projections(Dataset):
     """
     def __init__(self, year: int = 2017, extension: str = 'pop', **kwargs) -> None:
 
-        product_key = self._make_product_key(year=year, extension=extension)
         url_extension = self._make_url_extension(year=year, extension=extension)
 
         super().__init__(
-            product_key=product_key,
             url_extension=url_extension,
             map_service = 'tigerWMS_Current',
             **kwargs
         )
-
-    @staticmethod
-    def _make_product_key(year, extension):
-        return (int(year), 'popproj', extension)
 
     @staticmethod
     def _make_url_extension(year, extension):

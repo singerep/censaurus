@@ -1,15 +1,15 @@
 from typing import Dict, List
 from pyvis.network import Network
-import webbrowser
-import os
-import queue
-import time
+from webbrowser import open
+from os import remove, getcwd
+from queue import Queue
+from time import sleep
 
 def get_roots(tree: Dict[tuple, set]):
     return [r for r in tree if all(r not in tree[n] for n in tree)]
 
 def bfs(tree: dict, roots: list):
-    q = queue.Queue()
+    q = Queue()
     for r in roots:
         q.put((r, 0))
     depths = {root_node: 0 for root_node in roots}
@@ -28,7 +28,7 @@ def visualize_graph(tree: dict, titles: dict, labels: dict, hierarchical: bool, 
         print('Cannot visualize a tree with no nodes.')
         return None
 
-    cwd = os.getcwd()
+    cwd = getcwd()
 
     roots = get_roots(tree)
     depths = bfs(tree, roots)
@@ -64,8 +64,8 @@ def visualize_graph(tree: dict, titles: dict, labels: dict, hierarchical: bool, 
     g.show(filename)
 
     if show is True:
-        webbrowser.open('file://' + cwd + f'/{filename}')
+        open('file://' + cwd + f'/{filename}')
     
     if keep_file is False:
-        time.sleep(5)
-        os.remove(cwd + f'/{filename}')
+        sleep(5)
+        remove(cwd + f'/{filename}')

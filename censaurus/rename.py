@@ -1,5 +1,5 @@
 from typing import Dict, Callable
-import re
+from re import Match, finditer
 from pandas import DataFrame
 
 import censaurus.census_accessors
@@ -33,7 +33,7 @@ class Renamer:
         value in the dictionary as opposed to that group's concept (the default 
         behavior).
     """
-    def __init__(self, separator: str = '|', default_rename_function: Callable[[str], str] = lambda x : x, replacements: Dict[str, str] = {}, custom_match_functions: Dict[str, Callable[[re.Match, str], str]] = {}, group_prefixes: Dict[str, str] = {}) -> None:
+    def __init__(self, separator: str = '|', default_rename_function: Callable[[str], str] = lambda x : x, replacements: Dict[str, str] = {}, custom_match_functions: Dict[str, Callable[[Match, str], str]] = {}, group_prefixes: Dict[str, str] = {}) -> None:
         self._separator = separator
         self.replacements = replacements
         self.default_rename_function = default_rename_function
@@ -76,7 +76,7 @@ class Renamer:
                 new_token = token
                 for pattern, function in self.custom_match_functions.items():
                     if new_token is not None:
-                        for match in re.finditer(pattern=pattern, string=new_token):
+                        for match in finditer(pattern=pattern, string=new_token):
                             new_token = function(match, new_token)
 
                 new_token = self.default_rename_function(new_token)
@@ -113,7 +113,7 @@ class Renamer:
 
         return data
 
-def _age_renamer(match: re.Match, token: str) -> str:
+def _age_renamer(match: Match, token: str) -> str:
     start, stop = match.span()
     original_match = match.string[start:stop]
     if match['under'] is not None:
@@ -135,7 +135,7 @@ def _age_renamer(match: re.Match, token: str) -> str:
         return token.replace(original_match, f'{one_start}')
     return None
 
-def _type_renamer(match: re.Match, token: str) -> str:
+def _type_renamer(match: Match, token: str) -> str:
     if token == 'estimate':
         return None
     elif token == 'margin of error':
@@ -146,7 +146,7 @@ def _type_renamer(match: re.Match, token: str) -> str:
         return 'amoe'
     return None
 
-def _race_renamer(match: re.Match, token: str) -> str:
+def _race_renamer(match: Match, token: str) -> str:
     start, stop = match.span()
     original_match = match.string[start:stop]
     if match['white'] is not None:
@@ -174,13 +174,13 @@ def _race_renamer(match: re.Match, token: str) -> str:
     else:
         return token
 
-def _inflation_renamer(match: re.Match, token: str) -> str:
+def _inflation_renamer(match: Match, token: str) -> str:
     start, stop = match.span()
     original_match = match.string[start:stop]
     year = match['year']
     return token.replace(original_match, f'${year}')
 
-def _income_renamer(match: re.Match, token: str) -> str:
+def _income_renamer(match: Match, token: str) -> str:
     start, stop = match.span()
     original_match = match.string[start:stop]
     if match['less_than'] is not None:

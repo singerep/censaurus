@@ -1,0 +1,7 @@
+    1: from censaurus.dataset import CPS
+       
+       # acs = ACS5()
+       # acs.counties(variables=['B01001_001E'])
+       
+       # dataset = CPS(year='2023', month='blah')
+       # print(dataset)

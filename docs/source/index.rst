@@ -1,6 +1,6 @@
-=====================
-Welcome to censaurus!
-=====================
+========
+Welcome!
+========
 
 .. toctree::
    :hidden:

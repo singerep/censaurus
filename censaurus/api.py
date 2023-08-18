@@ -1,9 +1,7 @@
 from typing import Dict, List, Tuple, Iterable
-import httpx
-import asyncio
-
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+from httpx import AsyncClient, Timeout, Response, ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout
+from asyncio import new_event_loop, set_event_loop, run_coroutine_threadsafe, sleep, gather
+from threading import Thread
 
 
 class CensusAPIKeyError(Exception):
@@ -14,6 +12,8 @@ class CensusAPIKeyError(Exception):
 class CensusAPIError(Exception):
     def __init__(self, status_code: int, message: str) -> None:
         super().__init__(f'The Census API had an error (status code {status_code}) and returned the following message:\n\n{message}')
+        self.status_code = status_code
+        self.message = message
 
 
 class TIGERWebError(Exception):
@@ -28,7 +28,24 @@ class TIGERWebAPIError(Exception):
             super().__init__(message)
 
 
-class CensusClient(httpx.AsyncClient):
+class AsyncLoopHandler(Thread):
+    """
+    Class to handle asynchronous requests. Useful especially in the case where a user
+    is writing code inside an IPython environment.
+
+    Adapted from https://stackoverflow.com/a/66055205/17834461
+    """
+    def __init__(self):
+        super().__init__(daemon=True)
+        self.loop = new_event_loop()
+
+    def run(self):
+        set_event_loop(self.loop)
+        self.loop.run_forever()
+        return self.loop
+
+
+class CensusClient(AsyncClient):
     """
     An object that interfaces with the Census API. Extends the 
     :class:`httpx.AsyncClient`` class to allow for asynchronous requests.
@@ -44,7 +61,7 @@ class CensusClient(httpx.AsyncClient):
         are making a large number of calls.
     """
     def __init__(self, url_extension: str, api_key: str = None, **kwargs):
-        timeout = httpx.Timeout(30.0, connect=30.0)
+        timeout = Timeout(30.0, connect=30.0)
         super().__init__(timeout=timeout)
 
         self.root = f'https://api.census.gov/data/{url_extension}'
@@ -52,7 +69,12 @@ class CensusClient(httpx.AsyncClient):
         self.chunk_size = 50
         self.retry_limit = kwargs.pop('retry_limit', 2)
 
-    def get_sync(self, url: str = '', params: Dict[str, str] = {}) -> httpx.Response:
+        self._loop_handler = AsyncLoopHandler()
+        self._loop_handler.start()
+
+        self.response = None
+
+    def get_sync(self, url: str = '', params: Dict[str, str] = {}) -> Response:
         """
         Make a single request to the Census API synchronously.
 
@@ -63,9 +85,10 @@ class CensusClient(httpx.AsyncClient):
         params : :obj:`dict` of :obj:`str`: :obj:`str`
             Query parameters to supply to the Census API.
         """
-        return loop.run_until_complete(self.get(url=url, params=params))
+        future = run_coroutine_threadsafe(self.get(url=url, params=params), self._loop_handler.loop)
+        return future.result()
 
-    def get_many_sync(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = []) -> List[httpx.Response]:
+    def get_many_sync(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = []) -> List[Response]:
         """
         Make a more than one request to the Census API synchronously. Note that while
         the requests are still sent asynchronously, the function call itself is 
@@ -77,9 +100,10 @@ class CensusClient(httpx.AsyncClient):
             An array-like of tuples, where each tuple consists of a URL to request and a
             set of query parameters to supply to the Census API.
         """
-        return loop.run_until_complete(self.get_many(url_params_list=url_params_list))
+        future = run_coroutine_threadsafe(self.get_many(url_params_list=url_params_list), self._loop_handler.loop)
+        return future.result()
 
-    async def get(self, url: str = '', params: Dict[str, str] = {}) -> httpx.Response:
+    async def get(self, url: str = '', params: Dict[str, str] = {}) -> Response:
         """
         Make a single request to the Census API asynchronously.
 
@@ -99,22 +123,22 @@ class CensusClient(httpx.AsyncClient):
             retry_count += 1
             try:
                 response = await super().get(url=url, params=params)
-            except (httpx.ConnectTimeout, httpx.ConnectError, httpx.ReadTimeout, httpx.PoolTimeout):
+            except (ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout):
                 response = None
 
             if response is None:
-                await asyncio.sleep(2)
+                await sleep(2)
                 continue
 
             if response.status_code == 200 or response.status_code == 204:
                 return response
 
-            if response.status_code == 0:
-                raise CensusAPIKeyError()
+            if response.status_code == 404:
+                break
 
         raise CensusAPIError(status_code=response.status_code, message=response.text)
 
-    async def get_many(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = []) -> List[httpx.Response]:
+    async def get_many(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = []) -> List[Response]:
         """
         Make a more than one request to the Census API asynchronously.
 
@@ -126,18 +150,18 @@ class CensusClient(httpx.AsyncClient):
         """
         tasks = []
         for url, params in url_params_list:
-            tasks.append(loop.create_task(self.get(url, params=params)))
+            tasks.append(self._loop_handler.loop.create_task(self.get(url, params=params)))
 
         chunks = [tasks[i:i + self.chunk_size] for i in range(0, len(tasks), self.chunk_size)]
         responses = []
         for chunk in chunks:
-            chunk_responses = await asyncio.gather(*chunk)
+            chunk_responses = await gather(*chunk)
             responses.extend(chunk_responses)
         
         return responses
 
 
-class TIGERClient(httpx.AsyncClient):
+class TIGERClient(AsyncClient):
     """
     An object that interfaces with the TIGERWeb API. Extends the 
     :class:`httpx.AsyncClient`` class to allow for asynchronous requests.
@@ -149,12 +173,15 @@ class TIGERClient(httpx.AsyncClient):
         current map service.
     """
     def __init__(self, map_service: str = 'tigerWMS_Current', **kwargs):
-        timeout = httpx.Timeout(30.0, connect=30.0)
+        timeout = Timeout(30.0, connect=30.0)
         super().__init__(base_url=f'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/{map_service}/MapServer', timeout=timeout)
         self.chunk_size = 100
         self.retry_limit = kwargs.pop('retry_limit', 2)
 
-    def get_sync(self, url: str = '', params: Dict[str, str] = {}, return_type: str = 'json') -> httpx.Response:
+        self._loop_handler = AsyncLoopHandler()
+        self._loop_handler.start()
+
+    def get_sync(self, url: str = '', params: Dict[str, str] = {}, return_type: str = 'json') -> Response:
         """
         Make a single request to the TIGERWeb API synchronously.
 
@@ -168,9 +195,11 @@ class TIGERClient(httpx.AsyncClient):
             Determines the type of data to return. Should either be ``json`` or
             ``geojson``.
         """
-        return loop.run_until_complete(self.get(url=url, params=params, return_type=return_type))
+        # return loop.run_until_complete(self.get(url=url, params=params, return_type=return_type))
+        future = run_coroutine_threadsafe(self.get(url=url, params=params, return_type=return_type), self._loop_handler.loop)
+        return future.result()
 
-    def get_many_sync(self, url_params_list: List[Tuple[str, Dict[str, str]]] = [], return_type = 'json') -> List[httpx.Response]:
+    def get_many_sync(self, url_params_list: List[Tuple[str, Dict[str, str]]] = [], return_type = 'json') -> List[Response]:
         """
         Make a more than one request to the TIGERWeb API synchronously. Note that while
         the requests are still sent asynchronously, the function call itself is 
@@ -182,9 +211,10 @@ class TIGERClient(httpx.AsyncClient):
             An array-like of tuples, where each tuple consists of a URL to request and a
             set of query parameters to supply to the TIGERWeb API.
         """
-        return loop.run_until_complete(self.get_many(url_params_list=url_params_list, return_type=return_type))
+        future = run_coroutine_threadsafe(self.get_many(url_params_list=url_params_list, return_type=return_type), self._loop_handler.loop)
+        return future.result()
 
-    async def get(self, url: str = '', params: Dict[str, str] = {}, return_type = 'json') -> httpx.Response:
+    async def get(self, url: str = '', params: Dict[str, str] = {}, return_type = 'json') -> Response:
         """
         Make a single request to the TIGERWeb API asynchronously.
 
@@ -199,17 +229,16 @@ class TIGERClient(httpx.AsyncClient):
             ``geojson``.
         """
         params.update({'f': return_type})
-
         retry_count = 0
         while self.retry_limit is None or retry_count < self.retry_limit:
             retry_count += 1
             try:
                 response = await super().get(url=url, params=params)
-            except (httpx.ConnectTimeout, httpx.ConnectError, httpx.ReadTimeout, httpx.PoolTimeout):
+            except (ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout):
                 response = None
 
             if response is None:
-                await asyncio.sleep(2)
+                await sleep(2)
                 continue
 
             if 'The requested URL was rejected' in response.text:
@@ -224,7 +253,7 @@ class TIGERClient(httpx.AsyncClient):
 
         raise TIGERWebAPIError(status_code=None, message='Your TIGERWeb request failed.')
 
-    async def get_many(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = [], return_type = 'json') -> List[httpx.Response]:
+    async def get_many(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = [], return_type = 'json') -> List[Response]:
         """
         Make a more than one request to the TIGERWeb API asynchronously.
 
@@ -236,12 +265,12 @@ class TIGERClient(httpx.AsyncClient):
         """
         tasks = []
         for url, params in url_params_list:
-            tasks.append(loop.create_task(self.get(url, params=params, return_type=return_type)))
+            tasks.append(self._loop_handler.loop.create_task(self.get(url, params=params, return_type=return_type)))
 
         chunks = [tasks[i:i + self.chunk_size] for i in range(0, len(tasks), self.chunk_size)]
         responses = []
         for chunk in chunks:
-            chunk_responses = await asyncio.gather(*chunk)
+            chunk_responses = await gather(*chunk)
             responses.extend(chunk_responses)
         
         return responses

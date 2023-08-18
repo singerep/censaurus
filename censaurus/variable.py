@@ -1,14 +1,13 @@
 from typing import List, Dict, Set, Union, Callable, Tuple
 from collections import defaultdict
-import queue
-import os
-import re
-import pandas as pd
+from queue import Queue
+from os import path
+from pandas import DataFrame
 from itertools import zip_longest
 
 from .graph_utils import visualize_graph
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
+dir_path = path.dirname(path.realpath(__file__))
 
 
 class UnknownGroup(Exception):
@@ -128,7 +127,7 @@ class GroupCollection:
         g_names = [g_name for g_name in self._group_map if self._group_map[g_name].concept is not None and all(t in self._group_map[g_name].concept.lower() for t in terms)]
         return self._mask(g_names)
 
-    def to_df(self) -> pd.DataFrame:
+    def to_df(self) -> DataFrame:
         """
         Converts the :class:`.GroupCollection` into a :class:`pandas.DataFrame` object
         detailing each group's name, concept, and associated variables.
@@ -142,7 +141,7 @@ class GroupCollection:
             }
             group_dicts += [g_dict]
 
-        return pd.DataFrame(group_dicts).sort_values(by='name').reset_index(drop=True)
+        return DataFrame(group_dicts).sort_values(by='name').reset_index(drop=True)
 
     def to_list(self) -> List[Group]:
         """
@@ -634,7 +633,7 @@ class VariableCollection:
             returned :class:`.VariableCollection`.
         """
         visited_set = set()
-        q = queue.Queue()
+        q = Queue()
 
         q.put(variable)
 
@@ -739,7 +738,7 @@ class VariableCollection:
         v_names = [v_name for v_name in self._variable_map if self._variable_map[v_name].group == g.name]
         return self._mask(v_names)
 
-    def to_df(self) -> pd.DataFrame:
+    def to_df(self) -> DataFrame:
         """
         Converts the :class:`.VariableCollection` into a :class:`pandas.DataFrame` 
         object detailing each variable's name, label, group, concept, type, items,
@@ -759,7 +758,7 @@ class VariableCollection:
             }
             var_dicts += [v_dict]
 
-        return pd.DataFrame(var_dicts)
+        return DataFrame(var_dicts)
 
     def to_list(self) -> List[Variable]:
         """
