@@ -475,7 +475,7 @@ class Layer:
         geoids = features['GEOID'].values
         if geoid in geoids:
             print(f"successfully matched GEOID = {geoid} in layer '{self.name}'")
-            area = Area.from_tiger(geo_id=geoid, layer_id=self.id, tiger_client=self.tiger_client, intersect_with_cb=cb)
+            area = Area.from_tiger(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, intersect_with_cb=cb)
             area._set_attributes()
             return area
         
@@ -536,7 +536,7 @@ class Layer:
             geoid = best_matches[0][2]
             area_name = best_matches[0][0]
             print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-            area = Area.from_tiger(geo_id=geoid, layer_id=self.id, tiger_client=self.tiger_client, intersect_with_cb=cb)
+            area = Area.from_tiger(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, intersect_with_cb=cb)
             area._set_attributes()
             return area
         else:
@@ -558,7 +558,7 @@ class Layer:
             
             if new_matches_found == 1:
                 print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-                area = Area.from_tiger(geo_id=geoid, layer_id=self.id, tiger_client=self.tiger_client, intersect_with_cb=cb)
+                area = Area.from_tiger(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, intersect_with_cb=cb)
                 area._set_attributes()
                 return area
 

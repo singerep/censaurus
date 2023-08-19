@@ -1,5 +1,6 @@
 from pandas import DataFrame, read_csv
 from itertools import combinations
+from censaurus.internals import state_ids_path
 
 
 class RecodeError(Exception):
@@ -29,7 +30,7 @@ class StateRecoder:
             'GNIS_PADDED': '0-padded seven-digit integer codes. For example: 1779775 for Alabama, 1785533 for Alaska, etc.'
         }
 
-        state_ids = read_csv('censaurus/_data/state_ids.csv')
+        state_ids = read_csv(state_ids_path())
         state_ids['FIPS_PADDED'] = state_ids['FIPS'].apply(lambda f : str(f).zfill(2))
         state_ids['GNIS_PADDED'] = state_ids['GNIS'].apply(lambda g : str(g).zfill(7))
         self.recode_dicts = {}
