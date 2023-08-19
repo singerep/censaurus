@@ -415,17 +415,19 @@ class VariableCollection:
             
         variables = self._mask(unique_variable_names)
 
-        if 'NAME' not in unique_variable_names:
+        if 'NAME' not in unique_variable_names and self.get('NAME'):
             unique_variable_names.append('NAME')
-        if 'GEO_ID' not in unique_variable_names:
+        if 'GEO_ID' not in unique_variable_names and self.get('GEO_ID'):
             unique_variable_names.append('GEO_ID')
 
-        chunk_size = 49
+        chunk_size = 48
         chunks = [unique_variable_names[i:i + chunk_size] for i in range(0, len(unique_variable_names), chunk_size)]
         variable_params_list = []
         for chunk in chunks:
-            if 'GEO_ID' not in chunk:
+            if 'GEO_ID' not in chunk and 'GEO_ID' in unique_variable_names:
                 chunk.append('GEO_ID')
+            if 'NAME' not in chunk and 'NAME' in unique_variable_names:
+                chunk.append('NAME')
             variable_params_list.append({'get': ','.join(chunk)})
 
         return variables, variable_params_list, rename_map

@@ -16,16 +16,15 @@ class CensusAPIError(Exception):
         self.message = message
 
 
-class TIGERWebError(Exception):
-    ...
-
-
 class TIGERWebAPIError(Exception):
     def __init__(self, status_code: int, message: str) -> None:
         if status_code:
             super().__init__(f'The TIGER API had an error (status code {status_code}) and returned the following message:\n\n{message}')
         else:
             super().__init__(message)
+
+        self.status_code = status_code
+        self.message = message
 
 
 class AsyncLoopHandler(Thread):
@@ -195,7 +194,6 @@ class TIGERClient(AsyncClient):
             Determines the type of data to return. Should either be ``json`` or
             ``geojson``.
         """
-        # return loop.run_until_complete(self.get(url=url, params=params, return_type=return_type))
         future = run_coroutine_threadsafe(self.get(url=url, params=params, return_type=return_type), self._loop_handler.loop)
         return future.result()
 
@@ -245,13 +243,13 @@ class TIGERClient(AsyncClient):
                 raise TIGERWebAPIError(200, 'The requested URL was rejected.')
             if 'Invalid URL' in response.text:
                 raise TIGERWebAPIError(400, 'Invalid URL.')
-            if 'Error performing query operation' in response.text:
+            if 'Error performing query operation' in response.text or 'Failed to execute query' in response.text:
                 raise TIGERWebAPIError(500, 'Error performing query operation.')
 
             if response.status_code == 200:
                 return response
 
-        raise TIGERWebAPIError(status_code=None, message='Your TIGERWeb request failed.')
+        raise TIGERWebAPIError(status_code=None, message='Your TIGERWeb request failed for an unknown reason.')
 
     async def get_many(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = [], return_type = 'json') -> List[Response]:
         """

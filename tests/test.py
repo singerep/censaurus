@@ -1,15 +1,10 @@
-import cProfile
-import pstats
+from censaurus.dataset import ACS5, CPS
 
-with cProfile.Profile() as pr:
-    import censaurus.tiger
+# dataset = CPS()
+# # print(dataset.variables)
+# data = dataset.states(within=dataset.areas.region('Northeast'), variables=["PEMLR","PWSSWGT","PEMARITL"], extra_census_params={'PEEDUCA':'39'})
+# print(data)
 
-stats = pstats.Stats(pr)
-stats.sort_stats(pstats.SortKey.TIME)
-stats.print_stats(10)
-
-# acs = ACS5()
-# acs.counties(variables=['B01001_001E'])
-
-# dataset = CPS(year='2023', month='blah')
-# print(dataset)
+dataset = ACS5()
+data = dataset.counties(within=dataset.areas.region('Northeast'), variables=dataset.variables.filter_by_group('B01001') + dataset.variables.filter_by_group('B01001A'), return_geometry=True)
+print(data)

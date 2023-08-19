@@ -18,7 +18,7 @@ from fiona._err import CPLE_OpenFailedError
 from fiona.errors import DriverError
 from matplotlib.pyplot import fill, axis
 
-from censaurus.api import TIGERClient, TIGERWebAPIError, TIGERWebError
+from censaurus.api import TIGERClient, TIGERWebAPIError
 from censaurus.constants import LAYER_RESULT_COUNT_MAP, FEATURE_ATTRIBUTE_MAP, ABBR_TO_FULL, FIPS_TO_FULL, ABBR_TO_FULL_REGEX
 
 def parse_name(name: str) -> str:
@@ -178,12 +178,12 @@ class Area:
             self._set_attributes()
         if type(self.geometry) == Polygon:
             x, y = self.geometry.exterior.xy
-            plt.fill(x, y, **kwargs)
+            fill(x, y, **kwargs)
         elif type(self.geometry) == MultiPolygon:
             for g in self.geometry.geoms:
                 x, y = g.exterior.xy
-                plt.fill(x, y, **kwargs)
-        plt.axis('equal')
+                fill(x, y, **kwargs)
+        axis('equal')
 
     def intersect_with_cb(self) -> None:
         """
@@ -431,9 +431,9 @@ class Layer:
                 if tries <= 2:
                     result_record_count = result_record_count // 2
                 else:
-                    raise TIGERWebError('There was a problem generating TIGERWeb API calls. Please try again or request a smaller geography set.')
+                    raise TIGERWebAPIError('There was a problem generating TIGERWeb API calls. Please try again or request a smaller geography set.')
             except JSONDecodeError:
-                raise TIGERWebError('There was a problem decoding the result of your TIGER API call. Please try again or request a different geography.')
+                raise TIGERWebAPIError('There was a problem decoding the result of your TIGER API call. Please try again or request a different geography.')
 
     def get_features(self, bbox: Iterable[float] = None, out_fields: str = '*', return_geometry: bool = False, cb: bool = True) -> GeoDataFrame:
         """

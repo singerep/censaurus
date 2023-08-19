@@ -173,44 +173,48 @@ class Dataset:
         url_params_list = zip(url_list, params_list)
         responses = self.census_client.get_many_sync(url_params_list=url_params_list)
 
-        print('made requests')
-
-        if all(resp.status_code == 200 for resp in responses):
-            try:
-                dfs : List[DataFrame] = []
-                for resp in responses:
-                    data = resp.json()
+        key_record_map = defaultdict(dict)
+        dfs : List[DataFrame] = []
+        for response in responses:
+            if response.status_code == 200:
+                try:
+                    data = response.json()
                     df = DataFrame(data)
                     df.columns = df.iloc[0]
                     df = df[1:]
                     df = df.reset_index(drop=True)
                     df = df.rename_axis(None, axis=1)
                     dfs.append(df)
+                except JSONDecodeError:
+                    raise DatasetError(f'There was a problem decoding the result of your Census API call. The following is the response from the Census API:\n\n{response.text}')
+            else: # status code must be 204 (empty response); only 200s and 204s are returned, all other statuses raise Exceptions
+                pass
 
-                geo_id_map = defaultdict(dict)
-                for df in dfs:
-                    df_records = df.to_dict(orient='records')
-                    for geo_id, record in zip(df['GEO_ID'], df_records):
-                        geo_id_map[geo_id].update(record)
-                df = DataFrame.from_records(list(geo_id_map.values()))
-                
-            except JSONDecodeError:
-                raise DatasetError(f'There was a problem decoding the result of your Census API call.')
-        elif any(resp.status_code == 204 for resp in responses):
-            # TODO: THIS IS NOT NECESSARILY DESIRED BEHAVIOR -- POSSIBLY ONLY SOME REQUESTS HAVE NO DATA
-            return DataFrame()   
-        else:
-            # raise DatasetError(f'The Census API had an error ({resp.status_code}) and returned the following message: {resp.text}')
-            # TODO: need to have a list of unique errors here
-            raise DatasetError()
+        intersecting_cols = set.intersection(*[set(df.columns) for df in dfs])
+        df_id_cols = [col for col in dfs[0].columns if col in intersecting_cols]
+
+        for df in dfs:
+            df_records = df.to_dict(orient='records')
+            for record in df_records:
+                key = tuple(record[col] for col in df_id_cols)
+                key_record_map[key].update(record)
+        df = DataFrame.from_records(list(key_record_map.values()))
+        df = df[[col for col in df.columns if col not in df_id_cols] + df_id_cols]
 
         if features_within is not None:
-            df['GEOID'] = df['GEO_ID'].apply(lambda g : g.split('US')[1] if g != '0100000US' else g)
+            if 'GEO_ID' in df.columns:
+                df['GEOID'] = df['GEO_ID'].apply(lambda g : g.split('US')[1] if g != '0100000US' else g)
+                df_id_cols = [col if col != 'GEO_ID' else 'GEOID' for col in df_id_cols]
+            df_fw_id_cols = list(set.intersection(set(df_id_cols), set(features_within.columns)))
+            if 'NAME' in df_fw_id_cols:
+                df_fw_id_cols.remove('NAME')
             if return_geometry is True:
-                df = GeoDataFrame(df.merge(features_within[['GEOID', 'geometry']], on='GEOID', how='inner')).drop(labels='GEOID', axis=1)
+                df = GeoDataFrame(df.merge(features_within[df_fw_id_cols + ['geometry']], on=df_fw_id_cols, how='inner'))
                 df.set_crs(crs='4236')
             else:
-                df = df.merge(features_within[['GEOID']], on='GEOID', how='inner').drop(labels='GEOID', axis=1)
+                df = df.merge(features_within[df_fw_id_cols], on=df_fw_id_cols, how='inner')
+            if 'GEOID' in df.columns:
+                df = df.drop(labels='GEOID', axis=1)
 
         if rename_map != {}:
             reverse_rename_map = {v: k for k, v in rename_map.items()}
@@ -983,9 +987,19 @@ class ACS(Dataset):
 
         url_extension = self._make_url_extension(year=year, product=product, extension=extension)
 
+        year = int(year)
+        if year == 2020:
+            map_service = f'tigerWMS_ACS2021'
+            print('No ACS MapService is available for 2020, so using 2021')
+        elif year <= 2011:
+            map_service = f'tigerWMS_ACS2012'
+            print(f'No ACS MapService is available for {year}, so using earliest available (2012)')
+        else:
+            map_service = f'tigerWMS_ACS{year}'
+
         super().__init__(
             url_extension=url_extension,
-            map_service=f'tigerWMS_ACS{year}',
+            map_service=map_service,
             **kwargs
         )
 

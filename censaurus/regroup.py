@@ -61,7 +61,7 @@ class Regrouper:
         for group, cols in grouped_cols.items():
             col_places = zip(cols, range(0, len(cols)))
             last_col = sorted(col_places, key=lambda c : c[1], reverse=True)[0][0]
-            col_name = 'g:' + ','.join(cols)
+            col_name = 'g:' + ','.join(sorted(cols))
             data[last_col] = data[list(cols)].aggregate(func='sum', axis=1)
             data.rename(columns={last_col: col_name}, inplace=True)
             cols.remove(last_col)
@@ -144,29 +144,28 @@ class AgeRegrouper(Regrouper):
                 raise ValueError(f"The Census age bracket '{census_bracket}' does not fit into the brackets you provided")
 
         groupings = defaultdict(set)
-        variables = data.census.variables
         for c in data.columns:
             variable = data[c].census.variable
             if variable is not None:
                 for element in variable.path:
-                    match = match(AGE_REGEX, element)
-                    if match is not None:
-                        if match['under'] is not None:
-                            under_end = int(match['under_end'])
+                    age_match = match(AGE_REGEX, element)
+                    if age_match is not None:
+                        if age_match['under'] is not None:
+                            under_end = int(age_match['under_end'])
                             bracket = assign_bracket(census_bracket=element, stop=under_end)
-                        elif match['two'] is not None:
-                            two_start = int(match['two_start'])
-                            two_end = int(match['two_end'])
+                        elif age_match['two'] is not None:
+                            two_start = int(age_match['two_start'])
+                            two_end = int(age_match['two_end'])
                             bracket = assign_bracket(census_bracket=element, start=two_start, stop=two_end)
-                        elif match['to'] is not None:
-                            to_start = int(match['to_start'])
-                            to_end = int(match['to_end'])
+                        elif age_match['to'] is not None:
+                            to_start = int(age_match['to_start'])
+                            to_end = int(age_match['to_end'])
                             bracket = assign_bracket(census_bracket=element, start=to_start, stop=to_end)
-                        elif match['over'] is not None:
-                            over_start = int(match['over_start'])
+                        elif age_match['over'] is not None:
+                            over_start = int(age_match['over_start'])
                             bracket = assign_bracket(census_bracket=element, start=over_start)
-                        elif match['one'] is not None:
-                            one_start = int(match['one_start'])
+                        elif age_match['one'] is not None:
+                            one_start = int(age_match['one_start'])
                             bracket = assign_bracket(census_bracket=element, start=one_start)
 
                         groupings[bracket].add(element)
