@@ -726,7 +726,7 @@ class AreaCollection:
         for layer_name in layer_names:
             if layer_name in self.available_layers:
                 try:
-                    self.area(name=name, geoid=geoid, layer_name=layer_name, cb=cb)
+                    return self.area(name=name, geoid=geoid, layer_name=layer_name, cb=cb)
                 except Exception as e:
                     exceptions.append(str(e))
 

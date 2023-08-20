@@ -7,6 +7,7 @@ print(acs.variables.filter_by_term(['sex', 'age'], by='concept'))
 
 print(acs.groups.filter_by_term(['sex', 'age']))
 
+# NOTE: need to comment out the "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" link in the file this line of code produces
 acs.variables.filter_by_group(group='B01001').visualize(filename='source/B01001.html', show=False, keep_file=True, height='500px')
 
 male_age_vars = acs.variables.children_of(variable='B01001_002E')
@@ -16,6 +17,7 @@ print(acs.geographies.to_df())
 
 print(acs.geographies.get(name='tract'))
 
+# NOTE: need to comment out the "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" link in the file this line of code produces
 acs.geographies.visualize(filename='source/acs5_geos.html', hierarchical=True, show=False, keep_file=True, height='500px')
 
 northeast = acs.areas.region('Northeast')

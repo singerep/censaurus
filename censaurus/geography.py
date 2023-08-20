@@ -291,7 +291,7 @@ class GeographyCollection:
                 for r in geography.requires:
                     if r in within.attributes:
                         geo_filters[r] = within.attributes[r]
-                if within.name == 'United States (cartographic boundary)' or (within.layer_name is not None and LAYER_NAME_MAP[within.layer_name] in geo_filters):
+                if within.name == 'United States (cartographic boundary)' or (within.layer_name is not None and within.layer_name in LAYER_NAME_MAP and LAYER_NAME_MAP[within.layer_name] in geo_filters):
                     pass
                 else:
                     continue

@@ -7,7 +7,7 @@ Censaurus
 
 Not just another Census data tool. *Seriously.*
 
-``censaurus`` is a comprehensive, feature-rich, and user-oriented Python wrapper around the U.S. Census Bureau's Data and Geographic APIs.
+``censaurus`` is a comprehensive, feature-rich, and user-oriented Python package that wraps the U.S. Census Bureau's Data and Geographic APIs.
 
 Documentation
 -------------

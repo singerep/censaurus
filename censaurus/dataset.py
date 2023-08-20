@@ -210,7 +210,7 @@ class Dataset:
     The following datasets **do** have :class:`.Dataset` subclasses, and so you should
     use those instead.
 
-        * Decennial Census (general): :class:`.Decennial`
+    * Decennial Census (general): :class:`.Decennial`
 
        + Decennial Census Redistricting Data: :class:`.DecennialPL`
        + Decennial Census Summary File 1: :class:`.DecennialSF1`
@@ -245,9 +245,9 @@ class Dataset:
         ``<year>/<product>/<extension>``, though there are occasionally additional
         elements. For example, ``2021/acs/acs1`` is the extension for the American 
         Community Survey 1-Year Estimates published in 2021.
-    map_service : :obj:`str`
+    map_service : :obj:`str` = 'tigerWMS_Current'
         The name of the TIGERWeb mapservice to use as the geographic basis for this
-        dataset.
+        dataset. Defaults to the current mapservice.
     """
     def __init__(
         self,

@@ -7,6 +7,7 @@
   <title>Introduction &mdash; censaurus  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
     <link rel="shortcut icon" href="_static/censaurus_logo_icon.png"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -76,34 +77,51 @@
              
   <section id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">censaurus</span></code> isn’t just a data science tool. It’s a <em>Census-specific data science tool</em>: <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> cleverly takes advantage of the intricacies and design of the Census — all the way down to how the Census names it’s variables — to let users explore, retrieve, and analyze Census data like never before. Here is an overview of some of the features <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> provides to help you streamline your Census data workflows:</p>
+<p><code class="docutils literal notranslate"><span class="pre">censaurus</span></code> isn’t just a data science tool. It’s a <em>Census-specific data science tool</em>. Leveraging the intricacies and design of the Census — down to how the Census names its variables — <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> empowers users to explore, retrieve, and analyze Census data like never before. Key features of <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> include:</p>
 <ul>
-<li><p><strong>Powerful variable filtering:</strong> Like other Census tools, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> lets you do things like filter through available variables using a set of search terms. For example,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">filter_by_term</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">],</span> <span class="n">by</span><span class="o">=</span><span class="s1">&#39;concept&#39;</span><span class="p">)</span>
-<span class="go">VariableCollection of 3417 variables:</span>
-<span class="go">B01001A_001E</span>
-<span class="go">  group: B01001A</span>
-<span class="go">  concept: sex by age (white alone)</span>
-<span class="go">  path: [sex by age (white alone) -&gt; estimate -&gt; total]</span>
-<span class="go">B01001A_002E</span>
-<span class="go">  group: B01001A</span>
-<span class="go">  concept: sex by age (white alone)</span>
-<span class="go">  path: [sex by age (white alone) -&gt; estimate -&gt; total -&gt; male]</span>
+<li><p><strong>Extensive dataset support:</strong> <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> natively supports 17 popular Census datasets:</p>
+<ul>
+<li><p>Decennial Census (general): <a class="reference internal" href="api.html#censaurus.dataset.Decennial" title="censaurus.dataset.Decennial"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decennial</span></code></a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Decennial Census Redistricting Data: <a class="reference internal" href="api.html#censaurus.dataset.DecennialPL" title="censaurus.dataset.DecennialPL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecennialPL</span></code></a></p></li>
+<li><p>Decennial Census Summary File 1: <a class="reference internal" href="api.html#censaurus.dataset.DecennialSF1" title="censaurus.dataset.DecennialSF1"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecennialSF1</span></code></a></p></li>
+<li><p>Decennial Census Summary File 2: <a class="reference internal" href="api.html#censaurus.dataset.DecennialSF2" title="censaurus.dataset.DecennialSF2"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecennialSF2</span></code></a></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>American Community Survey Census (general): <a class="reference internal" href="api.html#censaurus.dataset.ACS" title="censaurus.dataset.ACS"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACS</span></code></a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>American Community Survey 1-Year Data: <a class="reference internal" href="api.html#censaurus.dataset.ACS1" title="censaurus.dataset.ACS1"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACS1</span></code></a></p></li>
+<li><p>American Community Survey 1-Year Supplemental Data: <a class="reference internal" href="api.html#censaurus.dataset.ACSSupplemental" title="censaurus.dataset.ACSSupplemental"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACSSupplemental</span></code></a></p></li>
+<li><p>American Community Survey 3-Year Data: <a class="reference internal" href="api.html#censaurus.dataset.ACS3" title="censaurus.dataset.ACS3"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACS3</span></code></a></p></li>
+<li><p>American Community Survey 5-Year Data: <a class="reference internal" href="api.html#censaurus.dataset.ACS5" title="censaurus.dataset.ACS5"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACS5</span></code></a></p></li>
+<li><p>American Community Survey Migration Flows: <a class="reference internal" href="api.html#censaurus.dataset.ACSFlows" title="censaurus.dataset.ACSFlows"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACSFlows</span></code></a></p></li>
+<li><p>American Community Survey Language Statistics: <a class="reference internal" href="api.html#censaurus.dataset.ACSLanguage" title="censaurus.dataset.ACSLanguage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACSLanguage</span></code></a></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Public Use Microdata Sample (general): <a class="reference internal" href="api.html#censaurus.dataset.PUMS" title="censaurus.dataset.PUMS"><code class="xref py py-class docutils literal notranslate"><span class="pre">PUMS</span></code></a></p></li>
+<li><p>Current Population Survey (general): <a class="reference internal" href="api.html#censaurus.dataset.CPS" title="censaurus.dataset.CPS"><code class="xref py py-class docutils literal notranslate"><span class="pre">CPS</span></code></a></p></li>
+<li><p>Economic Census (general): <a class="reference internal" href="api.html#censaurus.dataset.Economic" title="censaurus.dataset.Economic"><code class="xref py py-class docutils literal notranslate"><span class="pre">Economic</span></code></a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Economic Census Key Statistics: <a class="reference internal" href="api.html#censaurus.dataset.EconomicKeyStatistics" title="censaurus.dataset.EconomicKeyStatistics"><code class="xref py py-class docutils literal notranslate"><span class="pre">EconomicKeyStatistics</span></code></a></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Population Estimates (general): <a class="reference internal" href="api.html#censaurus.dataset.Estimates" title="censaurus.dataset.Estimates"><code class="xref py py-class docutils literal notranslate"><span class="pre">Estimates</span></code></a></p></li>
+<li><p>Population Projections (general): <a class="reference internal" href="api.html#censaurus.dataset.Projections" title="censaurus.dataset.Projections"><code class="xref py py-class docutils literal notranslate"><span class="pre">Projections</span></code></a></p></li>
+</ul>
+<p>In addition to these built-in datasets, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> also supports all other Census API datasets through the generic <a class="reference internal" href="api.html#censaurus.dataset.Dataset" title="censaurus.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> class. To filter and find available datasets that meet your requirements, you can use the <a class="reference internal" href="api.html#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetExplorer</span></code></a> class, which comes with tools like <a class="reference internal" href="api.html#censaurus.dataset.DatasetExplorer.filter_by_term" title="censaurus.dataset.DatasetExplorer.filter_by_term"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DatasetExplorer.filter_by_term()</span></code></a> and <a class="reference internal" href="api.html#censaurus.dataset.DatasetExplorer.filter_by_year" title="censaurus.dataset.DatasetExplorer.filter_by_year"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DatasetExplorer.filter_by_year()</span></code></a>.</p>
+</li>
+<li><p><strong>Powerful variable filtering:</strong> Utilizing the relationships between variables, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> grants users full control over the variable selection process. Users can easily select the exact set of variables they want, eliminating the need for the tedious and error-prone task of selecting and listing variables individually. For example,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">censaurus.dataset</span> <span class="kn">import</span> <span class="n">ACS5</span>
 
-<span class="go">...</span>
-
-<span class="go">C27009_020E</span>
-<span class="go">  group: C27009</span>
-<span class="go">  concept: va health care by sex by age</span>
-<span class="go">  path: [va health care by sex by age -&gt; estimate -&gt; total -&gt; female -&gt; 65 years and over -&gt; with va health care]</span>
-<span class="go">C27009_021E</span>
-<span class="go">  group: C27009</span>
-<span class="go">  concept: va health care by sex by age</span>
-<span class="go">  path: [va health care by sex by age -&gt; estimate -&gt; total -&gt; female -&gt; 65 years and over -&gt; no va health care]</span>
-</pre></div>
-</div>
-<p>But unlike other Census tools, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> lets you filter variables <em>relationally</em>. For example,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">children_of</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="s1">&#39;B01001_002E&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span> <span class="o">=</span> <span class="n">ACS5</span><span class="p">()</span>
+<span class="go"># B01001_002E is the [sex by age -&gt; total -&gt; male] variable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">children_of</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="s1">&#39;B01001_002E&#39;</span><span class="p">)</span>
 <span class="go">VariableCollection of 23 variables:</span>
 <span class="go">B01001_003E</span>
 <span class="go">  group: B01001</span>
@@ -128,13 +146,175 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>There is also support for finding the parent, siblings, cousins, descendants, and ancestors of a particular variable. Of course, you can also filter variables by group.</p>
+<p>There is also support for finding the parent, siblings, cousins, descendants, and ancestors of a particular variable.</p>
 </div>
-<p>These tools come in particular handy when you want to request some subset of a large group of Census variables. Getting the entire group of variables would be unnecessary and complicate your output, but individually writing out the names of the variables you want would be tedious and error-prone.</p>
-<p>This behavior is available thank to the rich way <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> processes variables. In particular, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> keeps track of each variable as a <a class="reference internal" href="api.html#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a> object, and stores the set of variables available to a particular dataset in a <a class="reference internal" href="api.html#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableCollection</span></code></a>.</p>
+<p>This behavior is available thanks to the rich way <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> processes variables. In particular, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> keeps track of each variable as a <a class="reference internal" href="api.html#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a> object, and stores the set of variables available to a particular dataset in a <a class="reference internal" href="api.html#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableCollection</span></code></a>.</p>
+<p>Of course, like other Census tools, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> also has support for more basic variable filtering. For example,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">censaurus.dataset</span> <span class="kn">import</span> <span class="n">ACS5</span><span class="p">()</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span> <span class="o">=</span> <span class="n">ACS5</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">filter_by_term</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">],</span> <span class="n">by</span><span class="o">=</span><span class="s1">&#39;concept&#39;</span><span class="p">)</span>
+<span class="go">VariableCollection of 3417 variables:</span>
+<span class="go">B01001A_001E</span>
+<span class="go">  group: B01001A</span>
+<span class="go">  concept: sex by age (white alone)</span>
+<span class="go">  path: [sex by age (white alone) -&gt; estimate -&gt; total]</span>
+<span class="go">B01001A_002E</span>
+<span class="go">  group: B01001A</span>
+<span class="go">  concept: sex by age (white alone)</span>
+<span class="go">  path: [sex by age (white alone) -&gt; estimate -&gt; total -&gt; male]</span>
+
+<span class="go">...</span>
+
+<span class="go">C27009_020E</span>
+<span class="go">  group: C27009</span>
+<span class="go">  concept: va health care by sex by age</span>
+<span class="go">  path: [va health care by sex by age -&gt; estimate -&gt; total -&gt; female -&gt; 65 years and over -&gt; with va health care]</span>
+<span class="go">C27009_021E</span>
+<span class="go">  group: C27009</span>
+<span class="go">  concept: va health care by sex by age</span>
+<span class="go">  path: [va health care by sex by age -&gt; estimate -&gt; total -&gt; female -&gt; 65 years and over -&gt; no va health care]</span>
+</pre></div>
+</div>
 </li>
-<li><p><strong>Moving beyond the Census geography hierarchy:</strong></p></li>
-<li><p><strong>Native data cleaning tools (renaming, regrouping, recoding):</strong></p></li>
+<li><p><strong>Flexible geographic support:</strong> <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> lets users move beyond the Census’ strict geography hierarchy. For example, within the American Community Survey, data at the <code class="docutils literal notranslate"><span class="pre">block</span> <span class="pre">group</span></code>-level is traditionally only available within a specified <code class="docutils literal notranslate"><span class="pre">state</span></code>, <code class="docutils literal notranslate"><span class="pre">county</span></code>, or Census <code class="docutils literal notranslate"><span class="pre">tract</span></code>. <code class="docutils literal notranslate"><span class="pre">censaurus</span></code>, on the other hand, lets users request <code class="docutils literal notranslate"><span class="pre">block</span> <span class="pre">group</span></code>-level data within <em>any possible geographic area</em>, such as <code class="docutils literal notranslate"><span class="pre">block</span> <span class="pre">group</span></code>-level data within a Census <code class="docutils literal notranslate"><span class="pre">place</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">censaurus.dataset</span> <span class="kn">import</span> <span class="n">ACS5</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span> <span class="o">=</span> <span class="n">ACS5</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span><span class="o">.</span><span class="n">block_groups</span><span class="p">(</span><span class="n">within</span><span class="o">=</span><span class="n">acs</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">place</span><span class="o">=</span><span class="s1">&#39;Houston, TX&#39;</span><span class="p">))</span>
+<span class="go">successfully matched &#39;Houston, TX&#39; to &#39;Houston city, Texas&#39; (GEOID = 4835000) in layer &#39;Incorporated Places&#39;</span>
+<span class="go">                                                   NAME                 GEO_ID state county   tract block group</span>
+<span class="go">0     Block Group 1, Census Tract 6701.01, Fort Bend...  1500000US481576701011    48    157  670101           1</span>
+<span class="go">1     Block Group 2, Census Tract 6701.01, Fort Bend...  1500000US481576701012    48    157  670101           2</span>
+<span class="go">2     Block Group 3, Census Tract 6701.01, Fort Bend...  1500000US481576701013    48    157  670101           3</span>
+<span class="go">3     Block Group 4, Census Tract 6701.01, Fort Bend...  1500000US481576701014    48    157  670101           4</span>
+<span class="go">4     Block Group 1, Census Tract 6701.02, Fort Bend...  1500000US481576701021    48    157  670102           1</span>
+<span class="go">...                                                 ...                    ...   ...    ...     ...         ...</span>
+<span class="go">2352  Block Group 2, Census Tract 6923.03, Montgomer...  1500000US483396923032    48    339  692303           2</span>
+<span class="go">2353  Block Group 3, Census Tract 6923.03, Montgomer...  1500000US483396923033    48    339  692303           3</span>
+<span class="go">2354  Block Group 1, Census Tract 6924.02, Montgomer...  1500000US483396924021    48    339  692402           1</span>
+<span class="go">2355  Block Group 4, Census Tract 6924.02, Montgomer...  1500000US483396924024    48    339  692402           4</span>
+<span class="go">2356  Block Group 5, Census Tract 6924.02, Montgomer...  1500000US483396924025    48    339  692402           5</span>
+
+<span class="go">[2357 rows x 6 columns]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can even geographically subset your data with a <em>list</em> of geographic areas. This is particularly useful for comparisons. For example,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span><span class="o">.</span><span class="n">states</span><span class="p">(</span><span class="n">within</span><span class="o">=</span><span class="p">[</span><span class="n">acs</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">division</span><span class="p">(</span><span class="n">division</span><span class="o">=</span><span class="s1">&#39;New England&#39;</span><span class="p">),</span> <span class="n">acs</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">division</span><span class="p">(</span><span class="n">division</span><span class="o">=</span><span class="s1">&#39;Mountain&#39;</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<p>This feature greatly expands access to more flexible and specific geographic queries. You could even request <code class="docutils literal notranslate"><span class="pre">block</span></code>-level data for the entire United States, if you wanted to!</p>
+<p>Internally, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> interfaces with the TIGERWeb API (another product of the U.S. Census Bureau) to make this behavior possible. When a user requests data inconsistent with the default geographic hierarchy, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> dynamically and efficiently converts that request into one (or, potentially, more than one) that <em>can</em> be properly parsed by the Census API.</p>
+</li>
+<li><p><strong>Census-focused data cleaning tools:</strong> <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> comes with powerful and convenient tools to help you clean and prepare your Census data for analysis. For example, you can easily rename your output columns to be more legible:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">censaurus.dataset</span> <span class="kn">import</span> <span class="n">ACS5</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span> <span class="o">=</span> <span class="n">ACS5</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counties</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">counties</span><span class="p">(</span><span class="n">variables</span><span class="o">=</span><span class="n">acs</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">filter_by_group</span><span class="p">(</span><span class="s1">&#39;B01001&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># go from this</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counties</span>
+<span class="go">      B01001_001E  B01001_002E  B01001_003E  B01001_004E  ...          GEO_ID                              NAME  state  county</span>
+<span class="go">0           58239        28206         1783         1959  ...  0500000US01001           Autauga County, Alabama     01     001</span>
+<span class="go">1          227131       110781         6121         5709  ...  0500000US01003           Baldwin County, Alabama     01     003</span>
+<span class="go">2           25259        13361          647          743  ...  0500000US01005           Barbour County, Alabama     01     005</span>
+<span class="go">3           22412        12300          603          646  ...  0500000US01007              Bibb County, Alabama     01     007</span>
+<span class="go">4           58884        29530         1818         1906  ...  0500000US01009            Blount County, Alabama     01     009</span>
+<span class="go">...           ...          ...          ...          ...  ...             ...                               ...    ...     ...</span>
+<span class="go">3216        54544        26057         1123         1277  ...  0500000US72145  Vega Baja Municipio, Puerto Rico     72     145</span>
+<span class="go">3217         8317         4239          255          165  ...  0500000US72147    Vieques Municipio, Puerto Rico     72     147</span>
+<span class="go">3218        22341        10796          509          664  ...  0500000US72149   Villalba Municipio, Puerto Rico     72     149</span>
+<span class="go">3219        31047        15000          559          698  ...  0500000US72151    Yabucoa Municipio, Puerto Rico     72     151</span>
+<span class="go">3220        34704        16548          611          699  ...  0500000US72153      Yauco Municipio, Puerto Rico     72     153</span>
+
+<span class="go">[3221 rows x 53 columns]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">censaurus.renamer</span> <span class="kn">import</span> <span class="n">SIMPLE_RENAMER</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counties</span> <span class="o">=</span> <span class="n">SIMPLE_RENAMER</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">counties</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># to this</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counties</span>
+<span class="go">      sex by age|total  sex by age|total|male  sex by age|total|male|0-5  ...                              NAME  state  county</span>
+<span class="go">0                58239                  28206                       1783  ...           Autauga County, Alabama     01     001</span>
+<span class="go">1               227131                 110781                       6121  ...           Baldwin County, Alabama     01     003</span>
+<span class="go">2                25259                  13361                        647  ...           Barbour County, Alabama     01     005</span>
+<span class="go">3                22412                  12300                        603  ...              Bibb County, Alabama     01     007</span>
+<span class="go">4                58884                  29530                       1818  ...            Blount County, Alabama     01     009</span>
+<span class="go">...                ...                    ...                        ...  ...                               ...    ...     ...</span>
+<span class="go">3216             54544                  26057                       1123  ...  Vega Baja Municipio, Puerto Rico     72     145</span>
+<span class="go">3217              8317                   4239                        255  ...    Vieques Municipio, Puerto Rico     72     147</span>
+<span class="go">3218             22341                  10796                        509  ...   Villalba Municipio, Puerto Rico     72     149</span>
+<span class="go">3219             31047                  15000                        559  ...    Yabucoa Municipio, Puerto Rico     72     151</span>
+<span class="go">3220             34704                  16548                        611  ...      Yauco Municipio, Puerto Rico     72     153</span>
+
+<span class="go">[3221 rows x 53 columns]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href="api.html#censaurus.rename.SIMPLE_RENAMER" title="censaurus.rename.SIMPLE_RENAMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIMPLE_RENAMER</span></code></a> can be customized to meet your needs: you can change the separator, add prefixes for specific groups, or add custom renaming functions. You can also create your own renamer from scratch using the <a class="reference internal" href="api.html#censaurus.rename.Renamer" title="censaurus.rename.Renamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code></a> class.</p>
+</div>
+<p>Next, if the Census data you requested is too granular for your needs, you can use the regrouping tools built into <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> to automatically aggregate your data into new, custom buckets. For example,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">censaurus.dataset</span> <span class="kn">import</span> <span class="n">ACS5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">censaurus.renamer</span> <span class="kn">import</span> <span class="n">SIMPLE_RENAMER</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span> <span class="o">=</span> <span class="n">ACS5</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counties</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">counties</span><span class="p">(</span><span class="n">variables</span><span class="o">=</span><span class="n">acs</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">filter_by_group</span><span class="p">(</span><span class="s1">&#39;B01001&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counties</span> <span class="o">=</span> <span class="n">SIMPLE_RENAMER</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">counties</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># go from this</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counties</span><span class="o">.</span><span class="n">columns</span>
+<span class="go">Index([&#39;sex by age|total&#39;, &#39;sex by age|total|male&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|0-5&#39;, &#39;sex by age|total|male|5-9&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|10-14&#39;, &#39;sex by age|total|male|15-17&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|18-19&#39;, &#39;sex by age|total|male|20&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|21&#39;, &#39;sex by age|total|male|22-24&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|25-29&#39;, &#39;sex by age|total|male|30-34&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|35-39&#39;, &#39;sex by age|total|male|40-44&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|45-49&#39;, &#39;sex by age|total|male|50-54&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|55-59&#39;, &#39;sex by age|total|male|60-61&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|62-64&#39;, &#39;sex by age|total|male|65-66&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|67-69&#39;, &#39;sex by age|total|male|70-74&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|75-79&#39;, &#39;sex by age|total|male|80-84&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|85+&#39;, &#39;sex by age|total|female&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|0-5&#39;, &#39;sex by age|total|female|5-9&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|10-14&#39;, &#39;sex by age|total|female|15-17&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|18-19&#39;, &#39;sex by age|total|female|20&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|21&#39;, &#39;sex by age|total|female|22-24&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|25-29&#39;, &#39;sex by age|total|female|30-34&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|35-39&#39;, &#39;sex by age|total|female|40-44&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|45-49&#39;, &#39;sex by age|total|female|50-54&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|55-59&#39;, &#39;sex by age|total|female|60-61&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|62-64&#39;, &#39;sex by age|total|female|65-66&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|67-69&#39;, &#39;sex by age|total|female|70-74&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|75-79&#39;, &#39;sex by age|total|female|80-84&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|85+&#39;, &#39;GEO_ID&#39;, &#39;NAME&#39;, &#39;state&#39;, &#39;county&#39;],</span>
+<span class="go">      dtype=&#39;object&#39;)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">censaurus.regroup</span> <span class="kn">import</span> <span class="n">AgeRegrouper</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regrouper</span> <span class="o">=</span> <span class="n">AgeRegrouper</span><span class="p">(</span><span class="n">brackets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0-17&quot;</span><span class="p">,</span> <span class="s2">&quot;18-29&quot;</span><span class="p">,</span> <span class="s2">&quot;30-49&quot;</span><span class="p">,</span> <span class="s2">&quot;50-64&quot;</span><span class="p">,</span> <span class="s2">&quot;65+&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counties</span> <span class="o">=</span> <span class="n">regrouper</span><span class="o">.</span><span class="n">regroup</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">counties</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counties</span> <span class="o">=</span> <span class="n">renamer</span><span class="o">.</span><span class="n">renamer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">counties</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># to this</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">counties</span><span class="o">.</span><span class="n">columns</span>
+<span class="go">Index([&#39;sex by age|total&#39;, &#39;sex by age|total|male&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|0-17&#39;, &#39;sex by age|total|male|18-29&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|30-49&#39;, &#39;sex by age|total|male|50-64&#39;,</span>
+<span class="go">       &#39;sex by age|total|male|65+&#39;, &#39;sex by age|total|female&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|0-17&#39;, &#39;sex by age|total|female|18-29&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|30-49&#39;, &#39;sex by age|total|female|50-64&#39;,</span>
+<span class="go">       &#39;sex by age|total|female|65+&#39;, &#39;GEO_ID&#39;, &#39;NAME&#39;, &#39;state&#39;, &#39;county&#39;],</span>
+<span class="go">      dtype=&#39;object&#39;)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For regrouping variables based on things other than age, you can use the generic <a class="reference internal" href="api.html#censaurus.regroup.Regrouper" title="censaurus.regroup.Regrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Regrouper</span></code></a> class.</p>
+</div>
+<p>Finally, the <code class="xref py py-class docutils literal notranslate"><span class="pre">Recoder</span></code> class allows user to recode state names and identifiers to and from various formats.</p>
+<p><code class="docutils literal notranslate"><span class="pre">censaurus</span></code> adds custom <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.Series</span></code> accessors to make this renaming, regrouping, and recoding possible.</p>
+</li>
 </ul>
 </section>
 

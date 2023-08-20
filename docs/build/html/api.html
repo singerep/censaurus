@@ -7,6 +7,7 @@
   <title>API documentation &mdash; censaurus  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
     <link rel="shortcut icon" href="_static/censaurus_logo_icon.png"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -192,19 +193,16 @@ webbrowser.</p></li>
 be used if the dataset you desire already has its own <a class="reference internal" href="#censaurus.dataset.Dataset" title="censaurus.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> subclass.
 The following datasets <strong>do</strong> have <a class="reference internal" href="#censaurus.dataset.Dataset" title="censaurus.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> subclasses, and so you should
 use those instead.</p>
+<ul>
+<li><p>Decennial Census (general): <a class="reference internal" href="#censaurus.dataset.Decennial" title="censaurus.dataset.Decennial"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decennial</span></code></a></p>
 <blockquote>
-<div><blockquote>
 <div><ul class="simple">
-<li><p>Decennial Census (general): <a class="reference internal" href="#censaurus.dataset.Decennial" title="censaurus.dataset.Decennial"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decennial</span></code></a></p></li>
-</ul>
-</div></blockquote>
-<ul class="simple">
 <li><p>Decennial Census Redistricting Data: <a class="reference internal" href="#censaurus.dataset.DecennialPL" title="censaurus.dataset.DecennialPL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecennialPL</span></code></a></p></li>
 <li><p>Decennial Census Summary File 1: <a class="reference internal" href="#censaurus.dataset.DecennialSF1" title="censaurus.dataset.DecennialSF1"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecennialSF1</span></code></a></p></li>
 <li><p>Decennial Census Summary File 2: <a class="reference internal" href="#censaurus.dataset.DecennialSF2" title="censaurus.dataset.DecennialSF2"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecennialSF2</span></code></a></p></li>
 </ul>
 </div></blockquote>
-<ul>
+</li>
 <li><p>American Community Survey Census (general): <a class="reference internal" href="#censaurus.dataset.ACS" title="censaurus.dataset.ACS"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACS</span></code></a></p>
 <blockquote>
 <div><ul class="simple">
@@ -237,8 +235,8 @@ use those instead.</p>
 <code class="docutils literal notranslate"><span class="pre">&lt;year&gt;/&lt;product&gt;/&lt;extension&gt;</span></code>, though there are occasionally additional
 elements. For example, <code class="docutils literal notranslate"><span class="pre">2021/acs/acs1</span></code> is the extension for the American
 Community Survey 1-Year Estimates published in 2021.</p></li>
-<li><p><strong>map_service</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The name of the TIGERWeb mapservice to use as the geographic basis for this
-dataset.</p></li>
+<li><p><strong>map_service</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘tigerWMS_Current’) – The name of the TIGERWeb mapservice to use as the geographic basis for this
+dataset. Defaults to the current mapservice.</p></li>
 </ul>
 </dd>
 </dl>

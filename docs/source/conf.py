@@ -38,4 +38,8 @@ html_context = {
     "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
 }
 
+html_css_files = [
+    'css/custom.css',
+]
+
 # github_url = "https://github.companyname.com/xyz"
