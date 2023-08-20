@@ -42,7 +42,6 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-censaurus.dataset">Datasets</a></li>
@@ -92,8 +91,100 @@
 <dd></dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="censaurus.dataset.DatasetExplorer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">DatasetExplorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_dataset_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.dataset.DatasetExplorer" title="Permalink to this definition"></a></dt>
+<dd><p>An object that explores the available Census API Datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>_dataset_json</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> = None) – This parameter should only be used internally. Used for creating subsets of an
+already existing <a class="reference internal" href="#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetExplorer</span></code></a>.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.dataset.DatasetExplorer.filter_by_year">
+<span class="sig-name descname"><span class="pre">filter_by_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><span class="pre">DatasetExplorer</span></a></span></span><a class="headerlink" href="#censaurus.dataset.DatasetExplorer.filter_by_year" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a new <a class="reference internal" href="#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetExplorer</span></code></a> consisting of all datasets that match
+the year range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = None) – The earliest year for which to include datasets. If <code class="docutils literal notranslate"><span class="pre">start_year</span></code> is
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, then no such restriction is applied.</p></li>
+<li><p><strong>end_year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = None) – The latest year for which to include datasets. If <code class="docutils literal notranslate"><span class="pre">end_year</span></code> is
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, then no such restriction is applied.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.dataset.DatasetExplorer.filter_by_term">
+<span class="sig-name descname"><span class="pre">filter_by_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'title'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><span class="pre">DatasetExplorer</span></a></span></span><a class="headerlink" href="#censaurus.dataset.DatasetExplorer.filter_by_term" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a new <a class="reference internal" href="#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetExplorer</span></code></a> consisting of all datasets that match
+the search. Can filter by each dataset’s title or description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>term</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The search string or strings.</p></li>
+<li><p><strong>by</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘title’) – If <code class="docutils literal notranslate"><span class="pre">by</span></code> is ‘title’, then datasets will be filtered by their titles.
+Otherwise, <code class="docutils literal notranslate"><span class="pre">by</span></code> should be ‘description’, and datasets will be filtered
+by their descriptions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.dataset.DatasetExplorer.to_df">
+<span class="sig-name descname"><span class="pre">to_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#censaurus.dataset.DatasetExplorer.to_df" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the <a class="reference internal" href="#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetExplorer</span></code></a> into a <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> object
+detailing all of each datasets’s attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.dataset.DatasetExplorer.describe">
+<span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url_extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#censaurus.dataset.DatasetExplorer.describe" title="Permalink to this definition"></a></dt>
+<dd><p>Prints out a string that describes each dataset in the explorer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url_extension</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – A specific URL extension or a list of specific URL extensions to describe.
+If <code class="docutils literal notranslate"><span class="pre">url_extension</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, then all datasets in the explorer will be
+described.</p></li>
+<li><p><strong>other_attributes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = []) – A list of addition attributes to describe from each dataset, if that
+attribute is available. For a list of attributes, see
+<a class="reference external" href="https://api.census.gov/data.json">the source file</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.dataset.DatasetExplorer.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dataset_explorer_graph.html'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#censaurus.dataset.DatasetExplorer.visualize" title="Permalink to this definition"></a></dt>
+<dd><p>Visualizes the <a class="reference internal" href="#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetExplorer</span></code></a> as a tree in your default
+webbrowser.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hierarchical</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether the variables (nodes) are presented in a hierarchical
+layout (with root nodes at the top), as opposed to a layout that looks
+more like spokes on a wheel.</p></li>
+<li><p><strong>filename</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘variable_graph.html’) – The path (from within the current working directory) the save the generated
+file at.</p></li>
+<li><p><strong>show</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = True) – Determines whether or not to open the generated file in your default
+webbrowser.</p></li>
+<li><p><strong>keep_file</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not to delete the generated file after opening it.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.Dataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">product_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url_extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.dataset.Dataset" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url_extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.dataset.Dataset" title="Permalink to this definition"></a></dt>
 <dd><p>A base class to represent a Census dataset (product). This class <strong>should not</strong>
 be used if the dataset you desire already has its own <a class="reference internal" href="#censaurus.dataset.Dataset" title="censaurus.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> subclass.
 The following datasets <strong>do</strong> have <a class="reference internal" href="#censaurus.dataset.Dataset" title="censaurus.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> subclasses, and so you should
@@ -138,13 +229,11 @@ use those instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>product_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> and/or <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – A unique key representing the dataset. Typically of the form
-<code class="docutils literal notranslate"><span class="pre">(&lt;year&gt;,</span> <span class="pre">&lt;product&gt;,</span> <span class="pre">&lt;extension&gt;)</span></code>. For example, <code class="docutils literal notranslate"><span class="pre">(2021,</span> <span class="pre">&quot;acs&quot;,</span> <span class="pre">&quot;acs1&quot;)</span></code> is
-the key for the American Community Survey 1-Year Estimates published in 2021.</p></li>
-<li><p><strong>url_extension</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – A url path that accesses the content for this dataset. Appended to
-<code class="docutils literal notranslate"><span class="pre">https://api.census.gov</span></code>. Typically, this looks like the elements of the
-<code class="docutils literal notranslate"><span class="pre">product_key</span></code> joined by a ‘/’. For example, <code class="docutils literal notranslate"><span class="pre">2021/acs/acs1</span></code> is the extension
-for the American Community Survey 1-Year Estimates published in 2021.</p></li>
+<li><p><strong>url_extension</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – A unique url path that accesses the content for this dataset. Appended to
+<code class="docutils literal notranslate"><span class="pre">https://api.census.gov</span></code>. Typically of the form
+<code class="docutils literal notranslate"><span class="pre">&lt;year&gt;/&lt;product&gt;/&lt;extension&gt;</span></code>, though there are occasionally additional
+elements. For example, <code class="docutils literal notranslate"><span class="pre">2021/acs/acs1</span></code> is the extension for the American
+Community Survey 1-Year Estimates published in 2021.</p></li>
 <li><p><strong>map_service</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The name of the TIGERWeb mapservice to use as the geographic basis for this
 dataset.</p></li>
 </ul>
@@ -196,11 +285,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -210,7 +299,7 @@ area).</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.dataset.Dataset.regions">
 <span class="sig-name descname"><span class="pre">regions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">within</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.tiger.Area" title="censaurus.tiger.Area"><span class="pre">Area</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.tiger.Area" title="censaurus.tiger.Area"><span class="pre">Area</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.variable.Group" title="censaurus.variable.Group"><span class="pre">Group</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.Group" title="censaurus.variable.Group"><span class="pre">Group</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.GroupCollection" title="censaurus.variable.GroupCollection"><span class="pre">GroupCollection</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_geometry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_census_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.dataset.Dataset.regions" title="Permalink to this definition"></a></dt>
-<dd><p>Get Census data for regions of United States. See
+<dd><p>Get Census data for regions of the United States. See
 <a class="reference external" href="https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf">here</a>
 for an overview of Census regions.</p>
 <dl class="field-list simple">
@@ -232,11 +321,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -246,7 +335,7 @@ area).</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.dataset.Dataset.divisions">
 <span class="sig-name descname"><span class="pre">divisions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">within</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.tiger.Area" title="censaurus.tiger.Area"><span class="pre">Area</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.tiger.Area" title="censaurus.tiger.Area"><span class="pre">Area</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.variable.Group" title="censaurus.variable.Group"><span class="pre">Group</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.Group" title="censaurus.variable.Group"><span class="pre">Group</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.GroupCollection" title="censaurus.variable.GroupCollection"><span class="pre">GroupCollection</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_geometry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_census_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.dataset.Dataset.divisions" title="Permalink to this definition"></a></dt>
-<dd><p>Get Census data for divisions of United States. See
+<dd><p>Get Census data for divisions of the United States. See
 <a class="reference external" href="https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf">here</a>
 for an overview of Census divisions.</p>
 <dl class="field-list simple">
@@ -268,11 +357,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -302,11 +391,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -336,11 +425,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -370,11 +459,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -404,11 +493,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -438,11 +527,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -472,11 +561,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -507,11 +596,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -541,11 +630,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -575,11 +664,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -609,11 +698,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -643,11 +732,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -678,11 +767,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -717,11 +806,11 @@ will be requested.</p></li>
 <li><p><strong>return_geometry</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not the geometry of each geographic area should be
 returned.</p></li>
 <li><p><strong>area_threshold</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = 0.01) – Only geographic areas where (<code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code> intersected
-with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is greater
-than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01 ensures that
-geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas)
-on the boundary will not be included (boundary intersections have zero
-area).</p></li>
+with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area (or areas) / <code class="docutils literal notranslate"><span class="pre">total</span> <span class="pre">area</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">geography</span></code>) is
+greater than <code class="docutils literal notranslate"><span class="pre">area_threshold</span></code> will be included. The default of 0.01
+ensures that geographic areas that only intersect with the <code class="docutils literal notranslate"><span class="pre">within</span></code> area
+(or areas) on the boundary will not be included (boundary intersections have
+zero area).</p></li>
 <li><p><strong>extra_census_params</strong> (dict of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – Extra query parameters to pass to the Census when requesting data.</p></li>
 </ul>
 </dd>
@@ -1532,7 +1621,7 @@ concept of each variable’s group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>term</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The search string.</p></li>
+<li><p><strong>term</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The search string or strings.</p></li>
 <li><p><strong>by</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘label’) – If <code class="docutils literal notranslate"><span class="pre">by</span></code> is ‘label’, then variables will be filtered by their labels.
 Otherwise, <code class="docutils literal notranslate"><span class="pre">by</span></code> should be ‘concept’, and variables will be filtered
 by the concepts of their groups.</p></li>
@@ -2645,11 +2734,12 @@ column names.</p>
 <dd><p>An object that handles recoding state to various formats. The available formats are:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">FIPS</span></code>: state FIPS codes with no zero-padding (1, 2, 4, etc.)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FIPS_PADDED</span></code>: state FIPS codes with two-digit zero-padding (01, 02, 04, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FIPS</span></code>: FIPS codes with no zero-padding (1, 2, 4, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FIPS_PADDED</span></code>: FIPS codes with two-digit zero-padding (01, 02, 04, etc.)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ABBR</span></code>: state abbreviations (AL, AK, AZ, etc.)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">NAME</span></code>: full state names (Alabama, Alaska, Arizona, etc.)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GNIS</span></code>: Geographic Names Information System codes (01779775, 01785533, 01779777 etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GNIS</span></code>: Geographic Names Information System codes (1779775, 1785533, 1779777 etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GNIS_PADDED</span></code>: Geographic Names Information System codes with seven-digit zero-padding (1779775, 1785533, 1779777 etc.)</p></li>
 </ul>
 </div></blockquote>
 <dl class="py method">
@@ -2715,7 +2805,22 @@ the original state format.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.recode.StateRecoder.to_GNIS">
 <span class="sig-name descname"><span class="pre">to_GNIS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.recode.StateRecoder.to_GNIS" title="Permalink to this definition"></a></dt>
-<dd><p>Recodes states as GNIS codes (01779775, 01785533, 01779777 etc.). Attempts to
+<dd><p>Recodes states as GNIS codes (1779775, 1785533, 1779777 etc.). Attempts to
+infer the original state format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
+<li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.recode.StateRecoder.to_GNIS_PADDED">
+<span class="sig-name descname"><span class="pre">to_GNIS_PADDED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.recode.StateRecoder.to_GNIS_PADDED" title="Permalink to this definition"></a></dt>
+<dd><p>Recodes states as GNIS codes (1779775, 1785533, 1779777 etc.). Attempts to
 infer the original state format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2743,14 +2848,27 @@ infer the original state format.</p>
 <dd></dd></dl>
 
 <dl class="py exception">
-<dt class="sig sig-object py" id="censaurus.api.TIGERWebError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.api.</span></span><span class="sig-name descname"><span class="pre">TIGERWebError</span></span><a class="headerlink" href="#censaurus.api.TIGERWebError" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py exception">
 <dt class="sig sig-object py" id="censaurus.api.TIGERWebAPIError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.api.</span></span><span class="sig-name descname"><span class="pre">TIGERWebAPIError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.api.TIGERWebAPIError" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="censaurus.api.AsyncLoopHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.api.</span></span><span class="sig-name descname"><span class="pre">AsyncLoopHandler</span></span><a class="headerlink" href="#censaurus.api.AsyncLoopHandler" title="Permalink to this definition"></a></dt>
+<dd><p>Class to handle asynchronous requests. Useful especially in the case where a user
+is writing code inside an IPython environment.</p>
+<p>Adapted from <a class="reference external" href="https://stackoverflow.com/a/66055205/17834461">https://stackoverflow.com/a/66055205/17834461</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.api.AsyncLoopHandler.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#censaurus.api.AsyncLoopHandler.run" title="Permalink to this definition"></a></dt>
+<dd><p>Method representing the thread’s activity.</p>
+<p>You may override this method in a subclass. The standard run() method
+invokes the callable object passed to the object’s constructor as the
+target argument, if any, with sequential and keyword arguments taken
+from the args and kwargs arguments, respectively.</p>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.api.CensusClient">
