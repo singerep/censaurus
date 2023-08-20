@@ -237,8 +237,8 @@ Introduction
            dtype='object')
 
   .. note::
-     For regrouping variables based on things other than age, you can use the generic :class:`.Regrouper` class.
+     For regrouping variables based on attributes other than age, you can use the generic :class:`.Regrouper` class.
 
-  Finally, the :class:`.Recoder` class allows user to recode state names and identifiers to and from various formats.
+  Finally, the :class:`.Recoder` class allows user to recode state names and identifiers to and from various formats (FIPS, GNIS, etc.).
 
   ``censaurus`` adds custom :obj:`pandas.DataFrame` and :obj:`pandas.Series` accessors to make this renaming, regrouping, and recoding possible.
