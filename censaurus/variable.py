@@ -706,8 +706,8 @@ class VariableCollection:
 
         Parameters
         ==========
-        term : :obj:`str`
-            The search string.
+        term : :obj:`str` or :obj:`list` of :obj:`str`
+            The search string or strings.
         by : :obj:`str` = 'label'
             If ``by`` is 'label', then variables will be filtered by their labels.
             Otherwise, ``by`` should be 'concept', and variables will be filtered

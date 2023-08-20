@@ -37,7 +37,7 @@ def visualize_graph(tree: dict, titles: dict, labels: dict, hierarchical: bool, 
     width = kwargs.pop('width', '100%')
     height = kwargs.pop('height', '100%')
 
-    g = Network(width=width, height=height, layout=hierarchical, bgcolor="#ebebeb", **kwargs)
+    g = Network(width=width, height=height, layout=hierarchical, bgcolor="#ebebeb", cdn_resources='in_line', **kwargs)
 
     for v_path in nodes:
         if depths[v_path] == 0:

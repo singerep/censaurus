@@ -1,10 +1,9 @@
-from typing import Union, Dict, List, Tuple
-from pandas import DataFrame, to_numeric
+from typing import Union, Dict, List, Set
+from pandas import DataFrame, to_numeric, json_normalize
 from json.decoder import JSONDecodeError
 from os import path
 from geopandas import GeoDataFrame
 from collections import defaultdict
-from httpx import get
 
 dir_path = path.dirname(path.realpath(__file__))
 
@@ -14,6 +13,7 @@ from censaurus.variable import Group, GroupCollection, Variable, VariableCollect
 from censaurus.geography import GeographyCollection
 from censaurus.tiger import AreaCollection, Area
 from censaurus.constants import BAD_VALUES
+from censaurus.graph_utils import visualize_graph
 
 
 class DatasetError(Exception):
@@ -21,18 +21,186 @@ class DatasetError(Exception):
 
 
 class DatasetExplorer:
-    def __init__(self) -> None:
-        def build_dataset_key(dataset_json):
-            key = ()
+    """
+    An object that explores the available Census API Datasets.
+
+    Parameters
+    ==========
+    _dataset_json : :obj:`dict` = None
+        This parameter should only be used internally. Used for creating subsets of an
+        already existing :class:`.DatasetExplorer`.
+    """
+    def __init__(self, _dataset_json: Dict = None) -> None:
+        if _dataset_json is None:
+            census_client = CensusClient(url_extension='')
+            datasets_resp = census_client.get_sync('data.json')
+            self._datasets_json = datasets_resp.json()['dataset']
+        else:
+            self._datasets_json = _dataset_json
+
+        url_extensions = [dataset['distribution'][0]['accessURL'].removeprefix('http://api.census.gov/data/') for dataset in self._datasets_json]
+        self._dataset_map = dict(zip(url_extensions, self._datasets_json))
+
+        self._dataset_tree : Dict[str, Set[str]] = {}
+        for url_extension in sorted(url_extensions):
+            dataset_json = self._dataset_map[url_extension]
+            dataset_json['url_extension'] = url_extension
+            
+            self._dataset_tree[url_extension] = set()
+
+            parent_url_extension = '/'.join(url_extension.split('/')[:-1])
+            if parent_url_extension in self._dataset_tree:
+                self._dataset_tree[parent_url_extension].add(url_extension)
+
+    def __len__(self):
+        return len(self._dataset_map)
+    
+    def __repr__(self):
+        return f"DatasetExplorer of {len(self)} datasets"
+
+    def _mask(self, url_extensions: List[str]) -> 'DatasetExplorer':
+        datasets_json = [self._dataset_map[url_extension] for url_extension in url_extensions]
+        return DatasetExplorer(_dataset_json=datasets_json)
+
+    def filter_by_year(self, start_year: int = None, end_year: int = None) -> 'DatasetExplorer':
+        """
+        Returns a new :class:`.DatasetExplorer` consisting of all datasets that match 
+        the year range.
+
+        Parameters
+        ==========
+        start_year : :obj:`int` = None
+            The earliest year for which to include datasets. If ``start_year`` is 
+            ``None``, then no such restriction is applied.
+        end_year : :obj:`int` = None
+            The latest year for which to include datasets. If ``end_year`` is 
+            ``None``, then no such restriction is applied.
+        """
+        url_extensions = []
+        for url_extension, dataset_json in self._dataset_map.items():
             if 'c_vintage' in dataset_json:
-                key += (int(dataset_json['c_vintage']),)
-            if 'c_dataset' in dataset_json:
-                key += tuple(dataset_json['c_dataset'])
+                if (start_year is None or dataset_json['c_vintage'] >= start_year) and (end_year is None or dataset_json['c_vintage'] <= end_year):
+                    url_extensions.append(url_extension)
+        
+        return self._mask(url_extensions=url_extensions)
 
-            return key
+    def filter_by_term(self, term: Union[str, List[str]], by: str = 'title') -> 'DatasetExplorer':
+        """
+        Returns a new :class:`.DatasetExplorer` consisting of all datasets that match 
+        the search. Can filter by each dataset's title or description.
 
-        datasets_resp = get('https://api.census.gov/data.json')
-        valid_dataset_keys = set(build_dataset_key(d) for d in datasets_resp.json()['dataset'])
+        Parameters
+        ==========
+        term : :obj:`str` or :obj:`list` of :obj:`str`
+            The search string or strings.
+        by : :obj:`str` = 'title'
+            If ``by`` is 'title', then datasets will be filtered by their titles.
+            Otherwise, ``by`` should be 'description', and datasets will be filtered
+            by their descriptions.
+        """
+        if isinstance(term, str):
+            term = [term]
+
+        if by == 'title' or by == 'description':
+            pass
+        else:
+            raise ValueError("the 'by' parameter should either be 'title' or 'description'")
+        
+        url_extensions = []
+        for url_extension, dataset_json in self._dataset_map.items():
+            if all(t.lower() in dataset_json[by].lower() for t in term):
+                url_extensions.append(url_extension)
+        
+        return self._mask(url_extensions=url_extensions)
+
+    def to_df(self) -> DataFrame:
+        """
+        Converts the :class:`.DatasetExplorer` into a :class:`pandas.DataFrame` object 
+        detailing all of each datasets's attributes.
+        """
+        if len(self._datasets_json) == 0:
+            return DataFrame()
+        
+        datasets_df = json_normalize(self._datasets_json, sep='_')
+        column_renames = {c: c.removeprefix('c_') for c in datasets_df.columns if c.startswith('c_')}
+        datasets_df = datasets_df.rename(columns=column_renames)
+
+        datasets_df['vintage'] = datasets_df['vintage'].astype('Int64')
+        if 'isTimeseries' in datasets_df.columns:
+            datasets_df['isTimeseries'] = datasets_df['isTimeseries'].fillna(False)
+        else:
+            datasets_df['isTimeseries'] = False
+        datasets_df = datasets_df.sort_values(by=['vintage', 'title'], ascending=[False, True]).reset_index(drop=True)
+        datasets_df.index = datasets_df['url_extension']
+        datasets_df = datasets_df.drop(labels='url_extension', axis=1)
+
+        return datasets_df
+
+    def describe(self, url_extension: Union[str, List[str]] = None, other_attributes: List[str] = []) -> None:
+        """
+        Prints out a string that describes each dataset in the explorer.
+
+        Parameters
+        ==========
+        url_extension : :obj:`str` or :obj:`list` of :obj:`str` = None
+            A specific URL extension or a list of specific URL extensions to describe.
+            If ``url_extension`` is ``None``, then all datasets in the explorer will be 
+            described.
+        other_attributes : :obj:`list` of :obj:`str` = []
+            A list of addition attributes to describe from each dataset, if that 
+            attribute is available. For a list of attributes, see
+            `the source file <https://api.census.gov/data.json>`_.
+        """
+        description_str = ''
+        if url_extension is None:
+            self.describe(url_extension=list(self._dataset_map.keys()), other_attributes=other_attributes)
+        else:
+            if isinstance(url_extension, str):
+                url_extension = [url_extension]
+            
+            for extension in url_extension:
+                if extension in self._dataset_map:
+                    dataset_json = self._dataset_map[extension]
+                    title = dataset_json['title']
+                    description = dataset_json['description']
+                    description_str += f"{title}:\n  URL extension: {extension}\n  description: {description}\n"
+                    for attribute in other_attributes:
+                        if attribute in dataset_json:
+                            value = dataset_json[attribute]
+                            description_str += f"  {attribute}: {value}\n"
+                    description_str += '\n'
+                else:
+                    raise ValueError("The 'url_extension' you requested was not present in the explorer.")
+        
+        print(description_str)
+
+    def visualize(self, hierarchical: bool = False, filename: str = 'dataset_explorer_graph.html', show: bool = True, keep_file: bool = False, **kwargs) -> None:
+        """
+        Visualizes the :class:`.DatasetExplorer` as a tree in your default
+        webbrowser.
+
+        Parameters
+        ==========
+        hierarchical : :obj:`bool` = False
+            Determines whether the variables (nodes) are presented in a hierarchical
+            layout (with root nodes at the top), as opposed to a layout that looks
+            more like spokes on a wheel.
+        filename : :obj:`str` = 'variable_graph.html'
+            The path (from within the current working directory) the save the generated
+            file at.
+        show : :obj:`bool` = True
+            Determines whether or not to open the generated file in your default
+            webbrowser.
+        keep_file : :obj:`bool` = False
+            Determines whether or not to delete the generated file after opening it.
+        """
+        labels = {url_extension: url_extension for url_extension in self._dataset_map}
+        titles = {}
+        for url_extension, dataset_json in self._dataset_map.items():
+            title = dataset_json['title']
+            titles[url_extension] = f"{url_extension}:\n - {title}"
+
+        visualize_graph(tree=self._dataset_tree, titles=titles, labels=labels, hierarchical=hierarchical, filename=filename, show=show, keep_file=keep_file, **kwargs)
 
 
 class Dataset:
@@ -278,11 +446,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -291,7 +459,7 @@ class Dataset:
 
     def regions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
         """
-        Get Census data for regions of United States. See 
+        Get Census data for regions of the United States. See 
         `here <https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf>`_
         for an overview of Census regions.
 
@@ -322,11 +490,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -335,7 +503,7 @@ class Dataset:
 
     def divisions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
         """
-        Get Census data for divisions of United States. See 
+        Get Census data for divisions of the United States. See 
         `here <https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf>`_
         for an overview of Census divisions.
 
@@ -366,11 +534,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -408,11 +576,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -450,11 +618,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -492,11 +660,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -534,11 +702,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -576,11 +744,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -618,11 +786,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -661,11 +829,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -703,11 +871,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -745,11 +913,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -787,11 +955,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -829,11 +997,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -872,11 +1040,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
@@ -923,11 +1091,11 @@ class Dataset:
 
         area_threshold : :obj:`float` = 0.01
             Only geographic areas where (``total area of the geography`` intersected 
-            with the ``within`` area (or areas) / ``total area of the geography``) is greater
-            than ``area_threshold`` will be included. The default of 0.01 ensures that
-            geographic areas that only intersect with the ``within`` area (or areas)
-            on the boundary will not be included (boundary intersections have zero 
-            area).
+            with the ``within`` area (or areas) / ``total area of the geography``) is 
+            greater than ``area_threshold`` will be included. The default of 0.01 
+            ensures that geographic areas that only intersect with the ``within`` area 
+            (or areas) on the boundary will not be included (boundary intersections have 
+            zero area).
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.

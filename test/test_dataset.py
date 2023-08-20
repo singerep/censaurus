@@ -2,7 +2,7 @@ from unittest import TestCase, main
 from pandas import DataFrame
 from geopandas import GeoDataFrame
 
-from censaurus.dataset import ACS, ACS1, ACS3, ACS5, ACSSupplemental, ACSFlows, ACSLanguage, PUMS, CPS, Decennial, DecennialPL, DecennialSF1, DecennialSF2, Economic, EconomicKeyStatistics, Estimates, Projections
+from censaurus.dataset import DatasetExplorer, ACS, ACS1, ACS3, ACS5, ACSSupplemental, ACSFlows, ACSLanguage, PUMS, CPS, Decennial, DecennialPL, DecennialSF1, DecennialSF2, Economic, EconomicKeyStatistics, Estimates, Projections
 from censaurus.geography import UnknownGeography
 
 
@@ -11,6 +11,10 @@ class DatasetTest(TestCase):
     def setUpClass(cls):
         cls.all_dataset_classes = [ACS, ACS1, ACS3, ACS5, ACSSupplemental, ACSFlows, ACSLanguage, PUMS, CPS, Decennial, DecennialPL, DecennialSF1, DecennialSF2, Economic, EconomicKeyStatistics, Estimates, Projections]
         cls.acs1 = ACS1()
+
+    def test_explorer(self):
+        explorer = DatasetExplorer()
+        self.assertEqual(len(explorer.filter_by_term(term=['american community survey', '5']).filter_by_year(start_year=2010, end_year=2020).to_df()), 42)
 
     def test_dataset_inits(self):
         try:
