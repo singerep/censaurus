@@ -21,4 +21,4 @@ Check out the documentation of ``censaurus`` `here <https://censaurus.readthedoc
 
 .. |logo| image:: https://raw.githubusercontent.com/singerep/censaurus/main/docs/source/censaurus_logo.png
     :alt: censaurus logo
-    :scale: 33%
+    :scale: 5%
