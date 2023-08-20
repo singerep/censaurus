@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction &mdash; censaurus  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/censaurus_logo_icon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
+    <link rel="prev" title="Welcome to censaurus!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            censaurus
+              <img src="_static/censaurus_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">censaurus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/singerep/censaurus/blob/main/docs/source/introduction.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">censaurus</span></code> isn’t just a data science tool. It’s a <em>Census-specific data science tool</em>: <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> cleverly takes advantage of the intricacies and design of the Census — all the way down to how the Census names it’s variables — to let users explore, retrieve, and analyze Census data like never before. Here is an overview of some of the features <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> provides to help you streamline your Census data workflows:</p>
+<ul>
+<li><p><strong>Powerful variable filtering:</strong> Like other Census tools, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> lets you do things like filter through available variables using a set of search terms. For example,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">filter_by_term</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">],</span> <span class="n">by</span><span class="o">=</span><span class="s1">&#39;concept&#39;</span><span class="p">)</span>
+<span class="go">VariableCollection of 3417 variables:</span>
+<span class="go">B01001A_001E</span>
+<span class="go">  group: B01001A</span>
+<span class="go">  concept: sex by age (white alone)</span>
+<span class="go">  path: [sex by age (white alone) -&gt; estimate -&gt; total]</span>
+<span class="go">B01001A_002E</span>
+<span class="go">  group: B01001A</span>
+<span class="go">  concept: sex by age (white alone)</span>
+<span class="go">  path: [sex by age (white alone) -&gt; estimate -&gt; total -&gt; male]</span>
+
+<span class="go">...</span>
+
+<span class="go">C27009_020E</span>
+<span class="go">  group: C27009</span>
+<span class="go">  concept: va health care by sex by age</span>
+<span class="go">  path: [va health care by sex by age -&gt; estimate -&gt; total -&gt; female -&gt; 65 years and over -&gt; with va health care]</span>
+<span class="go">C27009_021E</span>
+<span class="go">  group: C27009</span>
+<span class="go">  concept: va health care by sex by age</span>
+<span class="go">  path: [va health care by sex by age -&gt; estimate -&gt; total -&gt; female -&gt; 65 years and over -&gt; no va health care]</span>
+</pre></div>
+</div>
+<p>But unlike other Census tools, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> lets you filter variables <em>relationally</em>. For example,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">children_of</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="s1">&#39;B01001_002E&#39;</span><span class="p">)</span>
+<span class="go">VariableCollection of 23 variables:</span>
+<span class="go">B01001_003E</span>
+<span class="go">  group: B01001</span>
+<span class="go">  concept: sex by age</span>
+<span class="go">  path: [sex by age -&gt; estimate -&gt; total -&gt; male -&gt; under 5 years]</span>
+<span class="go">B01001_004E</span>
+<span class="go">  group: B01001</span>
+<span class="go">  concept: sex by age</span>
+<span class="go">  path: [sex by age -&gt; estimate -&gt; total -&gt; male -&gt; 5 to 9 years]</span>
+
+<span class="go">...</span>
+
+<span class="go">B01001_024E</span>
+<span class="go">  group: B01001</span>
+<span class="go">  concept: sex by age</span>
+<span class="go">  path: [sex by age -&gt; estimate -&gt; total -&gt; male -&gt; 80 to 84 years]</span>
+<span class="go">B01001_025E</span>
+<span class="go">  group: B01001</span>
+<span class="go">  concept: sex by age</span>
+<span class="go">  path: [sex by age -&gt; estimate -&gt; total -&gt; male -&gt; 85 years and over]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is also support for finding the parent, siblings, cousins, descendants, and ancestors of a particular variable. Of course, you can also filter variables by group.</p>
+</div>
+<p>These tools come in particular handy when you want to request some subset of a large group of Census variables. Getting the entire group of variables would be unnecessary and complicate your output, but individually writing out the names of the variables you want would be tedious and error-prone.</p>
+<p>This behavior is available thank to the rich way <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> processes variables. In particular, <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> keeps track of each variable as a <a class="reference internal" href="api.html#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a> object, and stores the set of variables available to a particular dataset in a <a class="reference internal" href="api.html#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableCollection</span></code></a>.</p>
+</li>
+<li><p><strong>Moving beyond the Census geography hierarchy:</strong></p></li>
+<li><p><strong>Native data cleaning tools (renaming, regrouping, recoding):</strong></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to censaurus!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Ethan Singer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

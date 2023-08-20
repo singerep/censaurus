@@ -1,10 +1,17 @@
-========
-Welcome!
-========
+:github_url: https://github.com/peterjc/
+:Version: |version|
+
+=========================
+Welcome to ``censaurus``!
+=========================
+
+Not just another Census data tool. *Seriously.*
+
+``censaurus`` is a comprehensive, feature-rich, and user-oriented Python wrapper around the U.S. Census Bureau's Data and Geographic APIs. 
 
 .. toctree::
-   :hidden:
    :maxdepth: 2
    
+   introduction
    tutorial
    api

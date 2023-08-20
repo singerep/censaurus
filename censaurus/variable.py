@@ -540,14 +540,14 @@ class VariableCollection:
         else:
             return self._mask([])
 
-    def cousins_of(self, variable: Union[str, Variable], include_root: bool = False) -> 'VariableCollection':
+    def siblings_and_cousins_of(self, variable: Union[str, Variable], include_root: bool = False) -> 'VariableCollection':
         """
-        Returns the cousins of the requested variable as a new 
+        Returns the siblings and cousins of the requested variable as a new 
         :class:`.VariableCollection`.
 
         For example, the variable ``B01001_003`` 
-        (path = ``(sex by age, estimate, total, male, under 5 years)``) has 45 cousins,
-        including:
+        (path = ``(sex by age, estimate, total, male, under 5 years)``) has 45 siblings
+        and cousins, including:
 
            + ``B01001_004`` (path = ``(sex by age, estimate, total, male, 6 to 9 years)``).
            + ``B01001_005`` (path = ``(sex by age, estimate, total, male, 10 to 14 years)``).

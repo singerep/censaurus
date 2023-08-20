@@ -4,9 +4,10 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome! &mdash; censaurus  documentation</title>
+  <title>Welcome to censaurus! &mdash; censaurus  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/censaurus_logo_icon.png"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -19,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Tutorial" href="tutorial.html" /> 
+    <link rel="next" title="Introduction" href="introduction.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,7 +33,11 @@
           
           <a href="#" class="icon icon-home">
             censaurus
+              <img src="_static/censaurus_logo.png" class="logo" alt="Logo"/>
           </a>
+              <div class="version">
+                0.5
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -42,6 +47,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a></li>
 </ul>
@@ -60,9 +66,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome!</li>
+      <li class="breadcrumb-item active">Welcome to <code class="docutils literal notranslate"><span class="pre">censaurus</span></code>!</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+              <!-- User defined GitHub URL -->
+              <a href="https://github.com/peterjc/" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -70,9 +77,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome">
-<h1>Welcome!<a class="headerlink" href="#welcome" title="Permalink to this heading"></a></h1>
+  <section id="welcome-to-censaurus">
+<h1>Welcome to <code class="docutils literal notranslate"><span class="pre">censaurus</span></code>!<a class="headerlink" href="#welcome-to-censaurus" title="Permalink to this heading"></a></h1>
+<p>Not just another Census data tool. <em>Seriously.</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">censaurus</span></code> is a comprehensive, feature-rich, and user-oriented Python wrapper around the U.S. Census Bureau’s Data and Geographic APIs.</p>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#choosing-a-dataset">Choosing a dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#finding-relevant-variables">Finding relevant variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#picking-a-geography-hierarchy">Picking a geography hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#requesting-data">Requesting data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#cleaning-data">Cleaning data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#plotting-data">Plotting data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-censaurus.dataset">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-censaurus.variable">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-censaurus.geography">Geography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-censaurus.census_accessors">Custom <code class="docutils literal notranslate"><span class="pre">pandas</span></code> functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-censaurus.tiger">TIGER and Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-censaurus.rename">Renaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-censaurus.regroup">Regrouping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-censaurus.recode">Recoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-censaurus.api">Census and TIGERWeb APIs</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </section>
 
@@ -80,7 +113,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="introduction.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

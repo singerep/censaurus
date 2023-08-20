@@ -7,6 +7,7 @@
   <title>API documentation &mdash; censaurus  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/censaurus_logo_icon.png"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -32,7 +33,11 @@
           
           <a href="index.html" class="icon icon-home">
             censaurus
+              <img src="_static/censaurus_logo.png" class="logo" alt="Logo"/>
           </a>
+              <div class="version">
+                0.5
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -42,6 +47,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-censaurus.dataset">Datasets</a></li>
@@ -73,7 +79,7 @@
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">API documentation</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+              <a href="https://github.com/singerep/censaurus/blob/main/docs/source/api.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -1481,13 +1487,13 @@ returned <a class="reference internal" href="#censaurus.variable.VariableCollect
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="censaurus.variable.VariableCollection.cousins_of">
-<span class="sig-name descname"><span class="pre">cousins_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a></span></span><a class="headerlink" href="#censaurus.variable.VariableCollection.cousins_of" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the cousins of the requested variable as a new
+<dt class="sig sig-object py" id="censaurus.variable.VariableCollection.siblings_and_cousins_of">
+<span class="sig-name descname"><span class="pre">siblings_and_cousins_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a></span></span><a class="headerlink" href="#censaurus.variable.VariableCollection.siblings_and_cousins_of" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the siblings and cousins of the requested variable as a new
 <a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableCollection</span></code></a>.</p>
 <p>For example, the variable <code class="docutils literal notranslate"><span class="pre">B01001_003</span></code>
-(path = <code class="docutils literal notranslate"><span class="pre">(sex</span> <span class="pre">by</span> <span class="pre">age,</span> <span class="pre">estimate,</span> <span class="pre">total,</span> <span class="pre">male,</span> <span class="pre">under</span> <span class="pre">5</span> <span class="pre">years)</span></code>) has 45 cousins,
-including:</p>
+(path = <code class="docutils literal notranslate"><span class="pre">(sex</span> <span class="pre">by</span> <span class="pre">age,</span> <span class="pre">estimate,</span> <span class="pre">total,</span> <span class="pre">male,</span> <span class="pre">under</span> <span class="pre">5</span> <span class="pre">years)</span></code>) has 45 siblings
+and cousins, including:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">B01001_004</span></code> (path = <code class="docutils literal notranslate"><span class="pre">(sex</span> <span class="pre">by</span> <span class="pre">age,</span> <span class="pre">estimate,</span> <span class="pre">total,</span> <span class="pre">male,</span> <span class="pre">6</span> <span class="pre">to</span> <span class="pre">9</span> <span class="pre">years)</span></code>).</p></li>
