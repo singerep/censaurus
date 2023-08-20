@@ -1,6 +1,3 @@
-:github_url: https://github.com/peterjc/
-:Version: |version|
-
 =========================
 Welcome to ``censaurus``!
 =========================
