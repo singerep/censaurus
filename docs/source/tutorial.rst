@@ -2,7 +2,7 @@
 Tutorial
 ========
 
-The goal of this tutorial is to create a detailed `choropleth map <https://en.wikipedia.org/wiki/Choropleth_map>`_ of the Northeast Region of the United States, where geographic areas are colored by the proportion of the men in those areas who are 65 years or older. In doing so, this tutorial will walk you through all of the major components of a ``censaurus`` workflow. The major steps highlighted here are:
+This tutorial will walk you through all of the major components of a ``censaurus`` workflow. The major steps highlighted are:
 
    + :ref:`Choosing a dataset`
    + :ref:`Finding relevant variables`
@@ -10,7 +10,9 @@ The goal of this tutorial is to create a detailed `choropleth map <https://en.wi
    + :ref:`Requesting data`
    + :ref:`Cleaning data`
 
-For a more in-depth review of the capabilities of ``censaurus``, check out the API documentation.
+The goal of this tutorial is to create a detailed `choropleth map <https://en.wikipedia.org/wiki/Choropleth_map>`_ of the Northeast Region of the United States, where geographic areas are colored by the proportion of the men in those areas who are 65 years or older.
+
+Let's begin!
 
 Choosing a dataset
 ------------------
@@ -50,9 +52,9 @@ Choosing a dataset
 
 ``censaurus`` also supports all other datasets available on the Census API (see the Census's `Available APIs page <https://www.census.gov/data/developers/data-sets.html>`_ for a full list). To request data from a dataset not natively supported by ``censaurus``, simply instantiate the base :class:`.Dataset` class with the necessary parameters.
 
-Each dataset has its own use case. For example, the Decennial Census is typically used in studies of apportionment and representation and is only carried out once every 10 years. The Current Population Survey, on the other hand, is a monthly survey with an emphasis on employment. If you can't decide what dataset is right for you, check out the Census's `programs and surveys page page <https://www.census.gov/programs-surveys.html>`_ for an overview of each dataset.
+Each dataset has its own use case. For example, the Decennial Census is typically used in studies of apportionment and representation and is only carried out once every 10 years. The Current Population Survey, on the other hand, is a monthly survey with an emphasis on employment. If you can't decide what dataset is right for you, check out the Census's `programs and surveys page <https://www.census.gov/programs-surveys.html>`_ for an overview of each dataset.
 
-For our particular use case — mapping the age-breakdown of Census tracts in the U.S. — we'll use the American Community Survey 5-Year Data because it has the demographic data we need and because it has more granular geographic coverage than the 1- and 3-Year ACS datasets.
+For our particular use case — mapping the age-breakdown of Census tracts in the U.S. — we'll use the American Community Survey 5-Year Data because it has the demographic variables we need and because it has more granular geographic coverage than the 1- and 3-Year ACS datasets.
 
 Therefore, our workflow starts by initializing an :class:`.ACS5` object (we can use the default parameters).
 
@@ -218,7 +220,7 @@ Let's check out the available geographies for our dataset using the :attr:`.Data
    
    [87 rows x 3 columns]
 
-We can also explore supported geographies the same way we explore variables, this time with a hierarchical view:
+We can also explore supported geographies the same way we explore variables. This time, let's try out a hierarchical view:
 
 .. code-block:: python
 
@@ -229,7 +231,7 @@ We can also explore supported geographies the same way we explore variables, thi
 
 The relationships between nodes here is similar to that of variables in the previous network visualization. Geographies are connected when one geography is a *geographic subset* of another. For example, the Census allows you to query counties *within* states, so ``state`` and ``county`` are connected (the former is the parent of the latter).
 
-Because we want to make a detailed plot, we probably don't want to go with states or counties (these areas are too big). A good middle ground between detail and avoiding clutter is Census tracts. There are around of 84,000 Census tracts in the country; on average, tracts have about 4000 people. Let's see if that geography hierarchy is available for our dataset.
+Because we want to make a detailed plot, we probably don't want to go with states or counties (these areas are too big). A good middle ground between detail and avoiding clutter is Census tracts. There are around 84,000 Census tracts in the country; on average, tracts have about 4000 people. Let's see if that geography hierarchy is available for our dataset.
 
 .. code-block:: python
 
@@ -312,7 +314,7 @@ And with that, we're good to go! There are some other parameters — namely, ``g
 Looking good! We got the data we wanted for all Census tracts in the Northeast region of the United States.
 
 .. note::
-   You may have noticed that tracts within regions is *not* a supported geographic hierarchy for this dataset — as far as I'm aware, it's not a supported hierarchy for *any* Census dataset. But thanks to ``censaurus``, that's totally okay. Using the ``within`` parameter, you can get *any* geographic level within *any other* geographic level. Counties within a state? Sure, that's easy (and already supported by the Census). But metropolitan statistical areas within a Congressional Districts? That's just as easy, even though it's *not* supported by the Census! Thanks to how ``censaurus`` internally handles geometry, you can even request block-level data for the *entire United States* (it just might take a few minutes) without any extra work! Go wild!
+   You may have noticed that tracts within regions is *not* a supported geographic hierarchy for this dataset — as far as I'm aware, it's not a supported hierarchy for *any* Census dataset. But thanks to ``censaurus``, that's totally okay. Using the ``within`` parameter, you can get *any* geographic level within *any other* geographic level. Counties within a state? Sure, that's easy (and already supported by the Census). But metropolitan statistical areas within Congressional Districts? That's just as easy, even though it's *not* supported by the Census! Thanks to how ``censaurus`` internally handles geometry, you can even request block-level data for the *entire United States* (it just might take a few minutes) without any extra work! Go wild!
 
    To read more about how this works, check out.
 
@@ -413,4 +415,4 @@ Because we set ``return_geometry`` to ``True``, ``censaurus`` automatically give
 
 And that's it! We have our plot of Census tracts in the Northeast Region of the United States, colored by the proportion of their male residents who are 65 years old or older. There are all sorts of other customization to clean up our visualization, but those are out of the scope of this tutorial.
 
-Please check out the documentation to answer any further questions!
+Please check out the `detailed documentation <https://censaurus.readthedocs.io/en/latest/api.html>`_ to answer any further questions!

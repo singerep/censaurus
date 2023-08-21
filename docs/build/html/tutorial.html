@@ -85,7 +85,7 @@
              
   <section id="tutorial">
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this heading"></a></h1>
-<p>The goal of this tutorial is to create a detailed <a class="reference external" href="https://en.wikipedia.org/wiki/Choropleth_map">choropleth map</a> of the Northeast Region of the United States, where geographic areas are colored by the proportion of the men in those areas who are 65 years or older. In doing so, this tutorial will walk you through all of the major components of a <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> workflow. The major steps highlighted here are:</p>
+<p>This tutorial will walk you through all of the major components of a <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> workflow. The major steps highlighted are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><a class="reference internal" href="#choosing-a-dataset"><span class="std std-ref">Choosing a dataset</span></a></p></li>
@@ -95,7 +95,8 @@
 <li><p><a class="reference internal" href="#cleaning-data"><span class="std std-ref">Cleaning data</span></a></p></li>
 </ul>
 </div></blockquote>
-<p>For a more in-depth review of the capabilities of <code class="docutils literal notranslate"><span class="pre">censaurus</span></code>, check out the API documentation.</p>
+<p>The goal of this tutorial is to create a detailed <a class="reference external" href="https://en.wikipedia.org/wiki/Choropleth_map">choropleth map</a> of the Northeast Region of the United States, where geographic areas are colored by the proportion of the men in those areas who are 65 years or older.</p>
+<p>Let’s begin!</p>
 <section id="choosing-a-dataset">
 <h2>Choosing a dataset<a class="headerlink" href="#choosing-a-dataset" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">censaurus</span></code> has built in support for a number of popular Census datasets, including:</p>
@@ -140,8 +141,8 @@
 <p>Each of these datasets has its own set of extra parameters. For example, initializing the American Community Survey 1-Year Data class (<a class="reference internal" href="api.html#censaurus.dataset.ACS1" title="censaurus.dataset.ACS1"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACS1</span></code></a>) requires a year (defaults to <code class="docutils literal notranslate"><span class="pre">2021</span></code>) and an extension (defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>). In the <a class="reference internal" href="api.html#censaurus.dataset.ACS1" title="censaurus.dataset.ACS1"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACS1</span></code></a> case, the extension controls what “table” you get: <code class="docutils literal notranslate"><span class="pre">None</span></code> indicates the <code class="docutils literal notranslate"><span class="pre">Detailed</span> <span class="pre">Tables</span></code>, while <code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">profile</span></code>, <code class="docutils literal notranslate"><span class="pre">cprofile</span></code>, and <code class="docutils literal notranslate"><span class="pre">spp</span></code> indicate various other tables. Please consult the documentation for your particular dataset (and potentially the Census’s <a class="reference external" href="https://www.census.gov/data/developers/data-sets.html">Available APIs page</a>) to see what parameters are required and how they will impact your request.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">censaurus</span></code> also supports all other datasets available on the Census API (see the Census’s <a class="reference external" href="https://www.census.gov/data/developers/data-sets.html">Available APIs page</a> for a full list). To request data from a dataset not natively supported by <code class="docutils literal notranslate"><span class="pre">censaurus</span></code>, simply instantiate the base <a class="reference internal" href="api.html#censaurus.dataset.Dataset" title="censaurus.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> class with the necessary parameters.</p>
-<p>Each dataset has its own use case. For example, the Decennial Census is typically used in studies of apportionment and representation and is only carried out once every 10 years. The Current Population Survey, on the other hand, is a monthly survey with an emphasis on employment. If you can’t decide what dataset is right for you, check out the Census’s <a class="reference external" href="https://www.census.gov/programs-surveys.html">programs and surveys page page</a> for an overview of each dataset.</p>
-<p>For our particular use case — mapping the age-breakdown of Census tracts in the U.S. — we’ll use the American Community Survey 5-Year Data because it has the demographic data we need and because it has more granular geographic coverage than the 1- and 3-Year ACS datasets.</p>
+<p>Each dataset has its own use case. For example, the Decennial Census is typically used in studies of apportionment and representation and is only carried out once every 10 years. The Current Population Survey, on the other hand, is a monthly survey with an emphasis on employment. If you can’t decide what dataset is right for you, check out the Census’s <a class="reference external" href="https://www.census.gov/programs-surveys.html">programs and surveys page</a> for an overview of each dataset.</p>
+<p>For our particular use case — mapping the age-breakdown of Census tracts in the U.S. — we’ll use the American Community Survey 5-Year Data because it has the demographic variables we need and because it has more granular geographic coverage than the 1- and 3-Year ACS datasets.</p>
 <p>Therefore, our workflow starts by initializing an <a class="reference internal" href="api.html#censaurus.dataset.ACS5" title="censaurus.dataset.ACS5"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACS5</span></code></a> object (we can use the default parameters).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">censaurus</span> <span class="kn">import</span> <span class="n">ACS5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span> <span class="o">=</span> <span class="n">ACS5</span><span class="p">()</span>
@@ -438,7 +439,7 @@
 <span class="go">[87 rows x 3 columns]</span>
 </pre></div>
 </div>
-<p>We can also explore supported geographies the same way we explore variables, this time with a hierarchical view:</p>
+<p>We can also explore supported geographies the same way we explore variables. This time, let’s try out a hierarchical view:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span><span class="o">.</span><span class="n">geographies</span><span class="o">.</span><span class="n">visualize</span><span class="p">(</span><span class="n">hierarchical</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -610,7 +611,7 @@
         </script>
     </body>
 </html><p>The relationships between nodes here is similar to that of variables in the previous network visualization. Geographies are connected when one geography is a <em>geographic subset</em> of another. For example, the Census allows you to query counties <em>within</em> states, so <code class="docutils literal notranslate"><span class="pre">state</span></code> and <code class="docutils literal notranslate"><span class="pre">county</span></code> are connected (the former is the parent of the latter).</p>
-<p>Because we want to make a detailed plot, we probably don’t want to go with states or counties (these areas are too big). A good middle ground between detail and avoiding clutter is Census tracts. There are around of 84,000 Census tracts in the country; on average, tracts have about 4000 people. Let’s see if that geography hierarchy is available for our dataset.</p>
+<p>Because we want to make a detailed plot, we probably don’t want to go with states or counties (these areas are too big). A good middle ground between detail and avoiding clutter is Census tracts. There are around 84,000 Census tracts in the country; on average, tracts have about 4000 people. Let’s see if that geography hierarchy is available for our dataset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">acs</span><span class="o">.</span><span class="n">geographies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tract&quot;</span><span class="p">)</span>
 <span class="go">tract (140)</span>
 <span class="go">  requires: [&#39;state&#39;, &#39;county&#39;]</span>
@@ -680,7 +681,7 @@
 <p>Looking good! We got the data we wanted for all Census tracts in the Northeast region of the United States.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You may have noticed that tracts within regions is <em>not</em> a supported geographic hierarchy for this dataset — as far as I’m aware, it’s not a supported hierarchy for <em>any</em> Census dataset. But thanks to <code class="docutils literal notranslate"><span class="pre">censaurus</span></code>, that’s totally okay. Using the <code class="docutils literal notranslate"><span class="pre">within</span></code> parameter, you can get <em>any</em> geographic level within <em>any other</em> geographic level. Counties within a state? Sure, that’s easy (and already supported by the Census). But metropolitan statistical areas within a Congressional Districts? That’s just as easy, even though it’s <em>not</em> supported by the Census! Thanks to how <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> internally handles geometry, you can even request block-level data for the <em>entire United States</em> (it just might take a few minutes) without any extra work! Go wild!</p>
+<p>You may have noticed that tracts within regions is <em>not</em> a supported geographic hierarchy for this dataset — as far as I’m aware, it’s not a supported hierarchy for <em>any</em> Census dataset. But thanks to <code class="docutils literal notranslate"><span class="pre">censaurus</span></code>, that’s totally okay. Using the <code class="docutils literal notranslate"><span class="pre">within</span></code> parameter, you can get <em>any</em> geographic level within <em>any other</em> geographic level. Counties within a state? Sure, that’s easy (and already supported by the Census). But metropolitan statistical areas within Congressional Districts? That’s just as easy, even though it’s <em>not</em> supported by the Census! Thanks to how <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> internally handles geometry, you can even request block-level data for the <em>entire United States</em> (it just might take a few minutes) without any extra work! Go wild!</p>
 <p>To read more about how this works, check out.</p>
 </div>
 <p>Finally, let’s try flipping the <code class="docutils literal notranslate"><span class="pre">return_geometry</span></code> flag to <code class="docutils literal notranslate"><span class="pre">True</span></code> because we’ll need geometry to make maps.</p>
@@ -766,7 +767,7 @@
 </div>
 <img alt="_images/northeast_65+.png" src="_images/northeast_65+.png" />
 <p>And that’s it! We have our plot of Census tracts in the Northeast Region of the United States, colored by the proportion of their male residents who are 65 years old or older. There are all sorts of other customization to clean up our visualization, but those are out of the scope of this tutorial.</p>
-<p>Please check out the documentation to answer any further questions!</p>
+<p>Please check out the <a class="reference external" href="https://censaurus.readthedocs.io/en/latest/api.html">detailed documentation</a> to answer any further questions!</p>
 </section>
 </section>
 

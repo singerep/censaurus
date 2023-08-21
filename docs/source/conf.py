@@ -16,7 +16,7 @@ author = 'Ethan Singer'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.napoleon', 'sphinx.ext.autosectionlabel']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.napoleon', 'sphinx.ext.autosectionlabel', 'sphinx.ext.linkcode']
 pygments_style = 'sphinx'
 
 templates_path = ['_templates']
@@ -45,4 +45,9 @@ html_css_files = [
     'css/custom.css',
 ]
 
-# github_url = "https://github.companyname.com/xyz"
+def linkcode_resolve(domain, info):
+    if domain != 'py':
+        return None
+
+    module = info['module'].replace('.', '/')    
+    return f"https://github.com/singerep/censaurus/blob/main/{module}.py"

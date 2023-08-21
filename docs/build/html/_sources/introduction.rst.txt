@@ -35,14 +35,14 @@ Introduction
 
   In addition to these built-in datasets, ``censaurus`` also supports all other Census API datasets through the generic :class:`.Dataset` class. To filter and find available datasets that meet your requirements, you can use the :class:`.DatasetExplorer` class, which comes with tools like :meth:`.DatasetExplorer.filter_by_term` and :meth:`.DatasetExplorer.filter_by_year`.
 
-+ **Powerful variable filtering:** Utilizing the relationships between variables, ``censaurus`` grants users full control over the variable selection process. Users can easily select the exact set of variables they want, eliminating the need for the tedious and error-prone task of selecting and listing variables individually. For example,
++ **Powerful variable filtering:** Utilizing the relationships between variables, ``censaurus`` grants users full control over the variable selection process. Users can easily select the exact set of variables they want, eliminating the need for the tedious and error-prone task of selecting and listing variables individually. Here's an example that uses the parent/child relationship between variables:
 
   .. code-block:: python  
 
      >>> from censaurus.dataset import ACS5
 
      >>> acs = ACS5()
-     # B01001_002E is the [sex by age -> total -> male] variable
+     >>> # B01001_002E is the [sex by age -> total -> male] variable
      >>> acs.variables.children_of(variable='B01001_002E')
      VariableCollection of 23 variables:
      B01001_003E
@@ -70,7 +70,7 @@ Introduction
 
   This behavior is available thanks to the rich way ``censaurus`` processes variables. In particular, ``censaurus`` keeps track of each variable as a :class:`.Variable` object, and stores the set of variables available to a particular dataset in a :class:`.VariableCollection`.
 
-  Of course, like other Census tools, ``censaurus`` also has support for more basic variable filtering. For example,
+  Of course, like other Census tools, ``censaurus`` also has support for more basic variable filtering. Here is an example where variables are filtered based on specific search terms:
 
   .. code-block:: python  
 
@@ -99,7 +99,7 @@ Introduction
        concept: va health care by sex by age
        path: [va health care by sex by age -> estimate -> total -> female -> 65 years and over -> no va health care]
 
-+ **Flexible geographic support:** ``censaurus`` lets users move beyond the Census' strict geography hierarchy. For example, within the American Community Survey, data at the ``block group``-level is traditionally only available within a specified ``state``, ``county``, or Census ``tract``. ``censaurus``, on the other hand, lets users request ``block group``-level data within *any possible geographic area*, such as ``block group``-level data within a Census ``place``:
++ **Flexible geographic support:** ``censaurus`` lets users circumvent the rigid system of geographic specification typically enforced by the Census. As an example, within the American Community Survey, data at the ``block group``-level is only available within a specified ``state``, ``county``, or Census ``tract``. ``censaurus``, on the other hand, lets users request ``block group``-level data within *any possible geographic area*, such as ``block group``-level data within a Census ``place``:
 
   .. code-block:: python
      
@@ -124,7 +124,7 @@ Introduction
      [2357 rows x 6 columns]
 
   .. note::
-     You can even geographically subset your data with a *list* of geographic areas. This is particularly useful for comparisons. For example,
+     You can even geographically subset your data with a *list* of geographic areas. This is particularly useful for comparisons. For example, you could request state level data within two particular Census divisions:
 
      .. code-block:: python
 
@@ -140,9 +140,9 @@ Introduction
 
      >>> from censaurus.dataset import ACS5
 
+     >>> # go from this
      >>> acs = ACS5()
      >>> counties = acs.counties(variables=acs.variables.filter_by_group('B01001'))
-     >>> # go from this
      >>> counties
            B01001_001E  B01001_002E  B01001_003E  B01001_004E  ...          GEO_ID                              NAME  state  county
      0           58239        28206         1783         1959  ...  0500000US01001           Autauga County, Alabama     01     001
@@ -161,8 +161,8 @@ Introduction
 
      >>> from censaurus.renamer import SIMPLE_RENAMER
 
-     >>> counties = SIMPLE_RENAMER.rename(data=counties)
      >>> # to this
+     >>> counties = SIMPLE_RENAMER.rename(data=counties)
      >>> counties
            sex by age|total  sex by age|total|male  sex by age|total|male|0-5  ...                              NAME  state  county
      0                58239                  28206                       1783  ...           Autauga County, Alabama     01     001
@@ -182,17 +182,17 @@ Introduction
   .. note::
      The :obj:`.SIMPLE_RENAMER` can be customized to meet your needs: you can change the separator, add prefixes for specific groups, or add custom renaming functions. You can also create your own renamer from scratch using the :class:`.Renamer` class.
 
-  Next, if the Census data you requested is too granular for your needs, you can use the regrouping tools built into ``censaurus`` to automatically aggregate your data into new, custom buckets. For example,
+  Next, if the Census data you requested is too granular for your needs, you can use the regrouping tools built into ``censaurus`` to automatically aggregate your data into new, custom buckets. Here is an example where the fine-grained Census age groups are collapsed into more general ones:
 
   .. code-block:: python
 
      >>> from censaurus.dataset import ACS5
      >>> from censaurus.renamer import SIMPLE_RENAMER
 
+     >>> # go from this
      >>> acs = ACS5()
      >>> counties = acs.counties(variables=acs.variables.filter_by_group('B01001'))
      >>> counties = SIMPLE_RENAMER.rename(data=counties)
-     >>> # go from this
      >>> counties.columns
      Index(['sex by age|total', 'sex by age|total|male',
             'sex by age|total|male|0-5', 'sex by age|total|male|5-9',
@@ -222,10 +222,11 @@ Introduction
            dtype='object')
 
      >>> from censaurus.regroup import AgeRegrouper
+     
+     >>> # to this
      >>> regrouper = AgeRegrouper(brackets=["0-17", "18-29", "30-49", "50-64", "65+"])
      >>> counties = regrouper.regroup(data=counties)
      >>> counties = renamer.renamer(data=counties)
-     >>> # to this
      >>> counties.columns
      Index(['sex by age|total', 'sex by age|total|male',
             'sex by age|total|male|0-17', 'sex by age|total|male|18-29',
@@ -242,3 +243,5 @@ Introduction
   Finally, the :class:`.Recoder` class allows user to recode state names and identifiers to and from various formats (FIPS, GNIS, etc.).
 
   ``censaurus`` adds custom :obj:`pandas.DataFrame` and :obj:`pandas.Series` accessors to make this renaming, regrouping, and recoding possible.
+
+For an example of a full walkthrough using these tools, check out the `tutorial <https://censaurus.readthedocs.io/en/latest/tutorial.html>`_ page.
