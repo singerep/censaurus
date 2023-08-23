@@ -9,8 +9,6 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('../..'))
 
-import censaurus
-
 project = 'censaurus'
 copyright = '2023, Ethan Singer'
 author = 'Ethan Singer'

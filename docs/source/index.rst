@@ -9,6 +9,7 @@ Not just another Census data tool. *Seriously.*
 .. toctree::
    :maxdepth: 2
    
+   installation
    introduction
    tutorial
    api

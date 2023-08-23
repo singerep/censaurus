@@ -1,7 +1,39 @@
 Metadata-Version: 2.1
 Name: censaurus
-Version: 0.0.1
-Summary: A Python library for downloading and managing Census data
+Version: 0.1.dev2
+Summary: A comprehensive, feature-rich, and user-oriented Python package that wraps the U.S. Census Bureau's Data and Geographic APIs
 Author: Ethan Singer
-Author-email: singerep@bu.edu
-Description-Content-Type: text/markdown
+Author-email: Ethan Singer <singerep@bu.edu>
+Project-URL: Homepage, https://github.com/singerep/censaurus
+Project-URL: Documentation, https://censaurus.readthedocs.io/en/latest/
+Project-URL: Issues, https://github.com/singerep/censaurus/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/x-rst
+License-File: LICENSE.txt
+
+Censaurus
+=========
+
+|docs|
+
+|logo|
+
+Not just another Census data tool. *Seriously.*
+
+``censaurus`` is a comprehensive, feature-rich, and user-oriented Python package that wraps the U.S. Census Bureau's Data and Geographic APIs.
+
+Documentation
+-------------
+
+Check out the documentation of ``censaurus`` `here <https://censaurus.readthedocs.io/en/latest/index.html>`_.
+
+.. |docs| image:: https://readthedocs.org/projects/censaurus/badge/?version=latest
+    :alt: Documentation Status
+    :scale: 100%
+    :target: https://docs.readthedocs.io/en/latest/?badge=latest
+
+.. |logo| image:: https://raw.githubusercontent.com/singerep/censaurus/main/docs/source/censaurus_logo.png
+    :alt: censaurus logo

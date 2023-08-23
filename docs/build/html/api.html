@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API documentation &mdash; censaurus  documentation</title>
+  <title>API documentation &mdash; censaurus 0.1.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -36,6 +36,9 @@
             censaurus
               <img src="_static/censaurus_logo.png" class="logo" alt="Logo"/>
           </a>
+              <div class="version">
+                0.1.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -45,6 +48,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API documentation</a><ul>
@@ -188,7 +192,7 @@ webbrowser.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.Dataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url_extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.Dataset" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url_extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.Dataset" title="Permalink to this definition"></a></dt>
 <dd><p>A base class to represent a Census dataset (product). This class <strong>should not</strong>
 be used if the dataset you desire already has its own <a class="reference internal" href="#censaurus.dataset.Dataset" title="censaurus.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> subclass.
 The following datasets <strong>do</strong> have <a class="reference internal" href="#censaurus.dataset.Dataset" title="censaurus.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> subclasses, and so you should
@@ -237,6 +241,9 @@ elements. For example, <code class="docutils literal notranslate"><span class="p
 Community Survey 1-Year Estimates published in 2021.</p></li>
 <li><p><strong>map_service</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘tigerWMS_Current’) – The name of the TIGERWeb mapservice to use as the geographic basis for this
 dataset. Defaults to the current mapservice.</p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p></li>
 </ul>
 </dd>
 </dl>
@@ -822,7 +829,7 @@ zero area).</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.ACS">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'acs5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACS" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'acs5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACS" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the American Community Survey. Generally, there is no need to instantiate
 an object of this class: you should use one of the subclasses instead. The available
 subclasses are:</p>
@@ -867,6 +874,10 @@ Example extension include:</p>
 <p>However, the available extensions depend on the product used. The extensions
 above are for the American Community Survey 1-Year Estimates.</p>
 </p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -874,7 +885,7 @@ above are for the American Community Survey 1-Year Estimates.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.ACS1">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACS1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACS1" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACS1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACS1" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the American Community Survey 1-Year Estimates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -892,6 +903,10 @@ which maps to Detailed Tables. Other available extensions are:</p>
 </ul>
 </div></blockquote>
 </p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -899,7 +914,7 @@ which maps to Detailed Tables. Other available extensions are:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.ACS3">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACS3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2013</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACS3" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACS3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2013</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACS3" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the American Community Survey 3-Year Estimates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -917,6 +932,10 @@ which maps to Detailed Tables. Other available extensions are:</p>
 </ul>
 </div></blockquote>
 </p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -924,7 +943,7 @@ which maps to Detailed Tables. Other available extensions are:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.ACS5">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACS5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACS5" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACS5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACS5" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the American Community Survey 5-Year Estimates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -944,6 +963,10 @@ which maps to Detailed Tables. Other available extensions are:</p>
 </ul>
 </div></blockquote>
 </p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -951,37 +974,57 @@ which maps to Detailed Tables. Other available extensions are:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.ACSSupplemental">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACSSupplemental</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACSSupplemental" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACSSupplemental</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACSSupplemental" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the American Community Survey 1-Year Supplemental Data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2021) – The year to get data from. Selected ACS Supplement data is available from 2014 to
-2021.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2021) – The year to get data from. Selected ACS Supplement data is available from 2014 to
+2021.</p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.ACSFlows">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACSFlows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACSFlows" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACSFlows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACSFlows" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the American Community Survey Migration Flows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2020) – The year to get data from. ACS Flows data is available from 2010 to
-2020.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2020) – The year to get data from. ACS Flows data is available from 2010 to
+2020.</p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.ACSLanguage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACSLanguage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACSLanguage" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">ACSLanguage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.ACSLanguage" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the American Community Survey Language Statistics (2013).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.PUMS">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">PUMS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">puerto_rico</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.PUMS" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">PUMS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">puerto_rico</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.PUMS" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the Public Use Microdata Sample.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -990,6 +1033,10 @@ which maps to Detailed Tables. Other available extensions are:</p>
 2021.</p></li>
 <li><p><strong>duration</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 5) – THe duration of the sample. Indicates whether to get 5 or 1 year estimates.</p></li>
 <li><p><strong>puerto_rico</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not to get data from the PUMS Puerto Rico survey.</p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -997,14 +1044,22 @@ which maps to Detailed Tables. Other available extensions are:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.CPS">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">CPS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2023</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'jan'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'basic'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.CPS" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">CPS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2023</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'jan'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'basic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.CPS" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the Current Population Survey.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2023) – The year to get data from. Selected CPS data is available from 1989 to 2023.</p></li>
-<li><p><strong>month</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘jan’) – The month to get data from. Should be three letters long (jan, feb, mar, etc.).
-Not all months are available every year and for every product.</p></li>
+<li><p><strong>month</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘jan’) – <p>The month to get data from. Should be one of the following formats:</p>
+<blockquote>
+<div><ul>
+<li><p>Full month name (January, February, etc.). Capitalization does not matter.</p></li>
+<li><p>3-letter abbreviated month name (Jan, Feb, etc.). Capitalization does not matter.</p></li>
+<li><p>An integer between 1-12.</p></li>
+</ul>
+</div></blockquote>
+<p>Not all months are available every year and for every product.</p>
+</p></li>
 <li><p><strong>product</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘basic’) – <p>The specific Current Population Survey product to get data from. Example
 products include:</p>
 <blockquote>
@@ -1019,6 +1074,10 @@ products include:</p>
 </div></blockquote>
 <p>However, the available products depend on the year and month requested.</p>
 </p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -1026,7 +1085,7 @@ products include:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.Decennial">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Decennial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pl'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.Decennial" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Decennial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.Decennial" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the Decennial Census. This class <strong>should not</strong> be used if the dataset you
 desire already had its own <a class="reference internal" href="#censaurus.dataset.Dataset" title="censaurus.dataset.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> subclass that inherits from
 <a class="reference internal" href="#censaurus.dataset.Decennial" title="censaurus.dataset.Decennial"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decennial</span></code></a>. The available subclasses are:</p>
@@ -1058,6 +1117,10 @@ include:</p>
 above are for 2020 Decennial Census. More products are available for the 2010
 and 2000 Decennial Censuses.</p>
 </p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -1065,41 +1128,59 @@ and 2000 Decennial Censuses.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.DecennialPL">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">DecennialPL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.DecennialPL" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">DecennialPL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.DecennialPL" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the Decennial Census Redistricting Data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2020) – The year to get data from. Redistricting data is available in 2000, 2010, or
-2020.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2020) – The year to get data from. Redistricting data is available in 2000, 2010, or
+2020.</p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.DecennialSF1">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">DecennialSF1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2010</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.DecennialSF1" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">DecennialSF1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2010</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.DecennialSF1" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the Decennial Census Summary File 1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2010) – The year to get data from. SF1 data is available in 2000 or 2010.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2010) – The year to get data from. SF1 data is available in 2000 or 2010.</p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.DecennialSF2">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">DecennialSF2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2010</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.DecennialSF2" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">DecennialSF2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2010</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.DecennialSF2" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the Decennial Census Summary File 2.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2010) – The year to get data from. SF2 data is available in 2000 or 2010.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2010) – The year to get data from. SF2 data is available in 2000 or 2010.</p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.Economic">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Economic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2017</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ecnbasic'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.Economic" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Economic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2017</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ecnbasic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.Economic" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the Economic Census. This class <strong>should only</strong> be used if you desire
 something <strong>other</strong> than the Census’s Economy-Wide Key Statistics. If you do in
 fact want key statistics, you should use the <a class="reference internal" href="#censaurus.dataset.EconomicKeyStatistics" title="censaurus.dataset.EconomicKeyStatistics"><code class="xref py py-class docutils literal notranslate"><span class="pre">EconomicKeyStatistics</span></code></a>
@@ -1119,6 +1200,10 @@ include:</p>
 </ul>
 </div></blockquote>
 </p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -1126,19 +1211,25 @@ include:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.EconomicKeyStatistics">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">EconomicKeyStatistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2017</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.EconomicKeyStatistics" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">EconomicKeyStatistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2017</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.EconomicKeyStatistics" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the Economic Census Economy-Wide Key Statistics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2017) – The year to get data from. EWKS data is available in 2002, 2007, 2012, or
-2017.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2017) – The year to get data from. EWKS data is available in 2002, 2007, 2012, or
+2017.</p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.Estimates">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Estimates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monthly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.Estimates" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Estimates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monthly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.Estimates" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the Census Population Estimates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1146,6 +1237,10 @@ include:</p>
 <li><p><strong>year</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = 2021) – The year to get data from. Selected Population Estimates data is available from
 2013 to 2021.</p></li>
 <li><p><strong>monthly</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not to get yearly or monthly population estimates.</p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -1153,7 +1248,7 @@ include:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.dataset.Projections">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Projections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2017</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pop'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.Projections" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.dataset.</span></span><span class="sig-name descname"><span class="pre">Projections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2017</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pop'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">census_api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.Projections" title="Permalink to this definition"></a></dt>
 <dd><p>Data from the Census Population Projections.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1174,6 +1269,10 @@ extensions include:</p>
 </div></blockquote>
 <p>However, the available extensions depend on the year requested. The extensions
 above are for 2017 Population Projections.</p>
+</p></li>
+<li><p><strong>census_api_key</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – <p>A Census API key. Can be obtained
+<a class="reference external" href="https://api.census.gov/data/key_signup.html">here</a>. Not necessary unless you
+are making more than 500 requests per day.</p>
 </p></li>
 </ul>
 </dd>
