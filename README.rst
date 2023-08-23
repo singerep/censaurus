@@ -1,8 +1,7 @@
 Censaurus
 =========
 
-|version_badge|
-
+|version_badge| 
 |docs|
 
 |logo|
