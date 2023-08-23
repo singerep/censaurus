@@ -245,18 +245,25 @@ class Dataset:
         ``<year>/<product>/<extension>``, though there are occasionally additional
         elements. For example, ``2021/acs/acs1`` is the extension for the American 
         Community Survey 1-Year Estimates published in 2021.
+    
     map_service : :obj:`str` = 'tigerWMS_Current'
         The name of the TIGERWeb mapservice to use as the geographic basis for this
         dataset. Defaults to the current mapservice.
+    
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
     def __init__(
         self,
         url_extension: str,
         map_service: str,
+        census_api_key: str = None,
     ) -> None:
 
         self.url_extension = url_extension
-        self.census_client = CensusClient(url_extension=url_extension)
+        self.census_client = CensusClient(url_extension=url_extension, api_key=census_api_key)
 
         try:
             self._geographies = self._find_supported_geographies()
@@ -1122,6 +1129,7 @@ class ACS(Dataset):
     year : :obj:`int` = 2021
         The year to get data from. Selected ACS data is available from 2005 to 
         2021.
+    
     product : :obj:`str` = 'acs5'
         The specific American Community Survey product to get data from. Available
         products are:
@@ -1144,13 +1152,18 @@ class ACS(Dataset):
 
         However, the available extensions depend on the product used. The extensions
         above are for the American Community Survey 1-Year Estimates.
+    
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
     def __init__(
         self, 
         year: int = 2021,
         product: str = "acs5",
         extension: str = None,
-        **kwargs
+        census_api_key: str = None
     ) -> None:
 
         url_extension = self._make_url_extension(year=year, product=product, extension=extension)
@@ -1168,7 +1181,7 @@ class ACS(Dataset):
         super().__init__(
             url_extension=url_extension,
             map_service=map_service,
-            **kwargs
+            census_api_key=census_api_key
         )
 
     @staticmethod
@@ -1197,13 +1210,22 @@ class ACS1(ACS):
            + Data Profiles: ``profile``
            + Comparison Profile: ``cprofile``
            + Selected Population Profiles: ``spp``
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2021, extension: str = None, **kwargs) -> None:
+    def __init__(
+        self, year: int = 2021, 
+        extension: str = None, 
+        census_api_key: str = None
+    ) -> None:
         super().__init__(
             year=year,
             product='acs1',
             extension=extension, 
-            **kwargs
+            census_api_key=census_api_key
         )
 
 
@@ -1225,13 +1247,23 @@ class ACS3(ACS):
            + Data Profiles: ``profile``
            + Comparison Profile: ``cprofile``
            + Selected Population Profiles: ``spp``
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2013, extension: str = None, **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2013, 
+        extension: str = None, 
+        census_api_key: str = None
+    ) -> None:
         super().__init__(
             year=year,
             product='acs3',
             extension=extension, 
-            **kwargs
+            census_api_key=census_api_key
         )
 
 
@@ -1255,13 +1287,23 @@ class ACS5(ACS):
            + Selected Population Data Profiles: ``sptprofile``
            + American Indian and Alaska Native Detailed Tables: ``aian``
            + American Indian and Alaska Native Data Profiles: ``aianprofile``
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2021, extension: str = None, **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2021, 
+        extension: str = None,
+        census_api_key: str = None
+    ) -> None:
         super().__init__(
             year=year,
             product='acs5',
             extension=extension, 
-            **kwargs
+            census_api_key=census_api_key
         )
 
 
@@ -1274,12 +1316,21 @@ class ACSSupplemental(ACS):
     year : :obj:`int` = 2021
         The year to get data from. Selected ACS Supplement data is available from 2014 to 
         2021.
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2021, **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2021, 
+        census_api_key: str = None
+    ) -> None:
         super().__init__(
             year=year,
             product='acsse',
-            **kwargs
+            census_api_key=census_api_key
         )
 
 
@@ -1292,24 +1343,44 @@ class ACSFlows(ACS):
     year : :obj:`int` = 2020
         The year to get data from. ACS Flows data is available from 2010 to 
         2020.
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2020, **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2020, 
+        census_api_key: str = None
+    ) -> None:
         super().__init__(
             year=year,
             product='flows',
-            **kwargs
+            census_api_key=census_api_key
         )
 
 
 class ACSLanguage(ACS):
     """
     Data from the American Community Survey Language Statistics (2013).
+
+    Parameters
+    ==========
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, **kwargs) -> None:
+    def __init__(
+        self,
+        census_api_key: str = None
+    ) -> None:
         super().__init__(
             year=2013,
             product='language',
-            **kwargs
+            census_api_key=census_api_key
         )
 
     @staticmethod
@@ -1332,8 +1403,19 @@ class PUMS(ACS):
         
     puerto_rico : :obj:`bool` = False
         Determines whether or not to get data from the PUMS Puerto Rico survey.
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2021, duration: Union[str, int] = 5, puerto_rico: bool = False, **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2021, 
+        duration: Union[str, int] = 5, 
+        puerto_rico: bool = False,
+        census_api_key: str = None
+    ) -> None:
         if puerto_rico is False:
             extension = 'pumspr'
         else:
@@ -1342,7 +1424,7 @@ class PUMS(ACS):
             year=year, 
             product=f'acs{duration}', 
             extension=extension,
-            **kwargs
+            census_api_key=census_api_key
         )
 
 
@@ -1354,9 +1436,16 @@ class CPS(Dataset):
     ==========
     year : :obj:`int` = 2023
         The year to get data from. Selected CPS data is available from 1989 to 2023.
+    
     month : :obj:`str` = 'jan'
-        The month to get data from. Should be three letters long (jan, feb, mar, etc.).
+        The month to get data from. Should be one of the following formats:
+
+           + Full month name (January, February, etc.). Capitalization does not matter.
+           + 3-letter abbreviated month name (Jan, Feb, etc.). Capitalization does not matter.
+           + An integer between 1-12.
+        
         Not all months are available every year and for every product.
+        
     product : :obj:`str` = 'basic'
         The specific Current Population Survey product to get data from. Example 
         products include:
@@ -1369,8 +1458,19 @@ class CPS(Dataset):
            + Disability Supplement: ``disability``
 
         However, the available products depend on the year and month requested.
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2023, month: int = 'jan', product: str = 'basic', **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2023, 
+        month: int = 'jan', 
+        product: str = 'basic', 
+        census_api_key: str = None
+    ) -> None:
         months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
         if isinstance(month, str): 
             if month.lower() in months:
@@ -1387,7 +1487,7 @@ class CPS(Dataset):
         super().__init__(
             url_extension=url_extension,
             map_service = 'tigerWMS_Current',
-            **kwargs
+            census_api_key=census_api_key
         )
 
     @staticmethod
@@ -1410,6 +1510,7 @@ class Decennial(Dataset):
     year : :obj:`int` = 2020
         The year to get data from. Selected Decennial Census data is available in 2000,
         2010, and 2020.
+
     product : :obj:`str` = 'pl'
         The specific Decennial Census product to get data from. Example products
         include:
@@ -1424,12 +1525,17 @@ class Decennial(Dataset):
         However, the available products depend on the year requested. The products
         above are for 2020 Decennial Census. More products are available for the 2010
         and 2000 Decennial Censuses.
+    
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
     def __init__(
         self, 
         year: int = 2020,
         product: str = 'pl',
-        **kwargs
+        census_api_key: str = None
     ) -> None:
 
         url_extension = self._make_url_extension(year=year, product=product)
@@ -1437,7 +1543,7 @@ class Decennial(Dataset):
         super().__init__(
             url_extension=url_extension,
             map_service=f'tigerWMS_Census{year}',
-            **kwargs
+            census_api_key=census_api_key
         )
 
     @staticmethod
@@ -1455,12 +1561,21 @@ class DecennialPL(Decennial):
     year : :obj:`int` = 2020
         The year to get data from. Redistricting data is available in 2000, 2010, or
         2020.
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2020, **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2020, 
+        census_api_key: str = None
+    ) -> None:
         super().__init__(
             year=year,
             product='pl',
-            **kwargs
+            census_api_key=census_api_key
         )
 
 
@@ -1472,12 +1587,21 @@ class DecennialSF1(Decennial):
     ==========
     year : :obj:`int` = 2010
         The year to get data from. SF1 data is available in 2000 or 2010.
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2010, **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2010, 
+        census_api_key: str = None
+    ) -> None:
         super().__init__(
             year=year,
             product='sf1',
-            **kwargs
+            census_api_key=census_api_key
         )
 
 class DecennialSF2(Decennial):
@@ -1488,12 +1612,21 @@ class DecennialSF2(Decennial):
     ==========
     year : :obj:`int` = 2010
         The year to get data from. SF2 data is available in 2000 or 2010.
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2010, **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2010, 
+        census_api_key: str = None
+    ) -> None:
         super().__init__(
             year=year,
             product='sf2',
-            **kwargs
+            census_api_key=census_api_key
         )
 
 
@@ -1509,6 +1642,7 @@ class Economic(Dataset):
     year : :obj:`int` = 2017
         The year to get data from. Selected Economic Census data is available in 2002,
         2007, 2012, and 2017.
+
     product : :obj:`str` = 'pl'
         The specific Economic Census product to get data from. Example products
         include:
@@ -1516,12 +1650,17 @@ class Economic(Dataset):
            + Economy-Wide Key Statistics: ``ecnbasic`` in 2017, ``ewks`` otherwise
            + Economic Census of Island Areas: ``ecn/islandareas/napcs``
            + Brokering and Dealing Products Income for the U.S.: ``ecnbranddeal``
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
     def __init__(
         self, 
         year: int = 2017,
         product: str = 'ecnbasic',
-        **kwargs
+        census_api_key: str = None
     ) -> None:
 
         url_extension = self._make_url_extension(year=year, product=product)
@@ -1529,7 +1668,7 @@ class Economic(Dataset):
         super().__init__(
             url_extension=url_extension,
             map_service=f'tigerWMS_Current',
-            **kwargs
+            census_api_key=census_api_key
         )
 
     @staticmethod
@@ -1547,8 +1686,17 @@ class EconomicKeyStatistics(Economic):
     year : :obj:`int` = 2017
         The year to get data from. EWKS data is available in 2002, 2007, 2012, or
         2017.
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2017, **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2017, 
+        census_api_key: str = None
+    ) -> None:
         if year == 2017:
             product = 'ecnbasic'
         else:
@@ -1556,7 +1704,7 @@ class EconomicKeyStatistics(Economic):
         super().__init__(
             year=year, 
             product=product,
-            **kwargs
+            census_api_key=census_api_key
         )
 
 
@@ -1569,17 +1717,28 @@ class Estimates(Dataset):
     year : :obj:`int` = 2021
         The year to get data from. Selected Population Estimates data is available from
         2013 to 2021.
+
     monthly : :obj:`bool` = False
         Determines whether or not to get yearly or monthly population estimates.
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2021, monthly: bool = False, **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2021, 
+        monthly: bool = False, 
+        census_api_key: bool = None
+    ) -> None:
 
         url_extension = self._make_url_extension(year=year, monthly=monthly)
 
         super().__init__(
             url_extension=url_extension,
             map_service = 'tigerWMS_Current',
-            **kwargs
+            census_api_key=census_api_key
         )
 
     @staticmethod
@@ -1601,6 +1760,7 @@ class Projections(Dataset):
     year : :obj:`int` = 2017
         The year to get data from. Selected Population Projections data is available 
         in 2012, 2014, and 2017.
+
     extension : :obj:`str` = 'pop'
         The specific Census Population Projections extension to get data from. Example 
         extensions include:
@@ -1614,15 +1774,25 @@ class Projections(Dataset):
 
         However, the available extensions depend on the year requested. The extensions
         above are for 2017 Population Projections.
+
+    census_api_key : :obj:`str` = None
+        A Census API key. Can be obtained
+        `here <https://api.census.gov/data/key_signup.html>`_. Not necessary unless you
+        are making more than 500 requests per day.
     """
-    def __init__(self, year: int = 2017, extension: str = 'pop', **kwargs) -> None:
+    def __init__(
+        self, 
+        year: int = 2017, 
+        extension: str = 'pop',
+        census_api_key: str = None
+    ) -> None:
 
         url_extension = self._make_url_extension(year=year, extension=extension)
 
         super().__init__(
             url_extension=url_extension,
             map_service = 'tigerWMS_Current',
-            **kwargs
+            census_api_key=census_api_key
         )
 
     @staticmethod
