@@ -9,21 +9,17 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('../..'))
 
+import censaurus
+
 project = 'censaurus'
 copyright = '2023, Ethan Singer'
 author = 'Ethan Singer'
-
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.napoleon', 'sphinx.ext.autosectionlabel', 'sphinx.ext.linkcode']
 pygments_style = 'sphinx'
 
 templates_path = ['_templates']
 exclude_patterns = []
-
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
 autodoc_member_order = 'bysource'
@@ -38,7 +34,8 @@ html_context = {
     "github_user": "singerep", # Username
     "github_repo": "censaurus", # Repo name
     "github_version": "main", # Version
-    "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
+    "conf_py_path": "/docs/source/", # Path in the checkout to the docs root,
+    "html_theme": 'sphinx_rtd_theme'
 }
 
 html_css_files = [
