@@ -1416,7 +1416,7 @@ class PUMS(ACS):
         puerto_rico: bool = False,
         census_api_key: str = None
     ) -> None:
-        if puerto_rico is False:
+        if puerto_rico is True:
             extension = 'pumspr'
         else:
             extension = 'pums'
