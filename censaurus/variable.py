@@ -568,7 +568,7 @@ class VariableCollection:
             Determines whether or not the requested variable will be included in the
             returned :class:`.VariableCollection`.
         """
-        root = self.root_of(variable=variable)
+        root = self.first_ancestor_of(variable=variable)
         root_descendants = self.descendants_of(variable=root, include_root=True)
         v = self.get(variable=variable)
         v_depth = len(v.path)
