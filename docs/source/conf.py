@@ -13,7 +13,7 @@ project = 'censaurus'
 copyright = '2023, Ethan Singer'
 author = 'Ethan Singer'
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.napoleon', 'sphinx.ext.autosectionlabel', 'sphinx.ext.linkcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.napoleon', 'sphinx.ext.autosectionlabel', 'sphinx.ext.linkcode', "sphinxext.opengraph"]
 pygments_style = 'sphinx'
 
 templates_path = ['_templates']
@@ -35,6 +35,19 @@ html_context = {
     "conf_py_path": "/docs/source/", # Path in the checkout to the docs root,
     "html_theme": 'sphinx_rtd_theme'
 }
+
+ogp_site_url = 'https://censaurus.readthedocs.io/en/latest/'
+ogp_image = 'https://raw.githubusercontent.com/singerep/censaurus/main/docs/source/censaurus_logo.png'
+ogp_image_alt = 'censaurus logo'
+ogp_title = 'censaurus: Not just another Census data tool. Seriously.'
+ogp_description = 'A comprehensive, feature-rich, and user-oriented Python package that wraps the U.S. Census Bureau\'s Data and Geographic APIs.'
+ogp_type = 'object'
+ogp_custom_meta_tags = [
+    '<meta name="twitter:image:src" content="https://raw.githubusercontent.com/singerep/censaurus/main/docs/source/censaurus_logo.png">',
+    '<meta name="twitter:card" content="summary_large_image">',
+    '<meta name="twitter:title" content="censaurus: Not just another Census data tool. Seriously.">',
+    '<meta name="twitter:description" content="A comprehensive, feature-rich, and user-oriented Python package that wraps the U.S. Census Bureau\'s Data and Geographic APIs.">',
+]
 
 html_css_files = [
     'css/custom.css',
