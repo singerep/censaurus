@@ -316,8 +316,6 @@ Looking good! We got the data we wanted for all Census tracts in the Northeast r
 .. note::
    You may have noticed that tracts within regions is *not* a supported geographic hierarchy for this dataset — as far as I'm aware, it's not a supported hierarchy for *any* Census dataset. But thanks to ``censaurus``, that's totally okay. Using the ``within`` parameter, you can get *any* geographic level within *any other* geographic level. Counties within a state? Sure, that's easy (and already supported by the Census). But metropolitan statistical areas within Congressional Districts? That's just as easy, even though it's *not* supported by the Census! Thanks to how ``censaurus`` internally handles geometry, you can even request block-level data for the *entire United States* (it just might take a few minutes) without any extra work! Go wild!
 
-   To read more about how this works, check out.
-
 Finally, let's try flipping the ``return_geometry`` flag to ``True`` because we'll need geometry to make maps.
 
 .. code-block:: python
