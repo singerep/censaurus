@@ -1,6 +1,6 @@
 [project]
 name = "censaurus"
-version = "0.1.1.4"
+version = "0.1.1.5"
 dynamic = ["dependencies"]
 authors = [
   {name="Ethan Singer", email="singerep@bu.edu"},

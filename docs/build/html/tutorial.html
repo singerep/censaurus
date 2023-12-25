@@ -7,10 +7,10 @@
 <meta property="og:url" content="https://censaurus.readthedocs.io/en/latest/tutorial.html" />
 <meta property="og:site_name" content="censaurus" />
 <meta property="og:description" content="This tutorial will walk you through all of the major components of a censaurus workflow. The major steps highlighted are: Choosing a dataset, Finding relevant variables, Picking a geography hierarc..." />
-<meta property="og:image" content="https://raw.githubusercontent.com/singerep/censaurus/main/docs/source/censaurus_logo.png" />
+<meta property="og:image" content="https://github.com/singerep/censaurus/blob/main/docs/source/censaurus_logo_bg_white.png" />
 <meta property="og:image:alt" content="censaurus logo" />
 <meta name="description" content="This tutorial will walk you through all of the major components of a censaurus workflow. The major steps highlighted are: Choosing a dataset, Finding relevant variables, Picking a geography hierarc..." />
-<meta name="twitter:image:src" content="https://raw.githubusercontent.com/singerep/censaurus/main/docs/source/censaurus_logo.png">
+<meta name="twitter:image:src" content="https://github.com/singerep/censaurus/blob/main/docs/source/censaurus_logo_bg_white.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="censaurus: Not just another Census data tool. Seriously.">
 <meta name="twitter:description" content="A comprehensive, feature-rich, and user-oriented Python package that wraps the U.S. Census Bureau's Data and Geographic APIs.">
@@ -695,7 +695,6 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>You may have noticed that tracts within regions is <em>not</em> a supported geographic hierarchy for this dataset — as far as I’m aware, it’s not a supported hierarchy for <em>any</em> Census dataset. But thanks to <code class="docutils literal notranslate"><span class="pre">censaurus</span></code>, that’s totally okay. Using the <code class="docutils literal notranslate"><span class="pre">within</span></code> parameter, you can get <em>any</em> geographic level within <em>any other</em> geographic level. Counties within a state? Sure, that’s easy (and already supported by the Census). But metropolitan statistical areas within Congressional Districts? That’s just as easy, even though it’s <em>not</em> supported by the Census! Thanks to how <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> internally handles geometry, you can even request block-level data for the <em>entire United States</em> (it just might take a few minutes) without any extra work! Go wild!</p>
-<p>To read more about how this works, check out.</p>
 </div>
 <p>Finally, let’s try flipping the <code class="docutils literal notranslate"><span class="pre">return_geometry</span></code> flag to <code class="docutils literal notranslate"><span class="pre">True</span></code> because we’ll need geometry to make maps.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">tracts</span><span class="p">(</span><span class="n">within</span><span class="o">=</span><span class="n">northeast</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">male_age_vars</span><span class="p">,</span> <span class="n">return_geometry</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
