@@ -21,6 +21,15 @@ from matplotlib.pyplot import fill, axis
 from censaurus.api import TIGERClient, TIGERWebAPIError
 from censaurus.constants import LAYER_RESULT_COUNT_MAP, FEATURE_ATTRIBUTE_MAP, ABBR_TO_FULL, FIPS_TO_FULL, ABBR_TO_FULL_REGEX
 
+def shapely_to_esri_json(shape: Union[Polygon, MultiPolygon]):
+    if isinstance(shape, Polygon):
+        rings = [[list(p) for p in shape.reverse().exterior.coords]]
+    else:
+        rings = []
+        for s in shape.reverse().geoms:
+            rings.append([list(p) for p in s.exterior.coords])
+    return str({'rings': rings})
+
 def parse_name(name: str) -> str:
     """
     Parses the name of a geographic area. Replaces state abbreviations with full state
@@ -346,33 +355,70 @@ class Layer:
         self.name = info['name']
         self.id = info['id']
         self.fields = [f['name'] for f in info.get('fields')]
+        self.critical_fields = [f for f in self.fields if f in FEATURE_ATTRIBUTE_MAP or f in ['OBJECTID', 'GEOID', 'NAME']]
+        self.geographic_fields = [f for f in self.fields if f in FEATURE_ATTRIBUTE_MAP]
+        self.max_record_count = info['maxRecordCount']
 
         self.tiger_client = tiger_client
 
     def __repr__(self) -> str:
         return f'MapService Layer ({self.name})'
 
-    def _get_feature_attributes(self, bbox: Iterable[float] = None, out_fields: str = '*') -> GeoDataFrame:
+    def _get_feature_attributes(self, within_geometry: Union[Polygon, MultiPolygon] = None, out_fields: str = '*', spatial_rel: str = 'esriSpatialRelContains', feature_count: int = None) -> GeoDataFrame:
         params = {
             'where': '1=1',
             'outFields': out_fields,
             'returnGeometry': 'false'
         }
-        if bbox:
+        if within_geometry:
             params.update({
-                'geometry': ','.join(str(b) for b in bbox),
-                'geometryType': 'esriGeometryEnvelope',
+                'geometry': shapely_to_esri_json(within_geometry),
+                'geometryType': 'esriGeometryPolygon',
                 'inSR': '4236',
-                'spatialRel': 'esriSpatialRelIntersects'
+                'spatialRel': spatial_rel
             })
 
-        features_resp = self.tiger_client.get_sync(url=f'{self.id}/query', params=params, return_type='geojson')
-        features = features_resp.json()['features']
-        gdf = GeoDataFrame.from_features(features=features)
+        if feature_count is None:
+            canary_params = {
+                'where': '1=1',
+                'returnCountOnly': 'true'
+            }
+            # feature_count = self.tiger_client.post_sync(url=f'{self.id}/query', data=canary_params).json()['count']
+            feature_count = 100001
+
+        if self.max_record_count >= feature_count:
+            features_resp = self.tiger_client.post_sync(url=f'{self.id}/query', data=params, return_type='geojson')
+            features = features_resp.json()['features']
+            gdf = GeoDataFrame.from_features(features=features)
+        else:
+            params_list = []
+            # for i in range(1 + (feature_count//self.max_record_count)):
+            for i in range(1):
+                result_offset = i*self.max_record_count
+                params = params.copy()
+                params['resultRecordCount'] = self.max_record_count
+                params['resultOffset'] = result_offset
+                params_list.append(params)
+
+            urls_list = [f'{self.id}/query']*len(params_list)
+            url_params_list = zip(urls_list, params_list)
+            
+            features_responses = self.tiger_client.post_many_sync(url_data_list=url_params_list, return_type='geojson')
+
+            gdfs = []
+            for features_resp in features_responses:
+                features = features_resp.json()['features']
+                gdf = GeoDataFrame.from_features(features=features)
+                gdfs.append(gdf)
+
+            gdf = GeoDataFrame(concat(gdfs))
+            gdf = gdf.reset_index()
+
         gdf.set_crs(crs='4236')
+
         return gdf
 
-    def _get_feature_geometry(self, bbox: Iterable[float] = None, feature_count: int = None, cb: bool = True) -> GeoDataFrame:
+    def _get_feature_geometry(self, within_geometry: Union[Polygon, MultiPolygon] = None, area_threshold: float = 1, feature_count: int = None) -> GeoDataFrame:
         params = {
             'where': '1=1',
             'outFields': 'GEOID',
@@ -381,10 +427,10 @@ class Layer:
             'outSR': '4236'
         }
 
-        if bbox:
+        if within_geometry:
             params.update({
-                'geometry': ','.join(str(b) for b in bbox),
-                'geometryType': 'esriGeometryEnvelope',
+                'geometry': shapely_to_esri_json(within_geometry),
+                'geometryType': 'esriGeometryPolygon',
                 'inSR': '4236',
                 'spatialRel': 'esriSpatialRelIntersects'
             })
@@ -394,7 +440,7 @@ class Layer:
                 'where': '1=1',
                 'returnCountOnly': 'true'
             }
-            feature_count = self.tiger_client.get_sync(url=f'{self.id}/query', params=canary_params).json()['count']
+            feature_count = self.tiger_client.post_sync(url=f'{self.id}/query', params=canary_params).json()['count']
 
         if self.name in LAYER_RESULT_COUNT_MAP:
             result_record_count = LAYER_RESULT_COUNT_MAP[self.name]
@@ -416,7 +462,7 @@ class Layer:
                 urls_list = [f'{self.id}/query']*len(params_list)
                 url_params_list = zip(urls_list, params_list)
                 
-                features_responses = self.tiger_client.get_many_sync(url_params_list=url_params_list, return_type='geojson')
+                features_responses = self.tiger_client.post_many_sync(url_data_list=url_params_list, return_type='geojson')
 
                 gdfs = []
                 for features_resp in features_responses:
@@ -426,6 +472,20 @@ class Layer:
 
                 features = GeoDataFrame(concat(gdfs))
                 features = features.reset_index()
+
+                if within_geometry:
+                    intersections = features.intersection(other=within_geometry)
+                else:
+                    intersections = features.intersection(other=US_CARTOGRAPHIC.geometry)
+
+                intersecting_mask = intersections.area/features.area >= area_threshold
+                features['geometry'] = intersections
+
+                if within_geometry:
+                    features_within = features[intersecting_mask]
+                
+                features_within = features_within.reset_index()
+
                 return features
             except TIGERWebAPIError:
                 if tries <= 2:
@@ -435,7 +495,7 @@ class Layer:
             except JSONDecodeError:
                 raise TIGERWebAPIError('There was a problem decoding the result of your TIGER API call. Please try again or request a different geography.')
 
-    def get_features(self, bbox: Iterable[float] = None, out_fields: str = '*', return_geometry: bool = False, cb: bool = True) -> GeoDataFrame:
+    def get_features(self, within_geometry: Union[Polygon, MultiPolygon] = None, area_threshold: float = 1, out_fields: Union[str, List[str]] = None, return_geometry: bool = False) -> GeoDataFrame:
         """
         Get a set of features in this layer.
 
@@ -444,19 +504,28 @@ class Layer:
         bbox : array-like of :obj:`float` = None
             A bounding box to subset the layer. Points should be in CRS 4236. ``bbox``
             should be of length four.
-        out_fields : :obj:`str` = '*'
-            Controls what parameters are returned for each feature.
+        out_fields : :obj:`str` or :obj:`List` of :obj:`str`  = None
+            Controls what parameters are returned for each feature. If None, then
+            only fields which are geographic specifiers, plus NAME, GEOID, and OBJECTID,
+            are returned.
         return_geometry : :obj:`bool` = False
             Determines whether or not the geometry of each feature is included in the
             returned :class:`geopandas.GeoDataFrame`.
-        cb : :obj:`bool` = True
-            Determines whether or not the geometry of each feature will be intersected
-            with the cartographic boundary of the United States.
         """
-        features = self._get_feature_attributes(bbox=bbox, out_fields=out_fields)
-        if return_geometry:
-            geometries = self._get_feature_geometry(bbox=bbox, feature_count=len(features), cb=cb)
+        if out_fields is None:
+            out_fields = self.critical_fields
+
+        if isinstance(out_fields, list):
+            out_fields = ','.join(out_fields)
+
+        if area_threshold == 1 and return_geometry is False:
+            features = self._get_feature_attributes(within_geometry=within_geometry, out_fields=out_fields, spatial_rel='esriSpatialRelContains')
+        else:
+            features = self._get_feature_attributes(within_geometry=within_geometry, out_fields=out_fields, spatial_rel='esriSpatialRelIntersects')
+            geometries = self._get_feature_geometry(within_geometry=within_geometry, area_threshold=area_threshold, feature_count=len(features))
             features = GeoDataFrame(features.drop(labels=['geometry'], axis=1).merge(geometries, on='GEOID', how='inner'))
+            if return_geometry is False:
+                features = DataFrame(features.drop(labels=['geometry'], axis=1))
         features = features.rename(columns=FEATURE_ATTRIBUTE_MAP)
         return features
 
@@ -616,7 +685,7 @@ class AreaCollection:
         else:
             raise ValueError(f"The layer '{layer_name}' is not available for this dataset. To see the available layers, see AreaCollection.available_layers.")
 
-    def get_features_within(self, within: Union[Area, List[Area]], layer_name: Union[str, List[str]], area_threshold: float):
+    def get_features_within(self, within: Union[Area, List[Area]], layer_name: Union[str, List[str]], area_threshold: float, return_geometry: bool):
         """
         Gets the features within a geographic area (or areas) and a specific layer.
 
@@ -635,38 +704,28 @@ class AreaCollection:
             on the boundary will not be included (boundary intersections have zero 
             area).
         """
-        if within == US_CARTOGRAPHIC and layer_name is None:
-            features = DataFrame([{'GEOID': '0100000US'}])
-            features['geometry'] = within.geometry
-            return GeoDataFrame(features)
-
         if isinstance(within, Area):
             within = [within]
 
-        for area in within:
-            if area._attributes_are_set is False:
-                area._set_attributes()
+        if isinstance(within, List):
+            for area in within:
+                if area._attributes_are_set is False:
+                    area._set_attributes()
+            within_union = union_all(geometries=[a.geometry for a in within])
+        else:
+            within_union = None
 
         if isinstance(layer_name, str):
             layer_name = [layer_name]
-        
-        within_union = union_all(geometries=[a.geometry for a in within])
 
         features_dfs = []
-        for area in within:
-            bounds = area.geometry.bounds
-            for name in layer_name:
-                layer = self.get_layer(layer_name=name)
-                features_within_bounds = layer.get_features(bbox=bounds, return_geometry=True, cb=False)
-                features_dfs.append(features_within_bounds)
+        for name in layer_name:
+            layer = self.get_layer(layer_name=name)
+            features_within_bounds = layer.get_features(within_geometry=within_union, area_threshold=area_threshold, return_geometry=return_geometry)
+            features_dfs.append(features_within_bounds)
         features_within_bounds = concat(features_dfs).drop_duplicates(subset=['GEOID'])
 
-        intersections = features_within_bounds.intersection(other=within_union)
-        intersecting_mask = intersections.area/features_within_bounds.area >= area_threshold
-        features_within_bounds['geometry'] = intersections
-        features_within = features_within_bounds[intersecting_mask]
-        features_within = features_within.reset_index()
-        return features_within
+        return features_within_bounds
 
     def area(self, name: str = None, geoid: str = None, layer_name: str = '', cb: bool = True) -> Area:
         """
@@ -861,7 +920,7 @@ class AreaCollection:
         """
         return self.area(geoid=geoid, layer_name='Census Block Groups', cb=cb)
 
-    def blocks(self, geoid: str = None, cb: bool = True) -> Area:
+    def block(self, geoid: str = None, cb: bool = True) -> Area:
         """
         Searches the Census Blocks layer for a specific block.
 
