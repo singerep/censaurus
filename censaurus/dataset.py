@@ -1,3 +1,4 @@
+import time
 from typing import Union, Dict, List, Set
 from pandas import DataFrame, to_numeric, json_normalize
 from json.decoder import JSONDecodeError
@@ -344,6 +345,7 @@ class Dataset:
                 if extra_census_params:
                     params.update(extra_census_params)
                 params_list.append(params)
+
         url_list = ['']*len(params_list)
         url_params_list = zip(url_list, params_list)
         responses = self.census_client.get_many_sync(url_params_list=url_params_list)
@@ -395,8 +397,7 @@ class Dataset:
             reverse_rename_map = {v: k for k, v in rename_map.items()}
             df = df.rename(columns=rename_map)
 
-        for val in BAD_VALUES:
-            df = df.replace(val, None)
+        df = df.replace(BAD_VALUES, None)
 
         df.census.geography = geography
         df.census.variables = variables
@@ -422,7 +423,7 @@ class Dataset:
 
         return df
 
-    def us(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None) -> Union[DataFrame, GeoDataFrame]:
+    def us(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None) -> Union[DataFrame, GeoDataFrame]:
         """
         Get Census data for the entire United States.
 
@@ -464,7 +465,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='us', target_layer_name=None, variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def regions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def regions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for regions of the United States. See 
         `here <https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf>`_
@@ -508,7 +509,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='region', target_layer_name='Census Regions', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def divisions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def divisions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for divisions of the United States. See 
         `here <https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf>`_
@@ -552,7 +553,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='division', target_layer_name='Census Divisions', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def states(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def states(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for states.
 
@@ -594,7 +595,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='state', target_layer_name='States', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def counties(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def counties(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for counties.
 
@@ -636,7 +637,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='county', target_layer_name='Counties', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def county_subdivisions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def county_subdivisions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for county subdivisions.
 
@@ -678,7 +679,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='county subdivision', target_layer_name='County Subdivisions', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def tracts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def tracts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for Census tracts.
 
@@ -720,7 +721,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='tract', target_layer_name='Census Tracts', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def block_groups(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def block_groups(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for Census block groups.
 
@@ -762,7 +763,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='block group', target_layer_name='Census Block Groups', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def blocks(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def blocks(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for Census blocks.
 
@@ -804,7 +805,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='block', target_layer_name='Census Blocks', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def places(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def places(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for Census places (both Incorporated Places and Census 
         Designated Places).
@@ -847,7 +848,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='place', target_layer_name=['Census Designated Places', 'Incorporated Places'], variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def MSAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def MSAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for Metropolitan and Micropolitan Statistical Areas.
 
@@ -889,7 +890,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='metropolitan statistical area/micropolitan statistical area', target_layer_name=['Metropolitan Statistical Areas', 'Micropolitan Statistical Areas'], variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def CSAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def CSAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for Combined Statistical Areas.
 
@@ -931,7 +932,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='combined statistical area', target_layer_name='Combined Statistical Areas', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def congressional_districts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def congressional_districts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for Congressional Districts.
 
@@ -973,7 +974,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='congressional district', target_layer_name='Congressional Districts', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def voting_districts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def voting_districts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for voting districts.
 
@@ -1015,7 +1016,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='voting district', target_layer_name='Voting Districts', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def ZCTAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def ZCTAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for Zib Code Tabulation Areas (note that these are **not**
         the exact same as zip codes).
@@ -1058,7 +1059,7 @@ class Dataset:
         """
         return self._get_cdf(within=within, target='zip code tabulation area', target_layer_name='Zip Code Tabulation Areas', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def other_geography(self, geography: str, geography_layer: str = None, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None):
+    def other_geography(self, geography: str, geography_layer: str = None, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None):
         """
         Get Census data for any other geographic level supported by the Census.
 

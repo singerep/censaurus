@@ -1,3 +1,4 @@
+import time
 from typing import Dict, List, Tuple, Iterable
 from httpx import AsyncClient, Timeout, Response, ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout
 from asyncio import new_event_loop, set_event_loop, run_coroutine_threadsafe, sleep, gather
@@ -6,7 +7,7 @@ from threading import Thread
 
 class CensusAPIKeyError(Exception):
     def __init__(self) -> None:
-        super().__init__('Looks like you are missing an API key! You can obtain one at https://api.census.gov/data/key_signup.html. You can set it by passing it into the api_key parameter.')
+        super().__init__("Looks like you've hit your Census API limit for requests without an API key! You can obtain one at https://api.census.gov/data/key_signup.html. You can set it by passing it into the census_api_key parameter.")
 
 
 class CensusAPIError(Exception):
@@ -114,7 +115,7 @@ class CensusClient(AsyncClient):
             Query parameters to supply to the Census API.
         """
         if self.api_key is not None:
-            params.update({'key', self.api_key})
+            params.update({'key': self.api_key})
         url = self.root + url
 
         retry_count = 0
@@ -122,7 +123,7 @@ class CensusClient(AsyncClient):
             retry_count += 1
             try:
                 response = await super().get(url=url, params=params)
-            except (ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout):
+            except (ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout) as e:
                 response = None
 
             if response is None:
@@ -131,6 +132,9 @@ class CensusClient(AsyncClient):
 
             if response.status_code == 200 or response.status_code == 204:
                 return response
+
+            if response.status_code == 429:
+                raise CensusAPIKeyError()
 
             if response.status_code == 404:
                 break
@@ -264,6 +268,99 @@ class TIGERClient(AsyncClient):
         tasks = []
         for url, params in url_params_list:
             tasks.append(self._loop_handler.loop.create_task(self.get(url, params=params, return_type=return_type)))
+
+        chunks = [tasks[i:i + self.chunk_size] for i in range(0, len(tasks), self.chunk_size)]
+        responses = []
+        for chunk in chunks:
+            chunk_responses = await gather(*chunk)
+            responses.extend(chunk_responses)
+        
+        return responses
+
+    def post_sync(self, url: str = '', data: Dict[str, str] = {}, return_type: str = 'json') -> Response:
+        """
+        Make a single post request to the TIGERWeb API synchronously.
+
+        Parameters
+        ==========
+        url : :obj:`str` = ''
+            The relative URL to request.
+        data : :obj:`dict` of :obj:`str`: :obj:`str`
+            Data to supply to the TIGERWeb API.
+        return_type : :obj:`str` = 'json'
+            Determines the type of data to return. Should either be ``json`` or
+            ``geojson``.
+        """
+        future = run_coroutine_threadsafe(self.post(url=url, data=data, return_type=return_type), self._loop_handler.loop)
+        return future.result()
+
+    def post_many_sync(self, url_data_list: List[Tuple[str, Dict[str, str]]] = [], return_type = 'json') -> List[Response]:
+        """
+        Make a more than one request to the TIGERWeb API synchronously. Note that while
+        the requests are still sent asynchronously, the function call itself is 
+        synchronous.
+
+        Parameters
+        ==========
+        url_params_list : array-like of :obj:`tuple` of :obj:`str` and :obj:`dict` of :obj:`str`: :obj:`str`
+            An array-like of tuples, where each tuple consists of a URL to request and a
+            set of data to supply to the TIGERWeb API.
+        """
+        future = run_coroutine_threadsafe(self.post_many(url_data_list=url_data_list, return_type=return_type), self._loop_handler.loop)
+        return future.result()
+
+    async def post(self, url: str = '', data: Dict[str, str] = {}, return_type = 'json') -> Response:
+        """
+        Make a single post request to the TIGERWeb API asynchronously.
+
+        Parameters
+        ==========
+        url : :obj:`str` = ''
+            The relative URL to request.
+        data : :obj:`dict` of :obj:`str`: :obj:`str`
+            Data to supply to the TIGERWeb API.
+        return_type : :obj:`str` = 'json'
+            Determines the type of data to return. Should either be ``json`` or
+            ``geojson``.
+        """
+        data.update({'f': return_type})
+        retry_count = 0
+        while self.retry_limit is None or retry_count < self.retry_limit:
+            retry_count += 1
+            try:
+                response = await super().post(url=url, data=data)
+            except (ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout):
+                response = None
+
+            if response is None:
+                await sleep(2)
+                continue
+
+            if 'The requested URL was rejected' in response.text:
+                raise TIGERWebAPIError(200, 'The requested URL was rejected.')
+            if 'Invalid URL' in response.text:
+                raise TIGERWebAPIError(400, 'Invalid URL.')
+            if 'Error performing query operation' in response.text or 'Failed to execute query' in response.text:
+                raise TIGERWebAPIError(500, 'Error performing query operation.')
+
+            if response.status_code == 200:
+                return response
+
+        raise TIGERWebAPIError(status_code=None, message='Your TIGERWeb request failed for an unknown reason.')
+
+    async def post_many(self, url_data_list: Iterable[Tuple[str, Dict[str, str]]] = [], return_type = 'json') -> List[Response]:
+        """
+        Make a more than one request to the TIGERWeb API asynchronously.
+
+        Parameters
+        ==========
+        url_params_list : array-like of :obj:`tuple` of :obj:`str` and :obj:`dict` of :obj:`str`: :obj:`str`
+            An array-like of tuples, where each tuple consists of a URL to request and a
+            set of data to supply to the TIGERWeb API.
+        """
+        tasks = []
+        for url, data in url_data_list:
+            tasks.append(self._loop_handler.loop.create_task(self.post(url, data=data, return_type=return_type)))
 
         chunks = [tasks[i:i + self.chunk_size] for i in range(0, len(tasks), self.chunk_size)]
         responses = []
