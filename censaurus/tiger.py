@@ -477,10 +477,13 @@ class Layer:
                     intersections = features.intersection(other=within_geometry)
                 else:
                     intersections = features.intersection(other=US_CARTOGRAPHIC.geometry)
-                
+
                 intersecting_mask = intersections.area/features.area >= area_threshold
                 features['geometry'] = intersections
-                features_within = features[intersecting_mask]
+
+                if within_geometry:
+                    features_within = features[intersecting_mask]
+                
                 features_within = features_within.reset_index()
 
                 return features
@@ -917,7 +920,7 @@ class AreaCollection:
         """
         return self.area(geoid=geoid, layer_name='Census Block Groups', cb=cb)
 
-    def blocks(self, geoid: str = None, cb: bool = True) -> Area:
+    def block(self, geoid: str = None, cb: bool = True) -> Area:
         """
         Searches the Census Blocks layer for a specific block.
 

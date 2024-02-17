@@ -270,13 +270,6 @@ class GeographyCollection:
 
         return best_geography, [loads(p) for p in best_param_set]
 
-    def _build_geography_params_from_parents(self, parents: GeoDataFrame, parent_target, target: str) -> Tuple[Geography, List[Dict[str, Union[str, List[str]]]]]:
-        # print(parents)
-        for i in range(len(parents)):
-            attributes = eval(parents[i:i+1].to_json(orient='index'))[str(i)]
-            
-        # raise Exception
-
     def _build_geography_params(self, areas: AreaCollection, within: Union[Area, List[Area]], target: str, target_layer_name: Union[str, List[str]], return_geometry: bool, area_threshold: float):        
         if isinstance(within, Area):
             within._set_attributes()
