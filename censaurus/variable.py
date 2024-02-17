@@ -283,6 +283,7 @@ class AttributeVariable(Variable):
             self.attribute_type = 'annotation of margin of error'
 
         self.name = name
+        self.info = owner.info
         self.label = owner.label
         self.group = owner.group
         self.concept = owner.concept
