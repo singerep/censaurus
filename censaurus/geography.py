@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import Dict, List, Set, Tuple, Union, Any
 from json import dumps, loads
 from geopandas import GeoDataFrame
-from pandas import DataFrame
+from pandas import DataFrame, concat
 
 from censaurus.graph_utils import visualize_graph
 from censaurus.tiger import AreaCollection, Area, US_CARTOGRAPHIC
@@ -271,61 +271,71 @@ class GeographyCollection:
         return best_geography, [loads(p) for p in best_param_set]
 
     def _build_geography_params(self, areas: AreaCollection, within: Union[Area, List[Area]], target: str, target_layer_name: Union[str, List[str]], return_geometry: bool, area_threshold: float):        
-        if isinstance(within, Area):
-            within._set_attributes()
-        elif isinstance(within, list):
-            for area in within:
-                area._set_attributes()
-        
-        if return_geometry is False:
+        # if isinstance(within, Area):
+        #     within._set_attributes()
+        #     geographies = self.get(name=target)
+        #     if isinstance(geographies, Geography):
+        #         geographies = [geographies]
+        #     for geography in geographies:
+        #         geo_filters = {}
+        #         for r in geography.requires:
+        #             if within and r in within.attributes:
+        #                 geo_filters[r] = within.attributes[r]
+        #         if within is None or (within.layer_name is not None and within.layer_name in LAYER_NAME_MAP and LAYER_NAME_MAP[within.layer_name] in geo_filters):
+        #             pass
+        #         else:
+        #             continue
+        #         try:
+        #             geography_params = geography._build_geography_params(geo_filters=geo_filters)
+        #             geography_params_list = [geography_params]
+
+        #             if return_geometry:
+        #                 features_within = areas.get_features_within(within=within, layer_name=target_layer_name, area_threshold=area_threshold, return_attributes=False, return_geometry=True)
+        #                 return geography, geography_params_list, features_within
+        #             else:
+        #                 return geography, geography_params_list, None
+                    
+        #         except InvalidGeographyHierarchy:
+        #             continue
+
+        if within is None:
             geographies = self.get(name=target)
             if isinstance(geographies, Geography):
                 geographies = [geographies]
+            
+            highest_parent_geography = None
+            highest_parent_geography_level = None
             for geography in geographies:
-                geo_filters = {}
-                for r in geography.requires:
-                    if within and r in within.attributes:
-                        geo_filters[r] = within.attributes[r]
-                if within is None or (within.layer_name is not None and within.layer_name in LAYER_NAME_MAP and LAYER_NAME_MAP[within.layer_name] in geo_filters):
-                    pass
+                lowest_required = geography.non_wildcard[-1]
+                parent_geography = self.get(name=lowest_required)
+                if isinstance(parent_geography, Geography):
+                    parent_geography = [parent_geography]
+                if highest_parent_geography is None or min(parent_geography, key=lambda g : int(g.level)) < highest_parent_geography_level:
+                    highest_parent_geography = min(parent_geography, key=lambda g : int(g.level))
+                    highest_parent_geography_level = int(min(parent_geography, key=lambda g : g.level).level)
+
+            if highest_parent_geography:
+                parent_layer = areas.get_layer(highest_parent_geography.name)
+                geographic_columns = [FEATURE_ATTRIBUTE_MAP[c] for c in parent_layer.geographic_fields]
+                parents = areas.get_features_within(within=within, layer_name=parent_layer.name, area_threshold=area_threshold, return_attributes=True, return_geometry=False)[geographic_columns].to_dict(orient='records')
+                
+                params_list = []
+                for p in parents:
+                    geography_params = geography._build_geography_params(geo_filters=p)
+                    params_list.append(geography_params)
+
+                if return_geometry:
+                    features_within = areas.get_features_within(within=within, layer_name=target_layer_name, area_threshold=area_threshold, return_attributes=False, return_geometry=True)
+                    return geography, params_list, features_within
                 else:
-                    continue
-                try:
-                    geography_params = geography._build_geography_params(geo_filters=geo_filters)
-                    geography_params_list = [geography_params]
-                    return geography, geography_params_list, None
-                except InvalidGeographyHierarchy:
-                    continue
-
-            if within is None:
-                highest_parent_geography = None
-                highest_parent_geography_level = None
-                for geography in geographies:
-                    lowest_required = geography.non_wildcard[-1]
-                    parent_geography = self.get(name=lowest_required)
-                    if isinstance(parent_geography, Geography):
-                        parent_geography = [parent_geography]
-                    if highest_parent_geography is None or min(parent_geography, key=lambda g : int(g.level)) < highest_parent_geography_level:
-                        highest_parent_geography = min(parent_geography, key=lambda g : int(g.level))
-                        highest_parent_geography_level = int(min(parent_geography, key=lambda g : g.level).level)
-
-                if highest_parent_geography:
-                    parent_layer = areas.get_layer(highest_parent_geography.name)
-                    geographic_columns = [FEATURE_ATTRIBUTE_MAP[c] for c in parent_layer.geographic_fields]
-                    parents = DataFrame(areas.get_features_within(within=within, layer_name=parent_layer.name, area_threshold=area_threshold, return_geometry=False)[geographic_columns]).to_dict(orient='records')
-                    
-                    params_list = []
-                    for p in parents:
-                        geography_params = geography._build_geography_params(geo_filters=p)
-                        params_list.append(geography_params)
-                    
                     return geography, params_list, None
-        
+
         if target_layer_name is None and target != 'us':
             raise ValueError('Since the geographic level you requested cannot be resolved inside a default Census hierarchy (or because you set return_geometry = True), you must specify the name of the geographic layer you want to query. To see the available options, see Dataset.areas.available_layers.')
-
-        features_within = areas.get_features_within(within=within, layer_name=target_layer_name, area_threshold=area_threshold, return_geometry=return_geometry)
+        
+        features_within = areas.get_features_within(within=within, layer_name=target_layer_name, area_threshold=area_threshold, return_attributes=True, return_geometry=return_geometry)
         geography, geography_params_list = self._build_geography_params_from_features_within(features_within=features_within, target=target)
+        
         return geography, geography_params_list, features_within
     
     def _build_geography_params_from_level(self, level: str = None, name: str = None, geo_filters: Dict[str, str] = {}):
