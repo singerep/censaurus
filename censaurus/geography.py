@@ -271,34 +271,34 @@ class GeographyCollection:
         return best_geography, [loads(p) for p in best_param_set]
 
     def _build_geography_params(self, areas: AreaCollection, within: Union[Area, List[Area]], target: str, target_layer_name: Union[str, List[str]], return_geometry: bool, area_threshold: float):        
-        # if isinstance(within, Area):
-        #     within._set_attributes()
-        #     geographies = self.get(name=target)
-        #     if isinstance(geographies, Geography):
-        #         geographies = [geographies]
-        #     for geography in geographies:
-        #         geo_filters = {}
-        #         for r in geography.requires:
-        #             if within and r in within.attributes:
-        #                 geo_filters[r] = within.attributes[r]
-        #         if within is None or (within.layer_name is not None and within.layer_name in LAYER_NAME_MAP and LAYER_NAME_MAP[within.layer_name] in geo_filters):
-        #             pass
-        #         else:
-        #             continue
-        #         try:
-        #             geography_params = geography._build_geography_params(geo_filters=geo_filters)
-        #             geography_params_list = [geography_params]
+        if isinstance(within, Area):
+            within._set_attributes()
+            geographies = self.get(name=target)
+            if isinstance(geographies, Geography):
+                geographies = [geographies]
+            for geography in geographies:
+                geo_filters = {}
+                for r in geography.requires:
+                    if within and r in within.attributes:
+                        geo_filters[r] = within.attributes[r]
+                if within is None or (within.layer_name is not None and within.layer_name in LAYER_NAME_MAP and LAYER_NAME_MAP[within.layer_name] in geo_filters):
+                    pass
+                else:
+                    continue
+                try:
+                    geography_params = geography._build_geography_params(geo_filters=geo_filters)
+                    geography_params_list = [geography_params]
 
-        #             if return_geometry:
-        #                 features_within = areas.get_features_within(within=within, layer_name=target_layer_name, area_threshold=area_threshold, return_attributes=False, return_geometry=True)
-        #                 return geography, geography_params_list, features_within
-        #             else:
-        #                 return geography, geography_params_list, None
+                    if return_geometry:
+                        features_within = areas.get_features_within(within=within, layer_name=target_layer_name, area_threshold=area_threshold, return_attributes=False, return_geometry=True)
+                        return geography, geography_params_list, features_within
+                    else:
+                        return geography, geography_params_list, None
                     
-        #         except InvalidGeographyHierarchy:
-        #             continue
+                except InvalidGeographyHierarchy:
+                    continue
 
-        if within is None:
+        elif within is None:
             geographies = self.get(name=target)
             if isinstance(geographies, Geography):
                 geographies = [geographies]
