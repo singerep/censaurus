@@ -139,7 +139,10 @@ class CensusClient(AsyncClient):
             if response.status_code == 404:
                 break
 
-        raise CensusAPIError(status_code=response.status_code, message=response.text)
+        if response:
+            raise CensusAPIError(status_code=response.status_code, message=response.text)
+        else:
+            raise CensusAPIError(status_code=None, message='The Census API had an error for an unknown reason. Please try again.')
 
     async def get_many(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = []) -> List[Response]:
         """
@@ -345,7 +348,7 @@ class TIGERClient(AsyncClient):
 
             if response.status_code == 200:
                 return response
-
+        
         raise TIGERWebAPIError(status_code=None, message='Your TIGERWeb request failed for an unknown reason.')
 
     async def post_many(self, url_data_list: Iterable[Tuple[str, Dict[str, str]]] = [], return_type = 'json') -> List[Response]:

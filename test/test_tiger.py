@@ -1,20 +1,33 @@
 from unittest import TestCase, main
 from pandas import DataFrame
 from geopandas import GeoDataFrame
+from shapely import union_all, difference
+from mapclassify import greedy
 
-from censaurus.tiger import Area, US_CARTOGRAPHIC, Layer, AreaCollection
+from censaurus.tiger import remove_water
 from censaurus.api import TIGERClient
 from censaurus.dataset import ACS5, Decennial
 
 import time
+import matplotlib.pyplot as plt
+acs = ACS5(census_api_key='11d46bc70e375d39b67b4b4919a0099934aecbc7')
 
-# acs = ACS5()
-d = Decennial(census_api_key='11d46bc70e375d39b67b4b4919a0099934aecbc7')
-# w = d.areas.region('northeast')
+# ny_cb = acs.areas.county('Bronx County, NY', cb=True)
 
-print('starting', time.time())
 
-print(d.blocks(variables=['P1_002N']))
+ny_ncb = acs.areas.county('Bronx County, NY', cb=False)
+tracts_ncb = acs.tracts(within=ny_ncb, variables=['B01001_001E'], area_threshold=0.0001, return_geometry=True)
+# tracts_cb = acs.tracts(within=ny_cb, variables=['B01001_001E'], area_threshold=0.0001, return_geometry=True)
+
+# print(tracts_ncb)
+# print(tracts_cb)
+
+# tracts_ncb['color'] = greedy(tracts_ncb)
+
+# base = tracts_ncb.plot(column='color', edgecolor='none')
+# tracts_cb.plot(ax=base, color='none', edgecolor='black', linewidth=1)
+
+# plt.show()
 
 # class TIGERTest(TestCase):
 #     @classmethod
