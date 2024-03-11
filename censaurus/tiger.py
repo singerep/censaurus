@@ -162,7 +162,6 @@ class Area:
         self.name : str = None
         self._attributes_are_set = False
         self.tiger_client : str = None
-        self.parent_area_collection : AreaCollection = None
         self.layer_name : str = None
         self.attributes : Dict[str, str] = {}
         self.geometry : Union[Polygon, MultiPolygon] = None
@@ -219,7 +218,7 @@ class Area:
             self.geometry = self.geometry.difference(water_geom)
 
     @classmethod
-    def from_tiger_geo_id(cls, geo_id: str, layer_id: int, parent_area_collection: 'AreaCollection', layer_name: str, tiger_client: TIGERClient, clip_to_cb: bool = True) -> 'Area':
+    def from_tiger_geo_id(cls, geo_id: str, layer_id: int, layer_name: str, tiger_client: TIGERClient, clip_to_cb: bool = True) -> 'Area':
         """
         Constructs a :class:`.Area` object from TIGERWeb given a specific geographic
         identifier.
@@ -262,7 +261,6 @@ class Area:
                 self.attributes[attr] = val
 
             self.tiger_client = tiger_client
-            self.parent_area_collection = parent_area_collection
             self.layer_name = layer_name
 
             self.geometry = shape(feature['geometry'])
@@ -371,7 +369,7 @@ class Layer:
     fields : :obj:`list` of :obj:`str`
         The available fields to use when querying this layer.
     """
-    def __init__(self, info: Dict[str, str], parent_area_collection : 'AreaCollection', tiger_client: TIGERClient) -> None:
+    def __init__(self, info: Dict[str, str], tiger_client: TIGERClient) -> None:
         self.name = info['name']
         self.id = info['id']
         self.fields = [f['name'] for f in info.get('fields')]
@@ -379,7 +377,6 @@ class Layer:
         self.geographic_fields = [f for f in self.fields if f in FEATURE_ATTRIBUTE_MAP]
         self.max_record_count = info['maxRecordCount']
 
-        self.parent_area_collection = parent_area_collection
         self.tiger_client = tiger_client
 
     def __repr__(self) -> str:
@@ -459,7 +456,6 @@ class Layer:
         return gdf
 
     def _get_feature_geometry(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = 'GEOID,OBJECTID', area_threshold: float = None, feature_count: int = None, object_ids: List[int] = None) -> GeoDataFrame:
-        # TODO: warning for if within geometry is false but area threshold is specified
         params = {
             'where': where_condition,
             'outFields': out_fields,
@@ -574,7 +570,7 @@ class Layer:
         geoids = features['GEOID'].values
         if geoid in geoids:
             print(f"successfully matched GEOID = {geoid} in layer '{self.name}'")
-            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, parent_area_collection=self.parent_area_collection, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
+            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
             area._set_attributes()
             return area
         
@@ -627,7 +623,7 @@ class Layer:
             geoid = best_matches[0][2]
             area_name = best_matches[0][0]
             print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, parent_area_collection=self.parent_area_collection, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
+            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
             area._set_attributes()
             return area
         
@@ -635,7 +631,7 @@ class Layer:
             geoid = best_matches[0][2]
             area_name = best_matches[0][0]
             print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, parent_area_collection=self.parent_area_collection, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
+            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
             area._set_attributes()
             return area
         else:
@@ -657,7 +653,7 @@ class Layer:
             
             if new_matches_found == 1:
                 print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-                area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, parent_area_collection=self.parent_area_collection, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
+                area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
                 area._set_attributes()
                 return area
 
@@ -696,7 +692,7 @@ class AreaCollection:
         layers = layers_response.json()['layers']
         for l in layers:
             if 'Labels' not in l['name']:
-                layer = Layer(l, parent_area_collection=self, tiger_client=self.tiger_client)
+                layer = Layer(l, tiger_client=self.tiger_client)
                 available_layers[layer.name] = layer
         return available_layers
 
