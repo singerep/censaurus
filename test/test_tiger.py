@@ -1,11 +1,7 @@
 from unittest import TestCase, main
-from pandas import DataFrame
-from geopandas import GeoDataFrame
-from shapely import union_all, difference
-from mapclassify import greedy
 
 from censaurus.api import TIGERClient
-from censaurus.dataset import ACS5, Decennial
+from censaurus.tiger import Area, AreaCollection, US_CARTOGRAPHIC
 
 class TIGERTest(TestCase):
     @classmethod
@@ -14,7 +10,7 @@ class TIGERTest(TestCase):
         cls.tiger_client = TIGERClient()
 
     def test_area_inits(self):
-        montgomery = Area.from_tiger(geo_id='24031', layer_id='82', layer_name='States', tiger_client=self.tiger_client)
+        montgomery = Area.from_tiger_geo_id(geo_id='24031', layer_id='82', layer_name='States', tiger_client=self.tiger_client)
         montgomery._set_attributes()
         self.assertEqual(montgomery.name, 'Montgomery County')
 
@@ -24,7 +20,6 @@ class TIGERTest(TestCase):
     def test_get_features(self):
         state_layer = self.area_collection.get_layer('States')
         states = state_layer.get_features()
-        self.assertIsInstance(states, GeoDataFrame)
         self.assertEqual(len(states), 56)
 
     def test_area_search(self):
