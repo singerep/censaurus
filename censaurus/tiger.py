@@ -1,13 +1,16 @@
 from typing import Dict, List, Union, Iterable, Set, Callable, Tuple
 from types import MethodType
 from shapely import intersection
-from shapely.geometry import shape
+from shapely.geometry import shape, box
 from shapely.geometry.polygon import Polygon
 from shapely.geometry.multipolygon import MultiPolygon
+from shapely.ops import transform
+from pyproj import Transformer, CRS
 from pandas import DataFrame, Series, concat
 from geopandas import GeoDataFrame
 from thefuzz import process
-from shapely import union_all
+from thefuzz.fuzz import ratio
+from shapely import union_all, union
 from re import finditer, split, sub
 from Levenshtein import distance, ratio
 from scipy.optimize import linear_sum_assignment
@@ -158,6 +161,8 @@ class Area:
     def __init__(self) -> None:
         self.name : str = None
         self._attributes_are_set = False
+        self.tiger_client : str = None
+        self.parent_area_collection : AreaCollection = None
         self.layer_name : str = None
         self.attributes : Dict[str, str] = {}
         self.geometry : Union[Polygon, MultiPolygon] = None
@@ -196,7 +201,7 @@ class Area:
                 plt.fill(x, y, **kwargs)
         plt.axis('equal')
 
-    def intersect_with_cb(self) -> None:
+    def clip_to_cb(self) -> None:
         """
         Intersects the geometric boundary of the geographic area with the cartographic
         boundary of the United States.
@@ -207,8 +212,14 @@ class Area:
             US_CARTOGRAPHIC._set_attributes()
         self.geometry = intersection(self.geometry, US_CARTOGRAPHIC.geometry)
 
+    def remove_water(self, area_threshold: float = 0.1, keep_internal: bool = False):
+        water_geom = _water_within_geometry(geometry=self.geometry, area_threshold=area_threshold, keep_internal=keep_internal)
+
+        if water_geom is not None:
+            self.geometry = self.geometry.difference(water_geom)
+
     @classmethod
-    def from_tiger_geo_id(cls, geo_id: str, layer_id: int, layer_name: str, tiger_client: TIGERClient, intersect_with_cb: bool = True) -> 'Area':
+    def from_tiger_geo_id(cls, geo_id: str, layer_id: int, parent_area_collection: 'AreaCollection', layer_name: str, tiger_client: TIGERClient, clip_to_cb: bool = True) -> 'Area':
         """
         Constructs a :class:`.Area` object from TIGERWeb given a specific geographic
         identifier.
@@ -223,7 +234,7 @@ class Area:
             The name of the layer the area is derived from.
         tiger_client : :class:`.TIGERClient`
             A client to use to interface with TIGERWeb.
-        intersect_with_cb : :obj:`bool` = True
+        clip_to_cb : :obj:`bool` = True
             Determines whether the geometric boundary of the area should be intersected
             with the cartographic boundary of the United States.
         """
@@ -235,8 +246,8 @@ class Area:
                 'where': f"GEOID='{geo_id}'",
                 'outFields': '*',
                 'returnGeometry': 'true',
-                'geometryPrecision': '10',
-                'outSR': '4236'
+                'geometryPrecision': '2',
+                'outSR': '3857'
             }
             area_resp = tiger_client.get_sync(f'{layer_id}/query', params=params, return_type='geojson')
             feature = area_resp.json()['features'][0]
@@ -250,11 +261,13 @@ class Area:
                 attr = FEATURE_ATTRIBUTE_MAP.get(attr, attr)
                 self.attributes[attr] = val
 
+            self.tiger_client = tiger_client
+            self.parent_area_collection = parent_area_collection
             self.layer_name = layer_name
 
             self.geometry = shape(feature['geometry'])
-            if intersect_with_cb is True:
-                self.intersect_with_cb()
+            if clip_to_cb is True:
+                self.clip_to_cb()
             self._attributes_are_set = True
 
         area = cls()
@@ -263,42 +276,7 @@ class Area:
         return area
 
     @classmethod
-    def from_tiger_layer(cls, layer: 'Layer', layer_name: str, tiger_client: TIGERClient, intersect_with_cb: bool = True) -> 'Area':
-        """
-        Constructs a :class:`.Area` object from TIGERWeb from the union of all elements
-        of a particular layer.
-
-        Parameters
-        ==========
-        layer_id : :obj:`int`
-            The identifier of the layer.
-        layer_name : :obj:`str`
-            The name of the layer the area is derived from.
-        tiger_client : :class:`.TIGERClient`
-            A client to use to interface with TIGERWeb.
-        intersect_with_cb : :obj:`bool` = True
-            Determines whether the geometric boundary of the area should be intersected
-            with the cartographic boundary of the United States.
-        """
-        def _set_attributes(self: Area):
-            if self._attributes_are_set is True:
-                return
-            
-            geometries = layer.get_features(return_attributes=False, return_geometry=True)
-            print(geometries)
-            
-            self.geometry = union_all(geometries)
-            if intersect_with_cb is True:
-                self.intersect_with_cb()
-            self._attributes_are_set = True
-
-        area = cls()
-        area._set_attributes = MethodType(_set_attributes, area)
-
-        return area
-
-    @classmethod
-    def from_url(cls, name: str, url: str, geo_col: str = 'geometry', intersect_with_cb: bool = True) -> 'Area':
+    def from_url(cls, name: str, url: str, geo_col: str = 'geometry', clip_to_cb: bool = True) -> 'Area':
         """
         Constructs a :class:`.Area` object from a URL.
 
@@ -311,14 +289,14 @@ class Area:
         geo_col : :obj:`str`
             The column within the file the ``url`` points to that details the geometry
             of the area.
-        intersect_with_cb : :obj:`bool` = True
+        clip_to_cb : :obj:`bool` = True
             Determines whether the geometric boundary of the area should be intersected
             with the cartographic boundary of the United States.
         """
-        return cls._from_file_or_url(name=name, path=url, kind='URL', geo_col=geo_col, intersect_with_cb=intersect_with_cb)
+        return cls._from_file_or_url(name=name, path=url, kind='URL', geo_col=geo_col, clip_to_cb=clip_to_cb)
 
     @classmethod
-    def from_file(cls, name: str, filename: str, geo_col: str = 'geometry', intersect_with_cb: bool = True) -> 'Area':
+    def from_file(cls, name: str, filename: str, geo_col: str = 'geometry', clip_to_cb: bool = True) -> 'Area':
         """
         Constructs a :class:`.Area` object from a filename.
 
@@ -331,14 +309,14 @@ class Area:
         geo_col : :obj:`str`
             The column within the file the ``filename`` points to that details the geometry
             of the area.
-        intersect_with_cb : :obj:`bool` = True
+        clip_to_cb : :obj:`bool` = True
             Determines whether the geometric boundary of the area should be intersected
             with the cartographic boundary of the United States.
         """
-        return cls._from_file_or_url(name=name, path=filename, kind='filename', geo_col=geo_col, intersect_with_cb=intersect_with_cb)
+        return cls._from_file_or_url(name=name, path=filename, kind='filename', geo_col=geo_col, clip_to_cb=clip_to_cb)
 
     @classmethod
-    def _from_file_or_url(cls, name: str, path: str, kind: str, geo_col: str = 'geometry', intersect_with_cb: bool = True) -> 'Area':
+    def _from_file_or_url(cls, name: str, path: str, kind: str, geo_col: str = 'geometry', clip_to_cb: bool = True) -> 'Area':
         def _set_attributes(self: Area):
             if self._attributes_are_set is True:
                 return
@@ -354,13 +332,13 @@ class Area:
             self.name = name
 
             if len(gdf) == 0:
-                self.geometry = gdf[geo_col].values[0]
+                self.geometry = gdf[geo_col].to_crs('EPSG:3857').values[0]
             else:
-                geometries = gdf[geo_col].values
+                geometries = gdf[geo_col].to_crs('EPSG:3857').values
                 self.geometry = union_all(geometries)
             
-            if intersect_with_cb is True:
-                self.intersect_with_cb()
+            if clip_to_cb is True:
+                self.clip_to_cb()
             self.attributes = gdf.to_dict(orient='index')[0]
             del self.attributes[geo_col]
             self._attributes_are_set = True
@@ -370,8 +348,8 @@ class Area:
         return area
 
 
-US_CARTOGRAPHIC = Area.from_url(name='United States (cartographic boundary)', url='https://www2.census.gov/geo/tiger/GENZ2021/shp/cb_2021_us_nation_5m.zip', intersect_with_cb=False)
-# US_LANDMASS = Area.from_url(name='United States (landmass boundary)', url='https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/USLandmass/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&timeRelation=esriTimeRelationOverlaps&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=OBJECTID&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=6&outSR=4236&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&sqlFormat=none&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson', intersect_with_cb=False)
+US_CARTOGRAPHIC = Area.from_url(name='United States (cartographic boundary)', url='https://www2.census.gov/geo/tiger/GENZ2021/shp/cb_2021_us_nation_5m.zip', clip_to_cb=False)
+# US_LANDMASS = Area.from_url(name='United States (landmass boundary)', url='https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/USLandmass/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&timeRelation=esriTimeRelationOverlaps&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=OBJECTID&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=6&outSR=3857&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&sqlFormat=none&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson', clip_to_cb=False)
 
 class Layer:
     """
@@ -393,7 +371,7 @@ class Layer:
     fields : :obj:`list` of :obj:`str`
         The available fields to use when querying this layer.
     """
-    def __init__(self, info: Dict[str, str], tiger_client: TIGERClient) -> None:
+    def __init__(self, info: Dict[str, str], parent_area_collection : 'AreaCollection', tiger_client: TIGERClient) -> None:
         self.name = info['name']
         self.id = info['id']
         self.fields = [f['name'] for f in info.get('fields')]
@@ -401,6 +379,7 @@ class Layer:
         self.geographic_fields = [f for f in self.fields if f in FEATURE_ATTRIBUTE_MAP]
         self.max_record_count = info['maxRecordCount']
 
+        self.parent_area_collection = parent_area_collection
         self.tiger_client = tiger_client
 
     def __repr__(self) -> str:
@@ -444,7 +423,7 @@ class Layer:
             except JSONDecodeError:
                 raise TIGERWebAPIError(None, 'There was a problem decoding the result of your TIGER API call. Please try again or request a different geography.')
 
-    def _convert_feature_responses_to_gdf(self, feature_responses: List[Response]):
+    def _convert_feature_responses_to_gdf(self, feature_responses: List[Response]) -> GeoDataFrame:
         gdfs = []
         for features_resp in feature_responses:
             features = features_resp.json()['features']
@@ -454,13 +433,11 @@ class Layer:
         gdf = GeoDataFrame(concat(gdfs))
         gdf = gdf.reset_index()
 
-        gdf.set_crs(crs='4236')
-
         return gdf
 
-    def _get_feature_attributes(self, within_geometry: Union[Polygon, MultiPolygon] = None, out_fields: str = '*', spatial_rel: str = 'esriSpatialRelContains', feature_count: int = None) -> GeoDataFrame:
+    def _get_feature_attributes(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = '*', spatial_rel: str = 'esriSpatialRelContains', feature_count: int = None) -> GeoDataFrame:
         params = {
-            'where': '1=1',
+            'where': where_condition,
             'outFields': out_fields,
             'returnGeometry': 'false'
         }
@@ -468,7 +445,7 @@ class Layer:
             params.update({
                 'geometry': shapely_to_esri_json(within_geometry),
                 'geometryType': 'esriGeometryPolygon',
-                'inSR': '4236',
+                'inSR': '3857',
                 'spatialRel': spatial_rel
             })
 
@@ -481,20 +458,21 @@ class Layer:
         gdf = self._convert_feature_responses_to_gdf(feature_responses)
         return gdf
 
-    def _get_feature_geometry(self, within_geometry: Union[Polygon, MultiPolygon] = None, area_threshold: float = 1, feature_count: int = None, object_ids: List[int] = None) -> GeoDataFrame:
+    def _get_feature_geometry(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = 'GEOID,OBJECTID', area_threshold: float = None, feature_count: int = None, object_ids: List[int] = None) -> GeoDataFrame:
+        # TODO: warning for if within geometry is false but area threshold is specified
         params = {
-            'where': '1=1',
-            'outFields': 'GEOID,OBJECTID',
+            'where': where_condition,
+            'outFields': out_fields,
             'returnGeometry': 'true',
-            'geometryPrecision': '10',
-            'outSR': '4236'
+            'geometryPrecision': '2',
+            'outSR': '3857'
         }
 
         if within_geometry and not object_ids:
             params.update({
                 'geometry': shapely_to_esri_json(within_geometry),
                 'geometryType': 'esriGeometryPolygon',
-                'inSR': '4236',
+                'inSR': '3857',
                 'spatialRel': 'esriSpatialRelIntersects'
             })
 
@@ -518,33 +496,45 @@ class Layer:
 
         gdf = self._convert_feature_responses_to_gdf(feature_responses)
 
-        if within_geometry:
-            intersections = gdf.intersection(other=within_geometry)
-        else:
-            intersections = gdf.intersection(other=US_CARTOGRAPHIC.geometry)
+        if len(gdf) > 0:
+            if within_geometry and area_threshold is not None:
+                intersections = gdf.intersection(other=within_geometry)
 
-        intersecting_mask = intersections.area/gdf.area >= area_threshold
-        gdf['geometry'] = intersections
+                intersecting_mask = intersections.area/gdf.area >= area_threshold
+                gdf['geometry'] = intersections
 
-        if within_geometry:
-            gdf = gdf[intersecting_mask]
-        
-        gdf = gdf.reset_index()
+                gdf = gdf[intersecting_mask]
+            
+            gdf.set_crs('EPSG:3857', inplace=True)
+            gdf = gdf.reset_index()
+
         return gdf
 
-    def get_features(self, within_geometry: Union[Polygon, MultiPolygon] = None, area_threshold: float = 1, out_fields: Union[str, List[str]] = None, return_attributes: bool = True, return_geometry: bool = False) -> GeoDataFrame:
+    def get_features(self, within_geometry: Union[Polygon, MultiPolygon] = None, area_threshold: float = None, where_condition: str = '1=1', out_fields: Union[str, List[str]] = None, return_attributes: bool = True, return_geometry: bool = False) -> GeoDataFrame:
         """
         Get a set of features in this layer.
 
         Parameters
         ==========
-        bbox : array-like of :obj:`float` = None
-            A bounding box to subset the layer. Points should be in CRS 4236. ``bbox``
-            should be of length four.
+        within_geometry : :obj:`shapely.Polygon` or :obj:`shapely.MultiPolygon` = None
+            The region used to subset features in the layer. Points should be in CRS 
+            EPSG:3857. If None, no geographic filters are applied.
+        area_threshold : :obj:`float` = None
+            Controls what proportion of the area of each feature needs to be inside
+            the ``within_geometry`` for it to be included. If ``within_geometry`` is
+            ``None``, this parameter has no effect.
+        where_condition : :obj:`str` = "1=1"
+            The SQL condition used to filter results from the layer. Cannot be empty;
+            the default, "1=1", will always be ``True``, and so it returns all features.
+            To see what attributes can be used in this condition, check out
+            :attr:`.Layer.fields`.
         out_fields : :obj:`str` or :obj:`List` of :obj:`str`  = None
             Controls what parameters are returned for each feature. If None, then
             only fields which are geographic specifiers, plus NAME, GEOID, and OBJECTID,
             are returned.
+        return_geometry : :obj:`bool` = False
+            Determines whether or not the attributes of each feature are included in the
+            returned :class:`geopandas.GeoDataFrame`.
         return_geometry : :obj:`bool` = False
             Determines whether or not the geometry of each feature is included in the
             returned :class:`geopandas.GeoDataFrame`.
@@ -555,20 +545,15 @@ class Layer:
         if isinstance(out_fields, list):
             out_fields = ','.join(out_fields)
 
-        if return_attributes and return_geometry:
-            features = self._get_feature_attributes(within_geometry=within_geometry, out_fields=out_fields, spatial_rel='esriSpatialRelIntersects')
-            geometries = self._get_feature_geometry(within_geometry=within_geometry, area_threshold=area_threshold, object_ids=features['OBJECTID'].to_list())
-            features = GeoDataFrame(features.drop(labels=['geometry'], axis=1).merge(geometries, on='GEOID', how='inner'))
-        elif return_attributes:
-            if area_threshold == 1:
-                features = self._get_feature_attributes(within_geometry=within_geometry, out_fields=out_fields)
-            else:
-                features = self._get_feature_attributes(within_geometry=within_geometry, out_fields=out_fields, spatial_rel='esriSpatialRelIntersects')
-                geometries = self._get_feature_geometry(within_geometry=within_geometry, area_threshold=area_threshold, object_ids=features['OBJECTID'].to_list())
+        if return_attributes:
+            features = self._get_feature_attributes(within_geometry=within_geometry, where_condition=where_condition, out_fields=out_fields, spatial_rel='esriSpatialRelIntersects')
+            if area_threshold is not None: # TODO: add notes about this
+                geometries = self._get_feature_geometry(within_geometry=within_geometry, where_condition=where_condition, out_fields='GEOID', area_threshold=area_threshold, object_ids=features['OBJECTID'].to_list())
                 features = GeoDataFrame(features.drop(labels=['geometry'], axis=1).merge(geometries, on='GEOID', how='inner'))
+            if return_geometry is False:
                 features = DataFrame(features.drop(labels=['geometry'], axis=1))
         else:
-            features = self._get_feature_geometry(within_geometry=within_geometry, area_threshold=area_threshold)
+            features = self._get_feature_geometry(within_geometry=within_geometry, where_condition=where_condition, out_fields=out_fields, area_threshold=area_threshold)
 
         features = features.rename(columns=FEATURE_ATTRIBUTE_MAP)
 
@@ -589,7 +574,7 @@ class Layer:
         geoids = features['GEOID'].values
         if geoid in geoids:
             print(f"successfully matched GEOID = {geoid} in layer '{self.name}'")
-            area = Area.from_tiger_geo_id_geo_id(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, intersect_with_cb=cb)
+            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, parent_area_collection=self.parent_area_collection, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
             area._set_attributes()
             return area
         
@@ -642,7 +627,7 @@ class Layer:
             geoid = best_matches[0][2]
             area_name = best_matches[0][0]
             print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, intersect_with_cb=cb)
+            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, parent_area_collection=self.parent_area_collection, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
             area._set_attributes()
             return area
         
@@ -650,7 +635,7 @@ class Layer:
             geoid = best_matches[0][2]
             area_name = best_matches[0][0]
             print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, intersect_with_cb=cb)
+            area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, parent_area_collection=self.parent_area_collection, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
             area._set_attributes()
             return area
         else:
@@ -672,7 +657,7 @@ class Layer:
             
             if new_matches_found == 1:
                 print(f"successfully matched '{name}' to '{area_name}' (GEOID = {geoid}) in layer '{self.name}'")
-                area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, layer_name=self.name, tiger_client=self.tiger_client, intersect_with_cb=cb)
+                area = Area.from_tiger_geo_id(geo_id=geoid, layer_id=self.id, parent_area_collection=self.parent_area_collection, layer_name=self.name, tiger_client=self.tiger_client, clip_to_cb=cb)
                 area._set_attributes()
                 return area
 
@@ -711,7 +696,7 @@ class AreaCollection:
         layers = layers_response.json()['layers']
         for l in layers:
             if 'Labels' not in l['name']:
-                layer = Layer(l, tiger_client=self.tiger_client)
+                layer = Layer(l, parent_area_collection=self, tiger_client=self.tiger_client)
                 available_layers[layer.name] = layer
         return available_layers
 
@@ -724,8 +709,18 @@ class AreaCollection:
         layer_name :obj:`str`
             The name to search for.
         """
-        match, score = process.extractOne(query=layer_name, choices=self.available_layers.keys())
-        if score >= 90:
+        token_sets = [tokenize_feature_name(l) for l in self.available_layers.keys()]
+        N = len(token_sets)
+        count_map = defaultdict(int)
+        for token_set in token_sets:
+            for token in token_set:
+                count_map[token.lower()] += 1
+
+        custom_scorer, idf_map = build_custom_scorer(count_map=count_map, N=N)
+        layer_token_set_dict = dict(zip(self.available_layers.keys(), self.available_layers.keys()))
+
+        match, score, tokens = process.extractOne(query=layer_name, choices=layer_token_set_dict, scorer=custom_scorer)
+        if score >= 0.80:
             return self.available_layers[match]
         else:
             raise ValueError(f"The layer '{layer_name}' is not available for this dataset. To see the available layers, see AreaCollection.available_layers.")
@@ -748,6 +743,12 @@ class AreaCollection:
             geographic areas that only intersect with the ``within`` area (or areas)
             on the boundary will not be included (boundary intersections have zero 
             area).
+        return_geometry : :obj:`bool` = False
+            Determines whether or not the attributes of each feature are included in the
+            returned :class:`geopandas.GeoDataFrame`.
+        return_geometry : :obj:`bool` = False
+            Determines whether or not the geometry of each feature is included in the
+            returned :class:`geopandas.GeoDataFrame`.
         """
         if isinstance(within, Area):
             within = [within]
@@ -1096,6 +1097,42 @@ class AreaCollection:
         return self.area(geoid=geoid, layer_name='Census ZIP Code Tabulation Areas', cb=cb)
 
 
-def remove_water(land: Union[GeoDataFrame, Area], cb: bool = False, hydrography: bool = False):
-    if isinstance(land, Area):
-        print('here')
+def _water_within_geometry(geometry: Union[Polygon, MultiPolygon], area_threshold: float, keep_internal: bool = False) -> Union[Polygon, MultiPolygon]:
+    projection = Transformer.from_crs(CRS('EPSG:3857'), CRS('EPSG:9822'), always_xy=True).transform
+    geometry_equal_area = transform(projection, geometry)
+    minimum_area = int(geometry_equal_area.area*area_threshold)
+    
+    where_condition = f"AREAWATER > {minimum_area}"
+
+    water_collection = AreaCollection(map_service='Hydro')
+    areal_water = water_collection.get_layer('Areal Hydrography')
+
+    if keep_internal is False:
+        # internal_water_types = ['Inlt', 'Sea', 'Strait', 'Lk', 'Reservoir', 'Ocean', 'Bay', 'Hbr', 'Chnnl', 'Lks', 'Waterway'] # all water types: {'Flowage', 'Run', 'Strm', 'Inlt', None, 'Br', 'Tank', 'Brk', 'Fls', 'Byu', 'Sea', 'Strait', 'Slough', 'Cv', 'Psge', 'Outlet', 'Lk', 'Reservoir', 'Ocean', 'Bay', 'Millpond', 'Riv', 'Aqueduct', 'Prong', 'Frk', 'Ditch', 'Pond', 'Marsh', 'Bog', 'Hbr', 'Chnnl', 'Holw', 'Lks', 'Crk', 'Lagoon', 'Spg', 'Swamp', 'Waterway', 'Cnl', 'Draw', 'Ponds'}
+        internal_water_types = ['Flowage', 'Run', 'Strm', 'Br', 'Tank', 'Brk', 'Fls', 'Byu', 'Slough', 'Cv', 'Psge', 'Outlet', 'Millpond', 'Aqueduct', 'Prong', 'Frk', 'Ditch', 'Pond', 'Marsh', 'Bog', 'Holw', 'Crk', 'Lagoon', 'Spg', 'Swamp', 'Cnl', 'Draw', 'Ponds']
+        where_condition += ' AND (SUFTYPEABRV NOT IN (' + ','.join([f"'{t}'" for t in internal_water_types]) + ') OR SUFTYPEABRV IS NULL)'
+
+    water = areal_water.get_features(within_geometry=geometry, where_condition=where_condition, out_fields='OBJECTID,SUFTYPEABRV', return_attributes=False, return_geometry=True)
+
+    if len(water) > 0:
+        water_geoms = water['geometry'].values
+        water_union = union_all(water_geoms)
+
+        if keep_internal is False:
+            bounding_polygon = box(*geometry.bounds)
+            difference = bounding_polygon.difference(geometry)
+
+            if isinstance(water_union, Polygon):
+                water_bodies = [water_union]
+            else:
+                water_bodies = water_union.geoms
+
+            external_water_bodies = []
+            for b in water_bodies:
+                if b.distance(difference) <= 10:
+                    external_water_bodies.append(b)
+            water_geoms = external_water_bodies
+
+        return union_all(water_geoms)
+    else:
+        return None 

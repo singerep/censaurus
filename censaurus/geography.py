@@ -306,8 +306,12 @@ class GeographyCollection:
             highest_parent_geography = None
             highest_parent_geography_level = None
             for geography in geographies:
-                lowest_required = geography.non_wildcard[-1]
-                parent_geography = self.get(name=lowest_required)
+                if geography.non_wildcard != []:
+                    lowest_required = geography.non_wildcard[-1]
+                    parent_geography = self.get(name=lowest_required)
+                else:
+                    parent_geography = geography
+                
                 if isinstance(parent_geography, Geography):
                     parent_geography = [parent_geography]
                 if highest_parent_geography is None or min(parent_geography, key=lambda g : int(g.level)) < highest_parent_geography_level:

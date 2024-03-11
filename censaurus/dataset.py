@@ -9,6 +9,7 @@ from collections import defaultdict
 dir_path = path.dirname(path.realpath(__file__))
 
 from censaurus.census_accessors import *
+from censaurus.cdf import CensusDataFrame, CensusGeoDataFrame
 from censaurus.api import CensusClient, CensusAPIError
 from censaurus.variable import Group, GroupCollection, Variable, VariableCollection
 from censaurus.geography import GeographyCollection
@@ -332,10 +333,9 @@ class Dataset:
         url = self.url_extension + f'?get={variable_str}&{geography_str}'
         return url
 
-    def _get_cdf(self, within: Union[Area, List[Area]], target: str, target_layer_name: Union[str, List[str]], variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]], groups: Union[List[str], List[Group]], return_geometry: bool, area_threshold: float, extra_census_params: Dict[str, str] = None) -> Union[GeoDataFrame, DataFrame]:
+    def _get_cdf(self, within: Union[Area, List[Area]], target: str, target_layer_name: Union[str, List[str]], variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]], groups: Union[List[str], List[Group]], return_geometry: bool, area_threshold: float, extra_census_params: Dict[str, str] = None) -> Union[CensusDataFrame, CensusGeoDataFrame]:
         variables, variable_params_list, rename_map = self.variables._build_variable_params(variables=variables, groups=groups)
         geography, geography_params_list, features_within = self.geographies._build_geography_params(areas=self.areas, within=within, target=target, target_layer_name=target_layer_name, return_geometry=return_geometry, area_threshold=area_threshold)
-
         params_list = []
         for geography_params in geography_params_list:
             for variable_params in variable_params_list:
@@ -387,7 +387,6 @@ class Dataset:
                 df_fw_id_cols.remove('NAME')
             if return_geometry is True:
                 df = GeoDataFrame(df.merge(features_within[df_fw_id_cols + ['geometry']], on=df_fw_id_cols, how='inner'))
-                df.set_crs(crs='4236')
             else:
                 df = df.merge(features_within[df_fw_id_cols], on=df_fw_id_cols, how='inner')
             if 'GEOID' in df.columns:
@@ -399,8 +398,13 @@ class Dataset:
 
         df = df.replace(BAD_VALUES, None)
 
-        df.census.geography = geography
-        df.census.variables = variables
+        if isinstance(df, GeoDataFrame):
+            cdf = CensusGeoDataFrame(df, geography=geography, variables=variables, areas=self.areas)
+        else:
+            cdf = CensusDataFrame(df, geography=geography, variables=variables)
+
+        # df.census.geography = geography
+        # df.census.variables = variables
 
         for col_name in df.columns:
             if rename_map != {}:
@@ -418,10 +422,10 @@ class Dataset:
             else:
                 var_name = col_name
             variable = self.variables.get(variable=var_name)
-            if variable is not None:
-                df[col_name].census.variable = variable
+            # if variable is not None:
+            #     df[col_name].census.variable = variable
 
-        return df
+        return cdf
 
     def us(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 1, extra_census_params: Dict[str, str] = None) -> Union[DataFrame, GeoDataFrame]:
         """
