@@ -211,8 +211,8 @@ class Area:
             US_CARTOGRAPHIC._set_attributes()
         self.geometry = intersection(self.geometry, US_CARTOGRAPHIC.geometry)
 
-    def remove_water(self, area_threshold: float = 0.1, keep_internal: bool = False):
-        water_geom = _water_within_geometry(geometry=self.geometry, area_threshold=area_threshold, keep_internal=keep_internal)
+    def remove_water(self, min_area: float = None, min_area_pct: float = None, top_n: int = None, top_pct: float = None, keep_internal: bool = False):
+        water_geom = _water_within_geometry(geometry=self.geometry, min_area=min_area, min_area_pct=min_area_pct, top_n=top_n, top_pct=top_pct, keep_internal=keep_internal)
 
         if water_geom is not None:
             self.geometry = self.geometry.difference(water_geom)
@@ -347,7 +347,6 @@ class Area:
 
 
 US_CARTOGRAPHIC = Area.from_url(name='United States (cartographic boundary)', url='https://www2.census.gov/geo/tiger/GENZ2021/shp/cb_2021_us_nation_5m.zip', clip_to_cb=False)
-# US_LANDMASS = Area.from_url(name='United States (landmass boundary)', url='https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/USLandmass/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&timeRelation=esriTimeRelationOverlaps&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=OBJECTID&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=6&outSR=3857&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&sqlFormat=none&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson', clip_to_cb=False)
 
 class Layer:
     """
@@ -383,16 +382,19 @@ class Layer:
         return f'MapService Layer ({self.name})'
 
     def _paginate_through_features(self, params: Dict, result_record_count: int, feature_count: int):
+        if feature_count < result_record_count:
+            result_record_count = feature_count
         tries = 0
         while True:
             try:
                 tries += 1
                 retrieved_all = False
                 all_feature_responses = []
+                found_features = 0
 
                 result_offset = 0
 
-                while retrieved_all is False:
+                while retrieved_all is False and found_features < feature_count:
                     params_list = []
                     for _ in range(1 + (feature_count//result_record_count)):
                         params = params.copy()
@@ -408,8 +410,12 @@ class Layer:
                     features_responses = self.tiger_client.post_many_sync(url_data_list=url_params_list, return_type='geojson')
                     all_feature_responses.extend(features_responses)
 
-                    if any([r.json().get('exceededTransferLimit', False) == False for r in features_responses]):
-                        retrieved_all = True
+                    for r in features_responses:
+                        r_json = r.json()
+                        if r_json.get('exceededTransferLimit', False) == False:
+                            retrieved_all = True
+                            break
+                        found_features += len(r_json['features'])
 
                 return all_feature_responses
             except TIGERWebAPIError:
@@ -432,7 +438,7 @@ class Layer:
 
         return gdf
 
-    def _get_feature_attributes(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = '*', spatial_rel: str = 'esriSpatialRelContains', feature_count: int = None) -> GeoDataFrame:
+    def _get_feature_attributes(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = '*', sort_by: str = None, top_pct: str = None, spatial_rel: str = 'esriSpatialRelContains', feature_count: int = None) -> GeoDataFrame:
         params = {
             'where': where_condition,
             'outFields': out_fields,
@@ -446,16 +452,23 @@ class Layer:
                 'spatialRel': spatial_rel
             })
 
+        if sort_by:
+            params.update({
+                'orderByFields': sort_by
+            })
+
         if feature_count is None:
             canary_params = params.copy()
             canary_params['returnCountOnly'] = 'true'
             feature_count = self.tiger_client.post_sync(url=f'{self.id}/query', data=canary_params).json()['count']
+        if top_pct:
+            feature_count = int(feature_count*top_pct)
 
         feature_responses = self._paginate_through_features(params=params, result_record_count=self.max_record_count, feature_count=feature_count)
-        gdf = self._convert_feature_responses_to_gdf(feature_responses)
+        gdf = self._convert_feature_responses_to_gdf(feature_responses)[:feature_count]
         return gdf
 
-    def _get_feature_geometry(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = 'GEOID,OBJECTID', area_threshold: float = None, feature_count: int = None, object_ids: List[int] = None) -> GeoDataFrame:
+    def _get_feature_geometry(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = 'GEOID,OBJECTID', sort_by: str = None, top_pct: str = None, area_threshold: float = None, feature_count: int = None, object_ids: List[int] = None) -> GeoDataFrame:
         params = {
             'where': where_condition,
             'outFields': out_fields,
@@ -475,6 +488,11 @@ class Layer:
         if object_ids:
             params.update({'objectIds': ','.join(str(i) for i in object_ids)})
 
+        if sort_by:
+            params.update({
+                'orderByFields': sort_by
+            })
+
         if feature_count is None:
             if object_ids is None:
                 canary_params = params.copy()
@@ -482,6 +500,9 @@ class Layer:
                 feature_count = self.tiger_client.post_sync(url=f'{self.id}/query', data=canary_params).json()['count']
             else:
                 feature_count = len(object_ids)
+
+        if top_pct:
+            feature_count = int(feature_count*top_pct)
 
         if self.name in LAYER_RESULT_COUNT_MAP:
             result_record_count = LAYER_RESULT_COUNT_MAP[self.name]
@@ -504,9 +525,11 @@ class Layer:
             gdf.set_crs('EPSG:3857', inplace=True)
             gdf = gdf.reset_index()
 
+        gdf = gdf[:feature_count]
+
         return gdf
 
-    def get_features(self, within_geometry: Union[Polygon, MultiPolygon] = None, area_threshold: float = None, where_condition: str = '1=1', out_fields: Union[str, List[str]] = None, return_attributes: bool = True, return_geometry: bool = False) -> GeoDataFrame:
+    def get_features(self, within_geometry: Union[Polygon, MultiPolygon] = None, area_threshold: float = None, where_condition: str = '1=1', out_fields: Union[str, List[str]] = None, sort_by: str = None, top_n: str = None, top_pct: str = None, return_attributes: bool = True, return_geometry: bool = False) -> GeoDataFrame:
         """
         Get a set of features in this layer.
 
@@ -541,15 +564,20 @@ class Layer:
         if isinstance(out_fields, list):
             out_fields = ','.join(out_fields)
 
+        if top_n:
+            feature_count = top_n
+        else:
+            feature_count = None
+
         if return_attributes:
-            features = self._get_feature_attributes(within_geometry=within_geometry, where_condition=where_condition, out_fields=out_fields, spatial_rel='esriSpatialRelIntersects')
+            features = self._get_feature_attributes(within_geometry=within_geometry, where_condition=where_condition, out_fields=out_fields, sort_by=sort_by, top_pct=top_pct, spatial_rel='esriSpatialRelIntersects', feature_count=feature_count)
             if area_threshold is not None: # TODO: add notes about this
-                geometries = self._get_feature_geometry(within_geometry=within_geometry, where_condition=where_condition, out_fields='GEOID', area_threshold=area_threshold, object_ids=features['OBJECTID'].to_list())
+                geometries = self._get_feature_geometry(within_geometry=within_geometry, where_condition=where_condition, out_fields='GEOID', sort_by=sort_by, top_pct=top_pct, area_threshold=area_threshold, feature_count=feature_count, object_ids=features['OBJECTID'].to_list())
                 features = GeoDataFrame(features.drop(labels=['geometry'], axis=1).merge(geometries, on='GEOID', how='inner'))
             if return_geometry is False:
                 features = DataFrame(features.drop(labels=['geometry'], axis=1))
         else:
-            features = self._get_feature_geometry(within_geometry=within_geometry, where_condition=where_condition, out_fields=out_fields, area_threshold=area_threshold)
+            features = self._get_feature_geometry(within_geometry=within_geometry, where_condition=where_condition, out_fields=out_fields, sort_by=sort_by, top_pct=top_pct, area_threshold=area_threshold, feature_count=feature_count)
 
         features = features.rename(columns=FEATURE_ATTRIBUTE_MAP)
 
@@ -1093,22 +1121,28 @@ class AreaCollection:
         return self.area(geoid=geoid, layer_name='Census ZIP Code Tabulation Areas', cb=cb)
 
 
-def _water_within_geometry(geometry: Union[Polygon, MultiPolygon], area_threshold: float, keep_internal: bool = False) -> Union[Polygon, MultiPolygon]:
-    projection = Transformer.from_crs(CRS('EPSG:3857'), CRS('EPSG:9822'), always_xy=True).transform
-    geometry_equal_area = transform(projection, geometry)
-    minimum_area = int(geometry_equal_area.area*area_threshold)
-    
-    where_condition = f"AREAWATER > {minimum_area}"
+def _water_within_geometry(geometry: Union[Polygon, MultiPolygon], min_area: float = None, min_area_pct: float = None, top_n: int = None, top_pct: float = None, keep_internal: bool = False) -> Union[Polygon, MultiPolygon]:
+    if sum([v is not None for v in [min_area, min_area_pct, top_n, top_pct]]) != 1:
+        raise ValueError('Must specify exactly one of: min_area, min_area_pct, top_n, top_pct')
 
     water_collection = AreaCollection(map_service='Hydro')
     areal_water = water_collection.get_layer('Areal Hydrography')
+    
+    if min_area_pct or min_area:
+        projection = Transformer.from_crs(CRS('EPSG:3857'), CRS('EPSG:9822'), always_xy=True).transform
+        geometry_equal_area = transform(projection, geometry)
+        if min_area_pct:
+            min_area = int(geometry_equal_area.area*min_area_pct)
+        where_condition = f"AREAWATER > {min_area}"
+    else:
+        where_condition = '1=1'
 
     if keep_internal is False:
         # internal_water_types = ['Inlt', 'Sea', 'Strait', 'Lk', 'Reservoir', 'Ocean', 'Bay', 'Hbr', 'Chnnl', 'Lks', 'Waterway'] # all water types: {'Flowage', 'Run', 'Strm', 'Inlt', None, 'Br', 'Tank', 'Brk', 'Fls', 'Byu', 'Sea', 'Strait', 'Slough', 'Cv', 'Psge', 'Outlet', 'Lk', 'Reservoir', 'Ocean', 'Bay', 'Millpond', 'Riv', 'Aqueduct', 'Prong', 'Frk', 'Ditch', 'Pond', 'Marsh', 'Bog', 'Hbr', 'Chnnl', 'Holw', 'Lks', 'Crk', 'Lagoon', 'Spg', 'Swamp', 'Waterway', 'Cnl', 'Draw', 'Ponds'}
         internal_water_types = ['Flowage', 'Run', 'Strm', 'Br', 'Tank', 'Brk', 'Fls', 'Byu', 'Slough', 'Cv', 'Psge', 'Outlet', 'Millpond', 'Aqueduct', 'Prong', 'Frk', 'Ditch', 'Pond', 'Marsh', 'Bog', 'Holw', 'Crk', 'Lagoon', 'Spg', 'Swamp', 'Cnl', 'Draw', 'Ponds']
         where_condition += ' AND (SUFTYPEABRV NOT IN (' + ','.join([f"'{t}'" for t in internal_water_types]) + ') OR SUFTYPEABRV IS NULL)'
 
-    water = areal_water.get_features(within_geometry=geometry, where_condition=where_condition, out_fields='OBJECTID,SUFTYPEABRV', return_attributes=False, return_geometry=True)
+    water = areal_water.get_features(within_geometry=geometry, where_condition=where_condition, out_fields='OBJECTID', sort_by='AREAWATER DESC', top_n=top_n, top_pct=top_pct, return_attributes=False, return_geometry=True)
 
     if len(water) > 0:
         water_geoms = water['geometry'].values
