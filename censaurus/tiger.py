@@ -20,6 +20,7 @@ from json.decoder import JSONDecodeError
 from fiona._err import CPLE_OpenFailedError
 from fiona.errors import DriverError
 from httpx import Response
+from math import ceil
 # from matplotlib.pyplot import fill, axis
 import matplotlib.pyplot as plt
 
@@ -382,9 +383,9 @@ class Layer:
         return f'MapService Layer ({self.name})'
 
     def _paginate_through_features(self, params: Dict, result_record_count: int, feature_count: int):
+        tries = 0
         if feature_count < result_record_count:
             result_record_count = feature_count
-        tries = 0
         while True:
             try:
                 tries += 1
@@ -396,10 +397,14 @@ class Layer:
 
                 while retrieved_all is False and found_features < feature_count:
                     params_list = []
-                    for _ in range(1 + (feature_count//result_record_count)):
+                    for _ in range(int(ceil(feature_count/result_record_count))):
                         params = params.copy()
                         params['resultRecordCount'] = result_record_count
                         params['resultOffset'] = result_offset
+                        p = params.copy()
+                        if 'geometry' in p:
+                            del p['geometry']
+                        print(p)
                         params_list.append(params)
                         
                         result_offset += result_record_count

@@ -6,61 +6,50 @@ from censaurus.tiger import Area, AreaCollection, US_CARTOGRAPHIC
 from censaurus.dataset import ACS5
 import matplotlib.pyplot as plt
 
-acs = ACS5(census_api_key='11d46bc70e375d39b67b4b4919a0099934aecbc7')
-ma = acs.areas.state('MA', cb=False)
-# ma.remove_water(top_pct=0.01, keep_internal=False)
+class TIGERTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.area_collection = AreaCollection()
+        cls.tiger_client = TIGERClient()
 
-counties = acs.counties(within=ma, area_threshold=0.01, variables=['B01001_001E'], return_geometry=True)
+    def test_area_inits(self):
+        montgomery = Area.from_tiger_geo_id(geo_id='24031', layer_id='82', layer_name='States', tiger_client=self.tiger_client)
+        montgomery._set_attributes()
+        self.assertEqual(montgomery.name, 'Montgomery County')
 
-counties.remove_water(top_n=60, min_area=10000, keep_internal=False)
+        US_CARTOGRAPHIC._set_attributes()
+        self.assertEqual(US_CARTOGRAPHIC.name, 'United States (cartographic boundary)')
 
-counties.plot()
-plt.show()
+    def test_get_features(self):
+        state_layer = self.area_collection.get_layer('States')
+        states = state_layer.get_features()
+        self.assertEqual(len(states), 56)
 
-# class TIGERTest(TestCase):
-#     @classmethod
-#     def setUpClass(cls):
-#         cls.area_collection = AreaCollection()
-#         cls.tiger_client = TIGERClient()
+    def test_area_search(self):
+        la = self.area_collection.county('Los Angeles County, California')
+        self.assertEqual(la.name, 'Los Angeles County')
 
-#     def test_area_inits(self):
-#         montgomery = Area.from_tiger_geo_id(geo_id='24031', layer_id='82', layer_name='States', tiger_client=self.tiger_client)
-#         montgomery._set_attributes()
-#         self.assertEqual(montgomery.name, 'Montgomery County')
+        la = self.area_collection.county('Los Angeles County')
+        self.assertEqual(la.name, 'Los Angeles County')
 
-#         US_CARTOGRAPHIC._set_attributes()
-#         self.assertEqual(US_CARTOGRAPHIC.name, 'United States (cartographic boundary)')
+        la = self.area_collection.county('Los Angeles')
+        self.assertEqual(la.name, 'Los Angeles County')
 
-#     def test_get_features(self):
-#         state_layer = self.area_collection.get_layer('States')
-#         states = state_layer.get_features()
-#         self.assertEqual(len(states), 56)
+        md = self.area_collection.state('Maryland')
+        self.assertEqual(md.name, 'Maryland')
 
-#     def test_area_search(self):
-#         la = self.area_collection.county('Los Angeles County, California')
-#         self.assertEqual(la.name, 'Los Angeles County')
+        md = self.area_collection.state('MD')
+        self.assertEqual(md.name, 'Maryland')
 
-#         la = self.area_collection.county('Los Angeles County')
-#         self.assertEqual(la.name, 'Los Angeles County')
+        md = self.area_collection.state(geoid=24)
+        self.assertEqual(md.name, 'Maryland')
 
-#         la = self.area_collection.county('Los Angeles')
-#         self.assertEqual(la.name, 'Los Angeles County')
+        ny01 = self.area_collection.congressional_district('NY-01')
+        self.assertEqual(ny01.name, 'Congressional District 1')
 
-#         md = self.area_collection.state('Maryland')
-#         self.assertEqual(md.name, 'Maryland')
-
-#         md = self.area_collection.state('MD')
-#         self.assertEqual(md.name, 'Maryland')
-
-#         md = self.area_collection.state(geoid=24)
-#         self.assertEqual(md.name, 'Maryland')
-
-#         ny01 = self.area_collection.congressional_district('NY-01')
-#         self.assertEqual(ny01.name, 'Congressional District 1')
-
-#         ny01 = self.area_collection.congressional_district('New York 1')
-#         self.assertEqual(ny01.name, 'Congressional District 1')
+        ny01 = self.area_collection.congressional_district('New York 1')
+        self.assertEqual(ny01.name, 'Congressional District 1')
 
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
