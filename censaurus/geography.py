@@ -6,7 +6,7 @@ from pandas import DataFrame, concat
 
 from censaurus.graph_utils import visualize_graph
 from censaurus.tiger import AreaCollection, Area, US_CARTOGRAPHIC
-from censaurus.constants import LAYER_NAME_MAP, FEATURE_ATTRIBUTE_MAP
+from censaurus.constants import LAYER_NAME_MAP, LAYER_NAME_MAP_REVERSE, FEATURE_ATTRIBUTE_MAP
 
 class UnknownGeography(Exception):
     pass
@@ -303,6 +303,7 @@ class GeographyCollection:
             if isinstance(geographies, Geography):
                 geographies = [geographies]
             
+            child_geography = None
             highest_parent_geography = None
             highest_parent_geography_level = None
             for geography in geographies:
@@ -314,29 +315,42 @@ class GeographyCollection:
                 
                 if isinstance(parent_geography, Geography):
                     parent_geography = [parent_geography]
-                if highest_parent_geography is None or min(parent_geography, key=lambda g : int(g.level)) < highest_parent_geography_level:
+                if highest_parent_geography is None or int(min(parent_geography, key=lambda g : int(g.level)).level) < highest_parent_geography_level:
+                    child_geography = geography
                     highest_parent_geography = min(parent_geography, key=lambda g : int(g.level))
-                    highest_parent_geography_level = int(min(parent_geography, key=lambda g : g.level).level)
+                    highest_parent_geography_level = int(min(parent_geography, key=lambda g : int(g.level)).level)
 
             if highest_parent_geography:
-                parent_layer = areas.get_layer(highest_parent_geography.name)
-                geographic_columns = [FEATURE_ATTRIBUTE_MAP[c] for c in parent_layer.geographic_fields]
-                parents = areas.get_features_within(within=within, layer_name=parent_layer.name, area_threshold=area_threshold, return_attributes=True, return_geometry=False)[geographic_columns].to_dict(orient='records')
-                
-                params_list = []
-                for p in parents:
-                    geography_params = geography._build_geography_params(geo_filters=p)
-                    params_list.append(geography_params)
+                if highest_parent_geography != child_geography:
+                    if highest_parent_geography.name == target:
+                        highest_parent_layer_name = target_layer_name
+                    elif highest_parent_geography.name in LAYER_NAME_MAP_REVERSE:
+                        highest_parent_layer_name = LAYER_NAME_MAP_REVERSE[highest_parent_geography.name]
+                    else:
+                        highest_parent_layer_name = highest_parent_geography.name
+
+                    parent_layer = areas.get_layer(highest_parent_layer_name)
+
+                    geographic_columns = [FEATURE_ATTRIBUTE_MAP[c] for c in parent_layer.geographic_fields]
+                    parents = areas.get_features_within(within=within, layer_name=parent_layer.name, area_threshold=area_threshold, return_attributes=True, return_geometry=False)[geographic_columns].to_dict(orient='records')
+                    params_list = []
+
+                    for p in parents:
+                        feature_attributes = {k: v for k, v in p.items() if v is not None}
+                        geography_params = child_geography._build_broadest_params(feature_attributes=feature_attributes)
+                        params_list.append(geography_params)
+                else:
+                    params_list = [child_geography._build_broadest_params(feature_attributes={})]
 
                 if return_geometry:
                     features_within = areas.get_features_within(within=within, layer_name=target_layer_name, area_threshold=area_threshold, return_attributes=False, return_geometry=True)
-                    return geography, params_list, features_within
+                    return child_geography, params_list, features_within
                 else:
-                    return geography, params_list, None
+                    return child_geography, params_list, None
 
         if target_layer_name is None and target != 'us':
             raise ValueError('Since the geographic level you requested cannot be resolved inside a default Census hierarchy (or because you set return_geometry = True), you must specify the name of the geographic layer you want to query. To see the available options, see Dataset.areas.available_layers.')
-        
+
         features_within = areas.get_features_within(within=within, layer_name=target_layer_name, area_threshold=area_threshold, return_attributes=True, return_geometry=return_geometry)
         geography, geography_params_list = self._build_geography_params_from_features_within(features_within=features_within, target=target)
         
