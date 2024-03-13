@@ -169,6 +169,8 @@ LAYER_NAME_MAP = {
     'Urban Areas': 'urban area'
 }
 
+LAYER_NAME_MAP_REVERSE = {v: k for k, v in LAYER_NAME_MAP.items() if list(LAYER_NAME_MAP.values()).count(v) == 1}
+
 FIPS_TO_ABBR = {
    "01":"AL",
    "02":"AK",

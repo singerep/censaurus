@@ -382,7 +382,7 @@ class Layer:
     def __repr__(self) -> str:
         return f'MapService Layer ({self.name})'
 
-    def _paginate_through_features(self, params: Dict, result_record_count: int, feature_count: int):
+    def _paginate_through_features(self, params: Dict, result_record_count: int, feature_count: int, object_ids : List[str] = None):
         tries = 0
         if feature_count < result_record_count:
             result_record_count = feature_count
@@ -391,23 +391,25 @@ class Layer:
                 tries += 1
                 retrieved_all = False
                 all_feature_responses = []
-                found_features = 0
 
                 result_offset = 0
 
-                while retrieved_all is False and found_features < feature_count:
+                while retrieved_all is False and feature_count > 0:
                     params_list = []
-                    for _ in range(int(ceil(feature_count/result_record_count))):
-                        params = params.copy()
-                        params['resultRecordCount'] = result_record_count
-                        params['resultOffset'] = result_offset
-                        p = params.copy()
-                        if 'geometry' in p:
-                            del p['geometry']
-                        print(p)
-                        params_list.append(params)
-                        
-                        result_offset += result_record_count
+                    if object_ids:
+                        object_id_chunks = [object_ids[i:i + result_record_count] for i in range(0, len(object_ids), result_record_count)]
+                        for object_id_chunk in object_id_chunks:
+                            params = params.copy()
+                            params['objectIds'] = ','.join([str(i) for i in object_id_chunk])
+                            params_list.append(params)
+                    else:
+                        for _ in range(int(ceil(feature_count/result_record_count))):
+                            params = params.copy()
+                            params['resultRecordCount'] = result_record_count
+                            params['resultOffset'] = result_offset
+                            params_list.append(params)
+                            
+                            result_offset += result_record_count
 
                     urls_list = [f'{self.id}/query']*len(params_list)
                     url_params_list = zip(urls_list, params_list)
@@ -420,7 +422,12 @@ class Layer:
                         if r_json.get('exceededTransferLimit', False) == False:
                             retrieved_all = True
                             break
-                        found_features += len(r_json['features'])
+
+                        new_found_features = len(r_json['features'])
+
+                        feature_count -= new_found_features
+                        result_record_count = min(result_record_count, feature_count)
+                        # TODO: when using a geographic subset and no object ids, this can accidentally include duplicates, leading to problems later
 
                 return all_feature_responses
             except TIGERWebAPIError:
@@ -439,50 +446,24 @@ class Layer:
             gdfs.append(gdf)
         
         gdf = GeoDataFrame(concat(gdfs))
-        gdf = gdf.reset_index()
+
+        if 'OBJECTID' in gdf.columns:
+            gdf = gdf.drop_duplicates(subset='OBJECTID')
+        elif 'GEOID' in gdf.columns:
+            gdf = gdf.drop_duplicates(subset='GEOID')
+        else:
+            gdf = gdf.drop_duplicates()
+        
+        gdf = gdf.reset_index(drop=True)
 
         return gdf
 
-    def _get_feature_attributes(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = '*', sort_by: str = None, top_pct: str = None, spatial_rel: str = 'esriSpatialRelContains', feature_count: int = None) -> GeoDataFrame:
+    def _get_feature_object_ids(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', sort_by: str = None, top_n: int = None, top_pct: str = None) -> List[int]:
         params = {
             'where': where_condition,
-            'outFields': out_fields,
-            'returnGeometry': 'false'
+            'returnIdsOnly': 'true'
         }
         if within_geometry:
-            params.update({
-                'geometry': shapely_to_esri_json(within_geometry),
-                'geometryType': 'esriGeometryPolygon',
-                'inSR': '3857',
-                'spatialRel': spatial_rel
-            })
-
-        if sort_by:
-            params.update({
-                'orderByFields': sort_by
-            })
-
-        if feature_count is None:
-            canary_params = params.copy()
-            canary_params['returnCountOnly'] = 'true'
-            feature_count = self.tiger_client.post_sync(url=f'{self.id}/query', data=canary_params).json()['count']
-        if top_pct:
-            feature_count = int(feature_count*top_pct)
-
-        feature_responses = self._paginate_through_features(params=params, result_record_count=self.max_record_count, feature_count=feature_count)
-        gdf = self._convert_feature_responses_to_gdf(feature_responses)[:feature_count]
-        return gdf
-
-    def _get_feature_geometry(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = 'GEOID,OBJECTID', sort_by: str = None, top_pct: str = None, area_threshold: float = None, feature_count: int = None, object_ids: List[int] = None) -> GeoDataFrame:
-        params = {
-            'where': where_condition,
-            'outFields': out_fields,
-            'returnGeometry': 'true',
-            'geometryPrecision': '2',
-            'outSR': '3857'
-        }
-
-        if within_geometry and not object_ids:
             params.update({
                 'geometry': shapely_to_esri_json(within_geometry),
                 'geometryType': 'esriGeometryPolygon',
@@ -490,31 +471,105 @@ class Layer:
                 'spatialRel': 'esriSpatialRelIntersects'
             })
 
-        if object_ids:
-            params.update({'objectIds': ','.join(str(i) for i in object_ids)})
-
         if sort_by:
             params.update({
                 'orderByFields': sort_by
             })
 
-        if feature_count is None:
-            if object_ids is None:
+        url = f'{self.id}/query'
+        object_ids = self.tiger_client.post_sync(url=url, data=params, return_type='json').json()['objectIds']
+
+        if top_n:
+            return object_ids[:top_n]
+        elif top_pct:
+            return object_ids[:int(len(object_ids)*top_pct)]
+        else:
+            return object_ids
+
+    def _get_feature_attributes(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = '*', sort_by: str = None, top_pct: str = None, spatial_rel: str = 'esriSpatialRelContains', feature_count: int = None, object_ids: List[int] = None) -> GeoDataFrame:
+        if object_ids:
+            params = {
+                'outFields': out_fields,
+                'returnGeometry': 'false'
+            }
+        else:
+            params = {
+                'where': where_condition,
+                'outFields': out_fields,
+                'returnGeometry': 'false'
+            }
+            if within_geometry:
+                params.update({
+                    'geometry': shapely_to_esri_json(within_geometry),
+                    'geometryType': 'esriGeometryPolygon',
+                    'inSR': '3857',
+                    'spatialRel': spatial_rel
+                })
+
+            if sort_by:
+                params.update({
+                    'orderByFields': sort_by
+                })
+
+            if feature_count is None:
                 canary_params = params.copy()
                 canary_params['returnCountOnly'] = 'true'
                 feature_count = self.tiger_client.post_sync(url=f'{self.id}/query', data=canary_params).json()['count']
-            else:
-                feature_count = len(object_ids)
+            if top_pct:
+                feature_count = int(feature_count*top_pct)
 
-        if top_pct:
-            feature_count = int(feature_count*top_pct)
+        feature_responses = self._paginate_through_features(params=params, result_record_count=self.max_record_count, feature_count=feature_count, object_ids=object_ids)
+        gdf = self._convert_feature_responses_to_gdf(feature_responses)
+
+        return gdf
+
+    def _get_feature_geometry(self, within_geometry: Union[Polygon, MultiPolygon] = None, where_condition: str = '1=1', out_fields: str = 'GEOID,OBJECTID', sort_by: str = None, top_pct: str = None, area_threshold: float = None, feature_count: int = None, object_ids: List[int] = None) -> GeoDataFrame:
+        if object_ids:
+            params = {
+                'outFields': out_fields,
+                'returnGeometry': 'true',
+                'geometryPrecision': '2',
+                'outSR': '3857'
+            }
+        else:
+            params = {
+                'where': where_condition,
+                'outFields': out_fields,
+                'returnGeometry': 'true',
+                'geometryPrecision': '2',
+                'outSR': '3857'
+            }
+
+            if within_geometry:
+                params.update({
+                    'geometry': shapely_to_esri_json(within_geometry),
+                    'geometryType': 'esriGeometryPolygon',
+                    'inSR': '3857',
+                    'spatialRel': 'esriSpatialRelIntersects'
+                })
+
+            if sort_by:
+                params.update({
+                    'orderByFields': sort_by
+                })
+
+            if feature_count is None:
+                if object_ids is None:
+                    canary_params = params.copy()
+                    canary_params['returnCountOnly'] = 'true'
+                    feature_count = self.tiger_client.post_sync(url=f'{self.id}/query', data=canary_params).json()['count']
+                else:
+                    feature_count = len(object_ids)
+
+            if top_pct:
+                feature_count = int(feature_count*top_pct)
 
         if self.name in LAYER_RESULT_COUNT_MAP:
             result_record_count = LAYER_RESULT_COUNT_MAP[self.name]
         else:
             result_record_count = 100
 
-        feature_responses = self._paginate_through_features(params=params, result_record_count=result_record_count, feature_count=feature_count)
+        feature_responses = self._paginate_through_features(params=params, result_record_count=result_record_count, feature_count=feature_count, object_ids=object_ids)
 
         gdf = self._convert_feature_responses_to_gdf(feature_responses)
 
@@ -529,8 +584,6 @@ class Layer:
             
             gdf.set_crs('EPSG:3857', inplace=True)
             gdf = gdf.reset_index()
-
-        gdf = gdf[:feature_count]
 
         return gdf
 
@@ -563,26 +616,23 @@ class Layer:
             Determines whether or not the geometry of each feature is included in the
             returned :class:`geopandas.GeoDataFrame`.
         """
+        object_ids = self._get_feature_object_ids(within_geometry=within_geometry, where_condition=where_condition, sort_by=sort_by, top_n=top_n, top_pct=top_pct)
+
         if out_fields is None:
             out_fields = self.critical_fields
 
         if isinstance(out_fields, list):
             out_fields = ','.join(out_fields)
 
-        if top_n:
-            feature_count = top_n
-        else:
-            feature_count = None
-
         if return_attributes:
-            features = self._get_feature_attributes(within_geometry=within_geometry, where_condition=where_condition, out_fields=out_fields, sort_by=sort_by, top_pct=top_pct, spatial_rel='esriSpatialRelIntersects', feature_count=feature_count)
-            if area_threshold is not None: # TODO: add notes about this
-                geometries = self._get_feature_geometry(within_geometry=within_geometry, where_condition=where_condition, out_fields='GEOID', sort_by=sort_by, top_pct=top_pct, area_threshold=area_threshold, feature_count=feature_count, object_ids=features['OBJECTID'].to_list())
+            features = self._get_feature_attributes(out_fields=out_fields, feature_count=len(object_ids), object_ids=object_ids)
+            if area_threshold is not None or return_geometry: # TODO: add notes about this
+                geometries = self._get_feature_geometry(within_geometry=within_geometry, out_fields='GEOID', area_threshold=area_threshold, feature_count=len(object_ids), object_ids=object_ids)
                 features = GeoDataFrame(features.drop(labels=['geometry'], axis=1).merge(geometries, on='GEOID', how='inner'))
             if return_geometry is False:
                 features = DataFrame(features.drop(labels=['geometry'], axis=1))
         else:
-            features = self._get_feature_geometry(within_geometry=within_geometry, where_condition=where_condition, out_fields=out_fields, sort_by=sort_by, top_pct=top_pct, area_threshold=area_threshold, feature_count=feature_count)
+            features = self._get_feature_geometry(within_geometry=within_geometry, out_fields=out_fields, area_threshold=area_threshold, feature_count=len(object_ids), object_ids=object_ids)
 
         features = features.rename(columns=FEATURE_ATTRIBUTE_MAP)
 
