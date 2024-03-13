@@ -3,6 +3,9 @@ from unittest import TestCase, main
 from censaurus.api import TIGERClient
 from censaurus.tiger import Area, AreaCollection, US_CARTOGRAPHIC
 
+from censaurus.dataset import ACS5
+import matplotlib.pyplot as plt
+
 class TIGERTest(TestCase):
     @classmethod
     def setUpClass(cls):

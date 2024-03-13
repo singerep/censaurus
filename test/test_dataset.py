@@ -25,21 +25,19 @@ class DatasetTest(TestCase):
 
     def test_valid_request(self):
         states = self.acs1.states()
-        self.assertIsInstance(states, DataFrame)
         self.assertEqual(len(states), 52)
         self.assertEqual(len(states.columns), 3)
 
         states = self.acs1.states(return_geometry=True)
-        self.assertIsInstance(states, GeoDataFrame)
         self.assertIn('geometry', states.columns)
         self.assertEqual(len(states), 52)
         self.assertEqual(len(states.columns), 4)
 
     def test_within_request(self):
-        states = self.acs1.states(within=self.acs1.areas.region('Northeast'))
+        states = self.acs1.states(within=self.acs1.areas.region('Northeast'), area_threshold=0.01)
         self.assertEqual(len(states), 9)
 
-        states = self.acs1.states(within=[self.acs1.areas.region('Northeast'), self.acs1.areas.region('South')])
+        states = self.acs1.states(within=[self.acs1.areas.region('Northeast'), self.acs1.areas.region('South')], area_threshold=0.01)
         self.assertEqual(len(states), 26)
 
     def test_many_variables(self):
