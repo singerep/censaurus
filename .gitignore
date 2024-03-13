@@ -1,2 +1,4 @@
 dist/
 cesaurus.egg-info/
+censaurus/__pycache__
+test/__pycache__

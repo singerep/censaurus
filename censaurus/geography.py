@@ -251,7 +251,7 @@ class GeographyCollection:
             is_possible = True
             params_set = set()
             for id, feature in features_within.iterrows():
-                feature_attributes = feature.to_dict()
+                feature_attributes = {k: v for k, v in feature.to_dict().items() if v is not None}
                 broadest_params = geography._build_broadest_params(feature_attributes=feature_attributes)
                 if broadest_params is not False:
                     params_set.add(dumps(broadest_params, sort_keys=True))
