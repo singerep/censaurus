@@ -1,10 +1,11 @@
-from typing import Dict, List, Iterable
+from typing import Dict, List, Iterable, Union
 from pandas import DataFrame
 from collections import defaultdict
 from re import match
 
 from censaurus.variable import RegroupedVariable
 from censaurus.rename import AGE_REGEX
+from censaurus.cdf import CensusDataFrame, CensusGeoDataFrame
 
 
 class Regrouper:
@@ -24,18 +25,17 @@ class Regrouper:
     def __init__(self, groupings: Dict[str, Iterable[str]] = {}) -> None:
         self.groupings = groupings
 
-    def regroup(self, data: DataFrame):
+    def regroup(self, data: Union[CensusDataFrame, CensusGeoDataFrame]) -> Union[CensusDataFrame, CensusGeoDataFrame]:
         """
-        Regroups the columns of the dataset. Note that you should probably rename
-        the data after a regrouping with a :class:`.Renamer` object to avoid long
-        column names.
+        Regroups the columns of the dataset. You should rename the data after a 
+        regrouping with a :class:`.Renamer` object to avoid long column names.
 
         Parameters
         ==========
-        data : :class:`pandas.DataFrame`
+        data : :class:`.cdf.CensusDataFrame` or :class:`.cdf.CensusGeoDataFrame`
             The data to regroup.
         """
-        variables = data.census.variables
+        variables = data.variables
 
         variable_map = {}
         column_map = {}
@@ -43,7 +43,7 @@ class Regrouper:
         grouped_variables = defaultdict(list)
         
         for c in data.columns:
-            variable = data[c].census.variable
+            variable = data[c].variable
             variable_map[c] = variable
             if variable is not None:
                 column_map[variable.name] = c
@@ -71,7 +71,7 @@ class Regrouper:
 
         for c, variable in variable_map.items():
             if c in data.columns:
-                data[c].census.variable = variable
+                data[c].variable = variable
 
         return data
 
@@ -100,7 +100,7 @@ class AgeRegrouper(Regrouper):
     def __init__(self, age_brackets: List[str]) -> None:
         self.age_brackets = age_brackets
 
-    def regroup(self, data: DataFrame) -> DataFrame:
+    def regroup(self, data: Union[CensusDataFrame, CensusGeoDataFrame]) -> Union[CensusDataFrame, CensusGeoDataFrame]:
         """
         Regroups the columns of the dataset. Note that you should probably rename
         the data after a regrouping with a :class:`.Renamer` object to avoid long
@@ -108,7 +108,7 @@ class AgeRegrouper(Regrouper):
 
         Parameters
         ==========
-        data : :class:`pandas.DataFrame`
+        data : :class:`.cdf.CensusDataFrame` or :class:`.cdf.CensusGeoDataFrame`
             The data to regroup.
         """
         age_assignments = {}
@@ -145,7 +145,7 @@ class AgeRegrouper(Regrouper):
 
         groupings = defaultdict(set)
         for c in data.columns:
-            variable = data[c].census.variable
+            variable = data[c].variable
             if variable is not None:
                 for element in variable.path:
                     age_match = match(AGE_REGEX, element)

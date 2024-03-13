@@ -1,10 +1,9 @@
-from typing import Dict, Callable
+from typing import Dict, Callable, Union
 from re import Match, finditer
 from pandas import DataFrame
 
-import censaurus.census_accessors
 from censaurus.variable import Variable
-from censaurus.dataset import Dataset
+from censaurus.cdf import CensusDataFrame, CensusGeoDataFrame
 
 
 class Renamer:
@@ -86,7 +85,7 @@ class Renamer:
         
         return self.separator.join([t for t in tokens if t])
 
-    def rename(self, data: DataFrame):
+    def rename(self, data: Union[CensusDataFrame, CensusGeoDataFrame]) -> Union[CensusDataFrame, CensusGeoDataFrame]:
         """
         Renames the columns of the dataset.
 
@@ -95,21 +94,14 @@ class Renamer:
         data : :class:`pandas.DataFrame`
             The data to rename.
         """
-        new_name_map = {}
-        old_name_map = {}
-        variable_map = {}
+        column_map = {}
         for c in data.columns:
-            v = data[c].census.variable
-            variable_map[c] = v
+            v = data[c].variable
             if v is not None:
                 new_name = self._rename_variable(variable=v)
-                new_name_map[c] = new_name
-                old_name_map[new_name] = c
+                column_map[c] = new_name
 
-        data.rename(columns=new_name_map, inplace=True)
-
-        for new_name, old_name in old_name_map.items():
-            data[new_name].census.variable = variable_map[old_name]
+        data.rename(columns=column_map, inplace=True)
 
         return data
 
