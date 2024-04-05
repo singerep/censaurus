@@ -12,15 +12,15 @@ def _transform_geometry(geometry, scale, center, x_offset, y_offset, rotation):
     geometry = affinity.translate(geometry, x_offset, y_offset)
     return geometry
 
-def _apply_transformation(row, state, scale, center, x_offset, y_offset, rotation):
-    if row['state'] == state:
+def _apply_transformation(row, region_col, region, scale, center, x_offset, y_offset, rotation):
+    if row[region_col] == region:
         row['geometry'] = _transform_geometry(row['geometry'], scale, center, x_offset, y_offset, rotation)
     return row
 
 def _transform(data: CensusGeoDataFrame, region_col: str, transformations: Dict[str, Tuple]) -> CensusGeoDataFrame:
-    for s, (scale, x_offset, y_offset, rotation) in transformations.items():
-        centroid = union_all(data[data[region_col] == s]['geometry'].values).centroid
-        data = data.apply(_apply_transformation, axis=1, args=(s, scale, centroid, x_offset, y_offset, rotation))
+    for r, (scale, x_offset, y_offset, rotation) in transformations.items():
+        centroid = union_all(data[data[region_col] == r]['geometry'].values).centroid
+        data = data.apply(_apply_transformation, axis=1, args=(region_col, r, scale, centroid, x_offset, y_offset, rotation))
 
     return data
 
@@ -32,7 +32,7 @@ CONTINENTAL_EA_BELOW = {
 
 CONTINENTAL_SCALED_BELOW = {
     '02': (0.4, 700000, -4750000, 45),
-    '15': (1, 5000000, -1100000, 45),
+    '15': (1, 4800000, -1100000, 45),
     '72': (1, -2500000, 300000, 0)
 }
 
@@ -86,26 +86,39 @@ def comparison(data: CensusGeoDataFrame, comparison_col: str):
         group_bounds[g] = group_geometry.bounds
 
     anchor = comparison_groups[0]
+
     anchor_height = group_bounds[anchor][3] - group_bounds[anchor][1]
     anchor_width = group_bounds[anchor][2] - group_bounds[anchor][0]
     
-    mid_height = group_bounds[anchor][1] + anchor_height/2
+    bottom_edge = group_bounds[anchor][3]
     right_edge = group_bounds[anchor][2]
     offset = anchor_width*0.1
 
     transformations = {}
     for g in comparison_groups[1:]:
-        new_height = group_bounds[g][3] - group_bounds[g][1]
-        scale = anchor_height/new_height
+        g_height = group_bounds[g][3] - group_bounds[g][1]
+        g_width = group_bounds[g][2] - group_bounds[g][0]
 
-        new_width = (group_bounds[g][2] - group_bounds[g][0])*scale
+        g_centroid_x = group_centroids[g].x
+        g_centroid_y = group_centroids[g].y
 
-        move_x = (right_edge + offset + new_width/2) - (group_bounds[g][0] + (new_width/scale)/2)
-        move_y = mid_height - (group_bounds[g][1] + new_height/2)
+        g_centroid_x_prop = ((g_centroid_x - group_bounds[g][0])/g_width)
+        g_centroid_y_prop = ((g_centroid_y - group_bounds[g][3])/g_height)
+
+        scale = anchor_height/g_height
+
+        g_height_scaled = g_height*scale
+        g_width_scaled = g_width*scale
+
+        g_centroid_x_adj = right_edge + offset + g_centroid_x_prop*g_width_scaled
+        g_centroid_y_adj = bottom_edge + g_centroid_y_prop*g_height_scaled
+
+        move_x = g_centroid_x_adj - g_centroid_x
+        move_y = g_centroid_y_adj - g_centroid_y
 
         transformations[g] = (scale, move_x, move_y, 0)
 
-        right_edge = right_edge + offset + new_width
+        right_edge += offset + g_width_scaled
 
     data = _transform(data, comparison_col, transformations)
 
