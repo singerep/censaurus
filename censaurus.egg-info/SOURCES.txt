@@ -5,7 +5,7 @@ requirements.txt
 setup.py
 censaurus/__init__.py
 censaurus/api.py
-censaurus/census_accessors.py
+censaurus/cdf.py
 censaurus/constants.py
 censaurus/dataset.py
 censaurus/geography.py
@@ -15,6 +15,7 @@ censaurus/recode.py
 censaurus/regroup.py
 censaurus/rename.py
 censaurus/tiger.py
+censaurus/transform.py
 censaurus/variable.py
 censaurus.egg-info/PKG-INFO
 censaurus.egg-info/SOURCES.txt
@@ -23,11 +24,12 @@ censaurus.egg-info/requires.txt
 censaurus.egg-info/top_level.txt
 censaurus/_data/state_ids.csv
 test/test_api.py
-test/test_census_accessors.py
+test/test_cdf.py
 test/test_dataset.py
 test/test_geography.py
 test/test_recode.py
 test/test_regroup.py
 test/test_rename.py
 test/test_tiger.py
+test/test_transform.py
 test/test_variable.py

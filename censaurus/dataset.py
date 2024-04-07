@@ -395,26 +395,26 @@ class Dataset:
         else:
             cdf = CensusDataFrame(df, geography=geography, variables=variables)
 
-        if rename_map != {}:
-            reverse_rename_map = {v: k for k, v in rename_map.items()}
-            cdf = cdf.rename(columns=rename_map)
+        # if rename_map != {}:
+        #     reverse_rename_map = {v: k for k, v in rename_map.items()}
+        #     cdf = cdf.rename(columns=rename_map)
 
-        for col_name in cdf.columns:
-            if rename_map != {}:
-                var_name = reverse_rename_map.get(col_name, col_name)
-            else:
-                var_name = col_name
-            variable = self.variables.get(variable=var_name)
-            if variable is not None and var_name not in self.variables._attribute_map:
-                if variable.type == int and clean is True:
-                    cdf[col_name] = to_numeric(cdf[col_name], errors='coerce')
-                    cdf[col_name] = cdf[col_name].where(cdf[col_name] > -222222222)
+        # for col_name in cdf.columns:
+        #     if rename_map != {}:
+        #         var_name = reverse_rename_map.get(col_name, col_name)
+        #     else:
+        #         var_name = col_name
+        #     variable = self.variables.get(variable=var_name)
+        #     if variable is not None and var_name not in self.variables._attribute_map:
+        #         if variable.type == int and clean is True:
+        #             cdf[col_name] = to_numeric(cdf[col_name], errors='coerce')
+        #             cdf[col_name] = cdf[col_name].where(cdf[col_name] > -222222222)
 
-        cdf = cdf.fillna(value=nan)
+        # cdf = cdf.fillna(value=nan)
 
         return cdf
 
-    def us(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None) -> Union[DataFrame, GeoDataFrame]:
+    def us(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True) -> Union[DataFrame, GeoDataFrame]:
         """
         Get Census data for the entire United States.
 
@@ -453,10 +453,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='us', target_layer_name=None, variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def regions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='us', target_layer_name=None, variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def regions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for regions of the United States. See 
         `here <https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf>`_
@@ -497,10 +502,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='region', target_layer_name='Census Regions', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def divisions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='region', target_layer_name='Census Regions', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def divisions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for divisions of the United States. See 
         `here <https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf>`_
@@ -541,10 +551,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='division', target_layer_name='Census Divisions', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def states(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='division', target_layer_name='Census Divisions', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def states(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for states.
 
@@ -583,10 +598,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='state', target_layer_name='States', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def counties(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='state', target_layer_name='States', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def counties(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for counties.
 
@@ -625,10 +645,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='county', target_layer_name='Counties', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def county_subdivisions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='county', target_layer_name='Counties', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def county_subdivisions(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for county subdivisions.
 
@@ -667,10 +692,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='county subdivision', target_layer_name='County Subdivisions', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def tracts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='county subdivision', target_layer_name='County Subdivisions', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def tracts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for Census tracts.
 
@@ -709,10 +739,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='tract', target_layer_name='Census Tracts', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def block_groups(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='tract', target_layer_name='Census Tracts', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def block_groups(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for Census block groups.
 
@@ -751,10 +786,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='block group', target_layer_name='Census Block Groups', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def blocks(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='block group', target_layer_name='Census Block Groups', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def blocks(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for Census blocks.
 
@@ -793,10 +833,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='block', target_layer_name='Census Blocks', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def places(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='block', target_layer_name='Census Blocks', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def places(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for Census places (both Incorporated Places and Census 
         Designated Places).
@@ -836,10 +881,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='place', target_layer_name=['Census Designated Places', 'Incorporated Places'], variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def MSAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='place', target_layer_name=['Census Designated Places', 'Incorporated Places'], variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def MSAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for Metropolitan and Micropolitan Statistical Areas.
 
@@ -878,10 +928,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='metropolitan statistical area/micropolitan statistical area', target_layer_name=['Metropolitan Statistical Areas', 'Micropolitan Statistical Areas'], variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def CSAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='metropolitan statistical area/micropolitan statistical area', target_layer_name=['Metropolitan Statistical Areas', 'Micropolitan Statistical Areas'], variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def CSAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for Combined Statistical Areas.
 
@@ -920,10 +975,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='combined statistical area', target_layer_name='Combined Statistical Areas', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def congressional_districts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='combined statistical area', target_layer_name='Combined Statistical Areas', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def congressional_districts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for Congressional Districts.
 
@@ -962,10 +1022,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='congressional district', target_layer_name='Congressional Districts', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def voting_districts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='congressional district', target_layer_name='Congressional Districts', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def voting_districts(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for voting districts.
 
@@ -1004,10 +1069,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='voting district', target_layer_name='Voting Districts', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def ZCTAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='voting district', target_layer_name='Voting Districts', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def ZCTAs(self, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for Zib Code Tabulation Areas (note that these are **not**
         the exact same as zip codes).
@@ -1047,10 +1117,15 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
-        """
-        return self._get_cdf(within=within, target='zip code tabulation area', target_layer_name='Zip Code Tabulation Areas', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
 
-    def other_geography(self, geography: str, geography_layer: str = None, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = None, extra_census_params: Dict[str, str] = None):
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
+        """
+        return self._get_cdf(within=within, target='zip code tabulation area', target_layer_name='Zip Code Tabulation Areas', variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
+
+    def other_geography(self, geography: str, geography_layer: str = None, within: Union[Area, List[Area]] = None, variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]] = [], groups: Union[List[str], List[Group], List[Union[str, Group]], GroupCollection] = [], return_geometry: bool = False, area_threshold: float = 0.01, extra_census_params: Dict[str, str] = None, clean: bool = True):
         """
         Get Census data for any other geographic level supported by the Census.
 
@@ -1098,8 +1173,13 @@ class Dataset:
 
         extra_census_params : dict of :obj:`str`: :obj:`str` = {}
             Extra query parameters to pass to the Census when requesting data.
+
+        clean : :obj:`bool`: = True
+            Determines whether or not resulting columns of type :obj:`int` should be
+            cleaned. If ``True``, then values that the Census uses to indicate missing
+            or null data are converted to ``NaN``.
         """
-        return self._get_cdf(within=within, target=geography, target_layer_name=geography_layer, variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params)
+        return self._get_cdf(within=within, target=geography, target_layer_name=geography_layer, variables=variables, groups=groups, return_geometry=return_geometry, area_threshold=area_threshold, extra_census_params=extra_census_params, clean=clean)
 
 
 # --- SPECIFIC DATASETS ---

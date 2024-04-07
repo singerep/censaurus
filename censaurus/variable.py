@@ -771,7 +771,7 @@ class VariableCollection:
         """
         return list(self._variable_map.values())
 
-    def visualize(self, label_type: str = 'name', hierarchical: bool = False, filename: str = 'variable_graph.html', show: bool = True, keep_file: bool = False, **kwargs):
+    def visualize(self, label_type: str = 'name', hierarchical: bool = False, filename: str = 'variable_graph.html', show: bool = True, keep_file: bool = False, notebook: bool = False, **kwargs):
         """
         Visualizes the :class:`.VariableCollection` as a tree in your default
         webbrowser.
@@ -807,4 +807,4 @@ class VariableCollection:
 
         titles = {v_path: str(self.get(self._path_to_name_map[v_path])) for v_path in self._variable_tree}
 
-        visualize_graph(tree=self._variable_tree, titles=titles, labels=labels, hierarchical=hierarchical, filename=filename, show=show, keep_file=keep_file, **kwargs)
+        visualize_graph(tree=self._variable_tree, titles=titles, labels=labels, hierarchical=hierarchical, filename=filename, show=show, keep_file=keep_file, notebook=notebook, **kwargs)

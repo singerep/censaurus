@@ -23,7 +23,7 @@ def bfs(tree: dict, roots: list):
 
     return depths
 
-def visualize_graph(tree: dict, titles: dict, labels: dict, hierarchical: bool, filename: str, show: bool, keep_file: bool, **kwargs):
+def visualize_graph(tree: dict, titles: dict, labels: dict, hierarchical: bool, filename: str, show: bool, keep_file: bool, notebook: bool, **kwargs):
     if len(tree) == 0:
         print('Cannot visualize a tree with no nodes.')
         return None
@@ -35,9 +35,9 @@ def visualize_graph(tree: dict, titles: dict, labels: dict, hierarchical: bool, 
     nodes = depths.keys()
 
     width = kwargs.pop('width', '100%')
-    height = kwargs.pop('height', '100%')
+    height = kwargs.pop('height', '500px')
 
-    g = Network(width=width, height=height, layout=hierarchical, bgcolor="#ebebeb", cdn_resources='in_line', **kwargs)
+    g = Network(width=width, height=height, layout=hierarchical, bgcolor="#ebebeb", cdn_resources='in_line', notebook=notebook, **kwargs)
 
     for v_path in nodes:
         if depths[v_path] == 0:
