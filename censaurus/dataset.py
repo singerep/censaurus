@@ -1,10 +1,11 @@
-import time
 from typing import Union, Dict, List, Set
-from pandas import DataFrame, to_numeric, json_normalize
+from pandas import DataFrame, to_numeric, json_normalize, merge, concat
+from numpy import nan
 from json.decoder import JSONDecodeError
 from os import path
 from geopandas import GeoDataFrame
 from collections import defaultdict
+from functools import reduce
 
 dir_path = path.dirname(path.realpath(__file__))
 
@@ -332,7 +333,7 @@ class Dataset:
         url = self.url_extension + f'?get={variable_str}&{geography_str}'
         return url
 
-    def _get_cdf(self, within: Union[Area, List[Area]], target: str, target_layer_name: Union[str, List[str]], variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]], groups: Union[List[str], List[Group]], return_geometry: bool, area_threshold: float, extra_census_params: Dict[str, str] = None) -> Union[CensusDataFrame, CensusGeoDataFrame]:
+    def _get_cdf(self, within: Union[Area, List[Area]], target: str, target_layer_name: Union[str, List[str]], variables: Union[List[str], List[Variable], List[Union[str, Variable]], VariableCollection, Dict[str, str]], groups: Union[List[str], List[Group]], return_geometry: bool, area_threshold: float, extra_census_params: Dict[str, str] = None, clean: bool = True) -> Union[CensusDataFrame, CensusGeoDataFrame]:
         variables, variable_params_list, rename_map = self.variables._build_variable_params(variables=variables, groups=groups)
         geography, geography_params_list, features_within = self.geographies._build_geography_params(areas=self.areas, within=within, target=target, target_layer_name=target_layer_name, return_geometry=return_geometry, area_threshold=area_threshold)
 
@@ -350,10 +351,10 @@ class Dataset:
         url_params_list = zip(url_list, params_list)
         responses = self.census_client.get_many_sync(url_params_list=url_params_list)
 
-        key_record_map = defaultdict(dict)
-        dfs : List[DataFrame] = []
+        geo_params_df_map = defaultdict(list)
         for response in responses:
             if response.status_code == 200:
+                response_geo_params = tuple([(k, tuple(response.url.params._dict.get(k, [None]))) for k in ['for', 'in']])
                 try:
                     data = response.json()
                     df = DataFrame(data)
@@ -361,22 +362,19 @@ class Dataset:
                     df = df[1:]
                     df = df.reset_index(drop=True)
                     df = df.rename_axis(None, axis=1)
-                    dfs.append(df)
+                    geo_params_df_map[response_geo_params].append(df)
                 except JSONDecodeError:
                     raise DatasetError(f'There was a problem decoding the result of your Census API call. The following is the response from the Census API:\n\n{response.text}')
             else: # status code must be 204 (empty response); only 200s and 204s are returned, all other statuses raise Exceptions
                 pass
 
-        intersecting_cols = set.intersection(*[set(df.columns) for df in dfs])
-        df_id_cols = [col for col in dfs[0].columns if col in intersecting_cols]
+        dfs : List[DataFrame] = []
+        for geo_params, geo_params_dfs in geo_params_df_map.items():
+            intersecting_cols = list(set.intersection(*[set(df.columns) for df in geo_params_dfs]))
+            merged_df = reduce(lambda  left, right: merge(left, right, on=intersecting_cols, how='inner'), geo_params_dfs)
+            dfs.append(merged_df)
 
-        for df in dfs:
-            df_records = df.to_dict(orient='records')
-            for record in df_records:
-                key = tuple(record[col] for col in df_id_cols)
-                key_record_map[key].update(record)
-        df = DataFrame.from_records(list(key_record_map.values()))
-        df = df[[col for col in df.columns if col not in df_id_cols] + df_id_cols]
+        df = concat(dfs)
 
         if features_within is not None:
             if 'GEO_ID' in df.columns:
@@ -391,9 +389,7 @@ class Dataset:
                 df = df.merge(features_within[df_fw_id_cols], on=df_fw_id_cols, how='inner')
             if 'GEOID' in df.columns:
                 df = df.drop(labels='GEOID', axis=1)
-
-        df = df.replace(BAD_VALUES, None)
-
+        
         if isinstance(df, GeoDataFrame):
             cdf = CensusGeoDataFrame(df, geography=geography, variables=variables, areas=self.areas)
         else:
@@ -401,7 +397,7 @@ class Dataset:
 
         if rename_map != {}:
             reverse_rename_map = {v: k for k, v in rename_map.items()}
-            df = df.rename(columns=rename_map)
+            cdf = cdf.rename(columns=rename_map)
 
         for col_name in cdf.columns:
             if rename_map != {}:
@@ -409,9 +405,12 @@ class Dataset:
             else:
                 var_name = col_name
             variable = self.variables.get(variable=var_name)
-            if variable is not None:
-                if variable.type == int:
-                    cdf[col_name] = cdf[col_name].apply(to_numeric, errors='coerce').fillna(cdf[col_name])
+            if variable is not None and var_name not in self.variables._attribute_map:
+                if variable.type == int and clean is True:
+                    cdf[col_name] = to_numeric(cdf[col_name], errors='coerce')
+                    cdf[col_name] = cdf[col_name].where(cdf[col_name] > -222222222)
+
+        cdf = cdf.fillna(value=nan)
 
         return cdf
 

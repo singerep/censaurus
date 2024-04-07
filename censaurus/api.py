@@ -1,6 +1,6 @@
 import time
 from typing import Dict, List, Tuple, Iterable
-from httpx import AsyncClient, Timeout, Response, ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout
+from httpx import AsyncClient, Timeout, Response, RequestError
 from asyncio import new_event_loop, set_event_loop, run_coroutine_threadsafe, sleep, gather
 from threading import Thread
 
@@ -12,7 +12,10 @@ class CensusAPIKeyError(Exception):
 
 class CensusAPIError(Exception):
     def __init__(self, status_code: int, message: str) -> None:
-        super().__init__(f'The Census API had an error (status code {status_code}) and returned the following message:\n\n{message}')
+        if status_code is None:
+            super().__init__(f'{message}')
+        else:
+            super().__init__(f'The Census API had an error (status code {status_code}) and returned the following message:\n\n{message}')
         self.status_code = status_code
         self.message = message
 
@@ -123,7 +126,7 @@ class CensusClient(AsyncClient):
             retry_count += 1
             try:
                 response = await super().get(url=url, params=params)
-            except (ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout) as e:
+            except RequestError:
                 response = None
 
             if response is None:
@@ -239,7 +242,7 @@ class TIGERClient(AsyncClient):
             retry_count += 1
             try:
                 response = await super().get(url=url, params=params)
-            except (ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout):
+            except RequestError:
                 response = None
 
             if response is None:
@@ -332,7 +335,7 @@ class TIGERClient(AsyncClient):
             retry_count += 1
             try:
                 response = await super().post(url=url, data=data)
-            except (ConnectTimeout, ConnectError, ReadTimeout, PoolTimeout):
+            except RequestError:
                 response = None
 
             if response is None:
