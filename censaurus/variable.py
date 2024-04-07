@@ -407,6 +407,7 @@ class VariableCollection:
         for g in groups:
             variable_names += self.filter_by_group(group=g)
 
+        # do not change to the obvious approach here! this is done to maintain variable order
         variable_names_set = set()
         unique_variable_names = []
         for v_n in variable_names:
