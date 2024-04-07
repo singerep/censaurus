@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from shapely import affinity, union_all, Point
-from typing import Dict, Tuple
+from geopandas import GeoDataFrame
+from typing import Dict, Tuple, Union
 
 from censaurus.dataset import ACS5
 from censaurus.cdf import CensusGeoDataFrame
@@ -12,15 +13,15 @@ def _transform_geometry(geometry, scale, center, x_offset, y_offset, rotation):
     geometry = affinity.translate(geometry, x_offset, y_offset)
     return geometry
 
-def _apply_transformation(row, region_col, region, scale, center, x_offset, y_offset, rotation):
+def _apply_transformation(row, geometry_col, region_col, region, scale, center, x_offset, y_offset, rotation):
     if row[region_col] == region:
-        row['geometry'] = _transform_geometry(row['geometry'], scale, center, x_offset, y_offset, rotation)
+        row[geometry_col] = _transform_geometry(row[geometry_col], scale, center, x_offset, y_offset, rotation)
     return row
 
-def _transform(data: CensusGeoDataFrame, region_col: str, transformations: Dict[str, Tuple]) -> CensusGeoDataFrame:
+def _transform(data: Union[CensusGeoDataFrame, GeoDataFrame], geometry_col: str, region_col: str, transformations: Dict[str, Tuple]) -> Union[CensusGeoDataFrame, GeoDataFrame]:
     for r, (scale, x_offset, y_offset, rotation) in transformations.items():
-        centroid = union_all(data[data[region_col] == r]['geometry'].values).centroid
-        data = data.apply(_apply_transformation, axis=1, args=(region_col, r, scale, centroid, x_offset, y_offset, rotation))
+        centroid = union_all(data[data[region_col] == r][geometry_col].values).centroid
+        data = data.apply(_apply_transformation, axis=1, args=(geometry_col, region_col, r, scale, centroid, x_offset, y_offset, rotation))
 
     return data
 
@@ -48,9 +49,7 @@ CONTINENTAL_SCALED_OUTSIDE = {
     '72': (1, -1300000, 200000, 0)
 }
 
-
-def continental(data: CensusGeoDataFrame, state_col: str = 'state', position: str = 'below', preserve_area: bool = False, custom_transformations: Dict[str, Tuple] = None) -> CensusGeoDataFrame:
-    # TODO: add warning about equal area (equal area during scaling, but CRS may not be equal area)
+def make_contiguous(data: Union[CensusGeoDataFrame, GeoDataFrame], state_col: str = 'state', position: str = 'below', preserve_area: bool = False, custom_transformations: Dict[str, Tuple] = None) -> Union[CensusGeoDataFrame, GeoDataFrame]:
     if custom_transformations:
         transformations = custom_transformations
     else:
@@ -74,8 +73,7 @@ def continental(data: CensusGeoDataFrame, state_col: str = 'state', position: st
 
     return data
 
-def comparison(data: CensusGeoDataFrame, comparison_col: str):
-    # TODO: figure out what to do if a geometry it wraps around
+def compare_regions(data: Union[CensusGeoDataFrame, GeoDataFrame], comparison_col: str) -> Union[CensusGeoDataFrame, GeoDataFrame]:
     comparison_groups = sorted(list(data[comparison_col].unique()))
 
     group_centroids = {}

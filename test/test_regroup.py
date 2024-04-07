@@ -2,7 +2,7 @@ from unittest import TestCase, main
 from pandas import DataFrame
 
 from censaurus.dataset import ACS1
-from censaurus.regroup import FIVE_RACE_REGROUPER, AgeRegrouper
+from censaurus.utils.regroup import FIVE_RACE_REGROUPER, AgeRegrouper
 
 
 class RegrouperTest(TestCase):

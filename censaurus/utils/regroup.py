@@ -4,7 +4,7 @@ from collections import defaultdict
 from re import match
 
 from censaurus.variable import RegroupedVariable
-from censaurus.rename import AGE_REGEX
+from censaurus.utils.rename import AGE_REGEX
 from censaurus.cdf import CensusDataFrame, CensusGeoDataFrame
 
 

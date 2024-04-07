@@ -29,12 +29,12 @@ plt.savefig('source/northeast.png', transparent=True, dpi=200)
 data = acs.tracts(within=northeast, variables=male_age_vars, return_geometry=True)
 print(data)
 
-from censaurus.rename import SIMPLE_RENAMER
+from censaurus.utils.rename import SIMPLE_RENAMER
 
 data = SIMPLE_RENAMER.rename(data)
 print(data)
 
-from censaurus.regroup import AgeRegrouper
+from censaurus.utils.regroup import AgeRegrouper
 
 data = AgeRegrouper(age_brackets=['0-64', '65+']).regroup(data)
 data = SIMPLE_RENAMER.rename(data)

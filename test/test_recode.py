@@ -2,7 +2,7 @@ from unittest import TestCase, main
 from pandas import DataFrame
 
 from censaurus.dataset import ACS1
-from censaurus.recode import StateRecoder
+from censaurus.utils.recode import StateRecoder
 
 
 class RecodeTest(TestCase):
