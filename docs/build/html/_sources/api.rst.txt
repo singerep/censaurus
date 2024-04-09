@@ -1,11 +1,17 @@
 =================
-API documentation
+API reference
 =================
 
 Datasets
 ========
 
 .. automodule:: censaurus.dataset
+   :members:
+
+CensusDataFrame and CensusGeoDataFrame
+======================================
+
+.. automodule:: censaurus.cdf
    :members:
 
 Variables
@@ -20,12 +26,6 @@ Geography
 .. automodule:: censaurus.geography
    :members:
 
-Custom ``pandas`` functionality
-===============================
-
-.. automodule:: censaurus.census_accessors
-   :members:
-
 TIGER and Geometry
 ==================
 
@@ -35,19 +35,25 @@ TIGER and Geometry
 Renaming
 ========
 
-.. automodule:: censaurus.rename
+.. automodule:: censaurus.utils.rename
    :members:
 
 Regrouping
 ==========
 
-.. automodule:: censaurus.regroup
+.. automodule:: censaurus.utils.regroup
    :members:
 
 Recoding
 ========
 
-.. automodule:: censaurus.recode
+.. automodule:: censaurus.utils.recode
+   :members:
+
+Transform Geometry
+==================
+
+.. automodule:: censaurus.utils.transform_geometry
    :members:
 
 Census and TIGERWeb APIs

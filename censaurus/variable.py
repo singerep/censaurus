@@ -5,7 +5,7 @@ from os import path
 from pandas import DataFrame
 from itertools import zip_longest
 
-from .graph_utils import visualize_graph
+from censaurus.utils.graph_utils import visualize_graph
 
 dir_path = path.dirname(path.realpath(__file__))
 
@@ -177,6 +177,12 @@ class RegroupedVariable:
         self.group = variables[0].group
         self.concept = variables[0].concept
         self.variables = variables
+
+    def __repr__(self) -> str:
+        joined_var_names = ', '.join([v.name for v in self.variables])
+        var_str = f'Grouped Variable: {joined_var_names}\n  group: {self.group}\n  concept: {self.concept}\n  path: [{self.path}]\n'
+                
+        return var_str
 
 
 class VariableError(Exception):

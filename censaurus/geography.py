@@ -4,7 +4,7 @@ from json import dumps, loads
 from geopandas import GeoDataFrame
 from pandas import DataFrame, concat
 
-from censaurus.utils.graph_utils import visualize_graph
+# from censaurus.utils.graph_utils import visualize_graph
 from censaurus.tiger import AreaCollection, Area, US_CARTOGRAPHIC
 from censaurus.constants import LAYER_NAME_MAP, LAYER_NAME_MAP_REVERSE, FEATURE_ATTRIBUTE_MAP
 

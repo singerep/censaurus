@@ -1,45 +1,45 @@
-from censaurus.dataset import ACS5
-acs = ACS5()
+# from censaurus.dataset import ACS5
+# acs = ACS5()
 
-print(acs.variables)
+# print(acs.variables)
 
-print(acs.variables.filter_by_term(['sex', 'age'], by='concept'))
+# print(acs.variables.filter_by_term(['sex', 'age'], by='concept'))
 
-print(acs.groups.filter_by_term(['sex', 'age']))
+# print(acs.groups.filter_by_term(['sex', 'age']))
 
-# NOTE: need to comment out the "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" link in the file this line of code produces
-acs.variables.filter_by_group(group='B01001').visualize(filename='source/B01001.html', show=False, keep_file=True, height='500px')
+# # NOTE: need to comment out the "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" link in the file this line of code produces
+# acs.variables.filter_by_group(group='B01001').visualize(filename='source/B01001.html', show=False, keep_file=True, height='500px')
 
-male_age_vars = acs.variables.children_of(variable='B01001_002E')
-print(male_age_vars)
+# male_age_vars = acs.variables.children_of(variable='B01001_002E')
+# print(male_age_vars)
 
-print(acs.geographies.to_df())
+# print(acs.geographies.to_df())
 
-print(acs.geographies.get(name='tract'))
+# print(acs.geographies.get(name='tract'))
 
-# NOTE: need to comment out the "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" link in the file this line of code produces
-acs.geographies.visualize(filename='source/acs5_geos.html', hierarchical=True, show=False, keep_file=True, height='500px')
+# # NOTE: need to comment out the "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" link in the file this line of code produces
+# acs.geographies.visualize(filename='source/acs5_geos.html', hierarchical=True, show=False, keep_file=True, height='500px')
 
-northeast = acs.areas.region('Northeast')
+# northeast = acs.areas.region('Northeast')
 
-import matplotlib.pyplot as plt
-northeast.plot(color='#2980b9')
-plt.savefig('source/northeast.png', transparent=True, dpi=200)
+# import matplotlib.pyplot as plt
+# northeast.plot(color='#2980b9')
+# plt.savefig('source/northeast.png', transparent=True, dpi=200)
 
-data = acs.tracts(within=northeast, variables=male_age_vars, return_geometry=True)
-print(data)
+# data = acs.tracts(within=northeast, variables=male_age_vars, return_geometry=True)
+# print(data)
 
-from censaurus.utils.rename import SIMPLE_RENAMER
+# from censaurus.utils.rename import SIMPLE_RENAMER
 
-data = SIMPLE_RENAMER.rename(data)
-print(data)
+# data = SIMPLE_RENAMER.rename(data)
+# print(data)
 
-from censaurus.utils.regroup import AgeRegrouper
+# from censaurus.utils.regroup import AgeRegrouper
 
-data = AgeRegrouper(age_brackets=['0-64', '65+']).regroup(data)
-data = SIMPLE_RENAMER.rename(data)
+# data = AgeRegrouper(age_brackets=['0-64', '65+']).regroup(data)
+# data = SIMPLE_RENAMER.rename(data)
 
-data['proportion_65+'] = data['sex by age|total|male|65+']/(data['sex by age|total|male|0-64'] + data['sex by age|total|male|65+'])
+# data['proportion_65+'] = data['sex by age|total|male|65+']/(data['sex by age|total|male|0-64'] + data['sex by age|total|male|65+'])
 
-data.plot(column='proportion_65+')
-plt.savefig('source/northeast_65+.png', transparent=True, dpi=200)
+# data.plot(column='proportion_65+')
+# plt.savefig('source/northeast_65+.png', transparent=True, dpi=200)

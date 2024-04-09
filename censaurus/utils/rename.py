@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 from typing import Dict, Callable, Union
 from re import Match, finditer
 from pandas import DataFrame
 
 from censaurus.variable import Variable
-from censaurus.cdf import CensusDataFrame, CensusGeoDataFrame
+import censaurus
 
 
-class Renamer:
+class CensusRenamer:
     """
     An object that handles renaming Census variable names in datasets.
 
@@ -49,7 +51,7 @@ class Renamer:
 
     def add_group_prefixes(self, group_prefixes: Dict[str, str]) -> None:
         """
-        Adds additional group prefixes to an existing :class:`.Renamer`.
+        Adds additional group prefixes to an existing :class:`.CensusRenamer`.
 
         Parameters
         ==========
@@ -85,7 +87,7 @@ class Renamer:
         
         return self.separator.join([t for t in tokens if t])
 
-    def rename(self, data: Union[CensusDataFrame, CensusGeoDataFrame]) -> Union[CensusDataFrame, CensusGeoDataFrame]:
+    def rename(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], inplace: bool = True) -> Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame]:
         """
         Renames the columns of the dataset.
 
@@ -93,6 +95,10 @@ class Renamer:
         ==========
         data : :class:`pandas.DataFrame`
             The data to rename.
+
+        inplace : :obj:`bool` = True
+            Determines whether variables are renamed in place, or whether this function
+            should return a new dataset, leaving the original unchanged.
         """
         column_map = {}
         for c in data.columns:
@@ -101,9 +107,10 @@ class Renamer:
                 new_name = self._rename_variable(variable=v)
                 column_map[c] = new_name
 
-        data.rename(columns=column_map, inplace=True)
-
-        return data
+        if inplace is True:
+            data.rename(columns=column_map, inplace=True)
+        else:
+            return data.rename(columns=column_map, inplace=False)
 
 def _age_renamer(match: Match, token: str) -> str:
     start, stop = match.span()
@@ -192,7 +199,7 @@ TYPE_REGEX = r'((estimate)|(margin of error)|(annotation of estimate)|(annotatio
 INFLATION_REGEX = r'in (?P<year>\d+) inflation-adjusted dollars'
 INCOME_REGEX = r'((?P<less_than>less than \$(?P<less_than_stop>[0-9,]+))|(?P<to>\$(?P<to_start>[0-9,]+) to \$(?P<to_stop>[0-9,]+))|(?P<or_more>\$(?P<or_more_start>[0-9,]+) or more))'
 
-SIMPLE_RENAMER = Renamer(
+SIMPLE_RENAMER = CensusRenamer(
     default_rename_function=lambda x : ' '.join(x.split()) if x is not None else None, 
     custom_match_functions={
         AGE_REGEX: _age_renamer,
@@ -202,5 +209,5 @@ SIMPLE_RENAMER = Renamer(
         INCOME_REGEX: _income_renamer
     }
 )
-"""A :class:`.Renamer` object that renames variables in a simple way. Has custom match
+"""A :class:`.CensusRenamer` object that renames variables in a simple way. Has custom match
 functions to handle: age, race, variable types, inflation, and incomes."""

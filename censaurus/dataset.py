@@ -15,7 +15,7 @@ from censaurus.variable import Group, GroupCollection, Variable, VariableCollect
 from censaurus.geography import GeographyCollection
 from censaurus.tiger import AreaCollection, Area
 from censaurus.constants import BAD_VALUES
-from censaurus.graph_utils import visualize_graph
+from censaurus.utils.graph_utils import visualize_graph
 
 
 class DatasetError(Exception):
@@ -395,22 +395,22 @@ class Dataset:
         else:
             cdf = CensusDataFrame(df, geography=geography, variables=variables)
 
-        # if rename_map != {}:
-        #     reverse_rename_map = {v: k for k, v in rename_map.items()}
-        #     cdf = cdf.rename(columns=rename_map)
+        if rename_map != {}:
+            reverse_rename_map = {v: k for k, v in rename_map.items()}
+            cdf = cdf.rename(columns=rename_map)
 
-        # for col_name in cdf.columns:
-        #     if rename_map != {}:
-        #         var_name = reverse_rename_map.get(col_name, col_name)
-        #     else:
-        #         var_name = col_name
-        #     variable = self.variables.get(variable=var_name)
-        #     if variable is not None and var_name not in self.variables._attribute_map:
-        #         if variable.type == int and clean is True:
-        #             cdf[col_name] = to_numeric(cdf[col_name], errors='coerce')
-        #             cdf[col_name] = cdf[col_name].where(cdf[col_name] > -222222222)
+        for col_name in cdf.columns:
+            if rename_map != {}:
+                var_name = reverse_rename_map.get(col_name, col_name)
+            else:
+                var_name = col_name
+            variable = self.variables.get(variable=var_name)
+            if variable is not None and var_name not in self.variables._attribute_map:
+                if variable.type == int and clean is True:
+                    cdf[col_name] = to_numeric(cdf[col_name], errors='coerce')
+                    cdf[col_name] = cdf[col_name].where(cdf[col_name] > -222222222)
 
-        # cdf = cdf.fillna(value=nan)
+        cdf = cdf.fillna(value=nan)
 
         return cdf
 

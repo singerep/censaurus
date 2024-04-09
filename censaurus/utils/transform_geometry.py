@@ -1,10 +1,11 @@
-import matplotlib.pyplot as plt
-from shapely import affinity, union_all, Point
+from __future__ import annotations
+
+from shapely import affinity, union_all
 from geopandas import GeoDataFrame
 from typing import Dict, Tuple, Union
+from geopandas import GeoDataFrame
 
-from censaurus.dataset import ACS5
-from censaurus.cdf import CensusGeoDataFrame
+import censaurus
 
 
 def _transform_geometry(geometry, scale, center, x_offset, y_offset, rotation):
@@ -18,7 +19,7 @@ def _apply_transformation(row, geometry_col, region_col, region, scale, center, 
         row[geometry_col] = _transform_geometry(row[geometry_col], scale, center, x_offset, y_offset, rotation)
     return row
 
-def _transform(data: Union[CensusGeoDataFrame, GeoDataFrame], geometry_col: str, region_col: str, transformations: Dict[str, Tuple]) -> Union[CensusGeoDataFrame, GeoDataFrame]:
+def _transform(data: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], geometry_col: str, region_col: str, transformations: Dict[str, Tuple]) -> Union[censaurus.CensusGeoDataFrame, GeoDataFrame]:    
     for r, (scale, x_offset, y_offset, rotation) in transformations.items():
         centroid = union_all(data[data[region_col] == r][geometry_col].values).centroid
         data = data.apply(_apply_transformation, axis=1, args=(geometry_col, region_col, r, scale, centroid, x_offset, y_offset, rotation))
@@ -49,7 +50,7 @@ CONTINENTAL_SCALED_OUTSIDE = {
     '72': (1, -1300000, 200000, 0)
 }
 
-def make_contiguous(data: Union[CensusGeoDataFrame, GeoDataFrame], state_col: str = 'state', position: str = 'below', preserve_area: bool = False, custom_transformations: Dict[str, Tuple] = None) -> Union[CensusGeoDataFrame, GeoDataFrame]:
+def make_contiguous(data: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], state_col: str = 'state', geometry_col: str = 'geometry', position: str = 'below', preserve_area: bool = False, custom_transformations: Dict[str, Tuple] = None, inplace: bool = False) -> Union[censaurus.CensusGeoDataFrame, GeoDataFrame] | None:
     if custom_transformations:
         transformations = custom_transformations
     else:
@@ -65,15 +66,21 @@ def make_contiguous(data: Union[CensusGeoDataFrame, GeoDataFrame], state_col: st
             raise ValueError('Must set position to either below or outside, and must set preserve_area to True or False, or you may use custom_transformations.')
 
     original_crs = data.crs
+
+    if inplace is False:
+        data = data.copy()
+
     data.to_crs(crs='EPSG:2163', inplace=True)
 
-    data = _transform(data, state_col, transformations)
+    data[geometry_col] = _transform(data, geometry_col, state_col, transformations)[geometry_col]
 
     data.to_crs(crs=original_crs, inplace=True)
 
-    return data
+    if inplace:
+        return data
+    
 
-def compare_regions(data: Union[CensusGeoDataFrame, GeoDataFrame], comparison_col: str) -> Union[CensusGeoDataFrame, GeoDataFrame]:
+def compare_regions(data: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], comparison_col: str, geometry_col: str, inplace: bool = False) -> Union[censaurus.CensusGeoDataFrame, GeoDataFrame] | None:
     comparison_groups = sorted(list(data[comparison_col].unique()))
 
     group_centroids = {}
@@ -118,6 +125,10 @@ def compare_regions(data: Union[CensusGeoDataFrame, GeoDataFrame], comparison_co
 
         right_edge += offset + g_width_scaled
 
-    data = _transform(data, comparison_col, transformations)
+    if inplace is False:
+        data = data.copy()
 
-    return data
+    data[geometry_col] = _transform(data, geometry_col, comparison_col, transformations)[geometry_col]
+
+    if inplace:
+        return data

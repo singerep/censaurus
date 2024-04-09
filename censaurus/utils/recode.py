@@ -1,6 +1,12 @@
+from __future__ import annotations
+
 from pandas import DataFrame, read_csv
+from geopandas import GeoDataFrame
 from itertools import combinations
 from censaurus.internals import state_ids_path
+from typing import Union
+
+import censaurus
 
 
 class RecodeError(Exception):
@@ -38,23 +44,30 @@ class StateRecoder:
             self.recode_dicts[f'{from_type}_{to_type}'] = dict(zip(state_ids[from_type].astype(str), state_ids[to_type].astype(str)))
             self.recode_dicts[f'{to_type}_{from_type}'] = dict(zip(state_ids[to_type].astype(str), state_ids[from_type].astype(str)))
 
-    def _to_new(self, data: DataFrame, new_type: str, state_col: str = 'state'):
+    def _to_new(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], new_type: str, state_col: str = 'state', inplace: bool = False) -> Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame]:
+        if inplace is False:
+            data = data.copy()
+        
         other_types = self.types.copy()
         other_types.remove(new_type)
         for type in other_types:
             record_dict = self.recode_dicts[f'{type}_{new_type}']
             if all(str(s) in record_dict.keys() for s in data[state_col].values):
                 data[state_col] = data[state_col].astype(str).map(record_dict)
-                return data
 
-        exception_string = 'Unable to match your state identifiers to any format. Please make sure you are following one of the following formats.\n\n'
+                if inplace is False:
+                    return data
+                else:
+                    return
+
+        exception_string = 'Unable to match your state identifiers to any format. Please make sure that your data is in one of the following formats.\n\n'
         for type in other_types:
             explanation = self.type_explanations[type]
             exception_string += f'  - {type}: {explanation}\n'
 
         raise RecodeError(exception_string)
 
-    def to_FIPS(self, data: DataFrame, state_col: str = 'state'):
+    def to_FIPS(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], state_col: str = 'state', inplace: bool = False):
         """
         Recodes states as FIPS codes (1, 2, 4, etc.). Attempts to infer the 
         original state format. 
@@ -66,9 +79,9 @@ class StateRecoder:
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
         """
-        return self._to_new(data=data, new_type='FIPS', state_col=state_col)
+        return self._to_new(data=data, new_type='FIPS', state_col=state_col, inplace=inplace)
 
-    def to_FIPS_PADDED(self, data: DataFrame, state_col: str = 'state'):
+    def to_FIPS_PADDED(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], state_col: str = 'state', inplace: bool = False):
         """
         Recodes states as two-digit zero-padded FIPS codes (01, 02, 04, etc.). 
         Attempts to infer the original state format. 
@@ -80,9 +93,9 @@ class StateRecoder:
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
         """
-        return self._to_new(data=data, new_type='FIPS_PADDED', state_col=state_col)
+        return self._to_new(data=data, new_type='FIPS_PADDED', state_col=state_col, inplace=inplace)
 
-    def to_ABBR(self, data: DataFrame, state_col: str = 'state'):
+    def to_ABBR(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], state_col: str = 'state', inplace: bool = False):
         """
         Recodes states as abbreviations (AL, AK, AZ, etc.). Attempts to infer the 
         original state format. 
@@ -94,9 +107,9 @@ class StateRecoder:
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
         """
-        return self._to_new(data=data, new_type='ABBR', state_col=state_col)
+        return self._to_new(data=data, new_type='ABBR', state_col=state_col, inplace=inplace)
 
-    def to_NAME(self, data: DataFrame, state_col: str = 'state'):
+    def to_NAME(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], state_col: str = 'state', inplace: bool = False):
         """
         Recodes states as full names (Alabama, Alaska, Arizona, etc.). Attempts to infer 
         the original state format. 
@@ -108,9 +121,9 @@ class StateRecoder:
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
         """
-        return self._to_new(data=data, new_type='NAME', state_col=state_col)
+        return self._to_new(data=data, new_type='NAME', state_col=state_col, inplace=inplace)
 
-    def to_GNIS(self, data: DataFrame, state_col: str = 'state'):
+    def to_GNIS(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], state_col: str = 'state', inplace: bool = False):
         """
         Recodes states as GNIS codes (1779775, 1785533, 1779777 etc.). Attempts to 
         infer the original state format. 
@@ -122,9 +135,9 @@ class StateRecoder:
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
         """
-        return self._to_new(data=data, new_type='GNIS', state_col=state_col)
+        return self._to_new(data=data, new_type='GNIS', state_col=state_col, inplace=inplace)
 
-    def to_GNIS_PADDED(self, data: DataFrame, state_col: str = 'state'):
+    def to_GNIS_PADDED(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], state_col: str = 'state', inplace: bool = False):
         """
         Recodes states as GNIS codes (1779775, 1785533, 1779777 etc.). Attempts to 
         infer the original state format. 
@@ -136,4 +149,4 @@ class StateRecoder:
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
         """
-        return self._to_new(data=data, new_type='GNIS_PADDED', state_col=state_col)
+        return self._to_new(data=data, new_type='GNIS_PADDED', state_col=state_col, inplace=inplace)

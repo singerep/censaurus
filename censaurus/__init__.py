@@ -1,4 +1,9 @@
 from censaurus.dataset import *
-from censaurus.utils.recode import StateRecoder
-from censaurus.utils.regroup import Regrouper, AgeRegrouper
-from censaurus.utils.rename import Renamer
+from censaurus.cdf import CensusDataFrame, CensusSeries, CensusGeoDataFrame
+
+from censaurus.utils.rename import CensusRenamer
+
+import censaurus
+import censaurus.utils
+
+from censaurus import utils

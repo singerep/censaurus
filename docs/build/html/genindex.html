@@ -46,7 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
 </ul>
 
         </div>
@@ -116,9 +116,9 @@
 </li>
       <li><a href="api.html#censaurus.dataset.ACSSupplemental">ACSSupplemental (class in censaurus.dataset)</a>
 </li>
-      <li><a href="api.html#censaurus.rename.Renamer.add_group_prefixes">add_group_prefixes() (censaurus.rename.Renamer method)</a>
+      <li><a href="api.html#censaurus.utils.rename.Renamer.add_group_prefixes">add_group_prefixes() (censaurus.utils.rename.Renamer method)</a>
 </li>
-      <li><a href="api.html#censaurus.regroup.AgeRegrouper">AgeRegrouper (class in censaurus.regroup)</a>
+      <li><a href="api.html#censaurus.utils.regroup.AgeRegrouper">AgeRegrouper (class in censaurus.utils.regroup)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -146,18 +146,16 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#censaurus.tiger.AreaCollection.block_group">block_group() (censaurus.tiger.AreaCollection method)</a>
+      <li><a href="api.html#censaurus.tiger.AreaCollection.block">block() (censaurus.tiger.AreaCollection method)</a>
 </li>
-      <li><a href="api.html#censaurus.dataset.Dataset.block_groups">block_groups() (censaurus.dataset.Dataset method)</a>
+      <li><a href="api.html#censaurus.tiger.AreaCollection.block_group">block_group() (censaurus.tiger.AreaCollection method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#censaurus.dataset.Dataset.blocks">blocks() (censaurus.dataset.Dataset method)</a>
-
-      <ul>
-        <li><a href="api.html#censaurus.tiger.AreaCollection.blocks">(censaurus.tiger.AreaCollection method)</a>
+      <li><a href="api.html#censaurus.dataset.Dataset.block_groups">block_groups() (censaurus.dataset.Dataset method)</a>
 </li>
-      </ul></li>
+      <li><a href="api.html#censaurus.dataset.Dataset.blocks">blocks() (censaurus.dataset.Dataset method)</a>
+</li>
       <li><a href="api.html#censaurus.tiger.build_custom_scorer">build_custom_scorer() (in module censaurus.tiger)</a>
 </li>
   </ul></td>
@@ -174,10 +172,10 @@
 </li>
       </ul></li>
       <li>
-    censaurus.census_accessors
+    censaurus.cdf
 
       <ul>
-        <li><a href="api.html#module-censaurus.census_accessors">module</a>
+        <li><a href="api.html#module-censaurus.cdf">module</a>
 </li>
       </ul></li>
       <li>
@@ -195,35 +193,40 @@
 </li>
       </ul></li>
       <li>
-    censaurus.recode
-
-      <ul>
-        <li><a href="api.html#module-censaurus.recode">module</a>
-</li>
-      </ul></li>
-      <li>
-    censaurus.regroup
-
-      <ul>
-        <li><a href="api.html#module-censaurus.regroup">module</a>
-</li>
-      </ul></li>
-      <li>
-    censaurus.rename
-
-      <ul>
-        <li><a href="api.html#module-censaurus.rename">module</a>
-</li>
-      </ul></li>
-      <li>
     censaurus.tiger
 
       <ul>
         <li><a href="api.html#module-censaurus.tiger">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    censaurus.utils.recode
+
+      <ul>
+        <li><a href="api.html#module-censaurus.utils.recode">module</a>
+</li>
+      </ul></li>
+      <li>
+    censaurus.utils.regroup
+
+      <ul>
+        <li><a href="api.html#module-censaurus.utils.regroup">module</a>
+</li>
+      </ul></li>
+      <li>
+    censaurus.utils.rename
+
+      <ul>
+        <li><a href="api.html#module-censaurus.utils.rename">module</a>
+</li>
+      </ul></li>
+      <li>
+    censaurus.utils.transform_geometry
+
+      <ul>
+        <li><a href="api.html#module-censaurus.utils.transform_geometry">module</a>
+</li>
+      </ul></li>
       <li>
     censaurus.variable
 
@@ -231,13 +234,23 @@
         <li><a href="api.html#module-censaurus.variable">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.api.CensusAPIError">CensusAPIError</a>
 </li>
       <li><a href="api.html#censaurus.api.CensusAPIKeyError">CensusAPIKeyError</a>
 </li>
       <li><a href="api.html#censaurus.api.CensusClient">CensusClient (class in censaurus.api)</a>
 </li>
+      <li><a href="api.html#censaurus.cdf.CensusDataFrame">CensusDataFrame (class in censaurus.cdf)</a>
+</li>
+      <li><a href="api.html#censaurus.cdf.CensusGeoDataFrame">CensusGeoDataFrame (class in censaurus.cdf)</a>
+</li>
+      <li><a href="api.html#censaurus.cdf.CensusSeries">CensusSeries (class in censaurus.cdf)</a>
+</li>
       <li><a href="api.html#censaurus.variable.VariableCollection.children_of">children_of() (censaurus.variable.VariableCollection method)</a>
+</li>
+      <li><a href="api.html#censaurus.tiger.Area.clip_to_cb">clip_to_cb() (censaurus.tiger.Area method)</a>
 </li>
       <li><a href="api.html#censaurus.variable.RegroupedVariable.concept">concept (censaurus.variable.RegroupedVariable attribute)</a>
 
@@ -267,8 +280,6 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#censaurus.census_accessors.DataFrameCensusAccessor">DataFrameCensusAccessor (class in censaurus.census_accessors)</a>
-</li>
       <li><a href="api.html#censaurus.dataset.Dataset">Dataset (class in censaurus.dataset)</a>
 </li>
       <li><a href="api.html#censaurus.dataset.DatasetError">DatasetError</a>
@@ -331,11 +342,11 @@
 </li>
       <li><a href="api.html#censaurus.variable.VariableCollection.first_ancestor_of">first_ancestor_of() (censaurus.variable.VariableCollection method)</a>
 </li>
-      <li><a href="api.html#censaurus.regroup.FIVE_RACE_REGROUPER">FIVE_RACE_REGROUPER (in module censaurus.regroup)</a>
+      <li><a href="api.html#censaurus.utils.regroup.FIVE_RACE_REGROUPER">FIVE_RACE_REGROUPER (in module censaurus.utils.regroup)</a>
 </li>
       <li><a href="api.html#censaurus.tiger.Area.from_file">from_file() (censaurus.tiger.Area class method)</a>
 </li>
-      <li><a href="api.html#censaurus.tiger.Area.from_tiger">from_tiger() (censaurus.tiger.Area class method)</a>
+      <li><a href="api.html#censaurus.tiger.Area.from_tiger_geo_id">from_tiger_geo_id() (censaurus.tiger.Area class method)</a>
 </li>
       <li><a href="api.html#censaurus.tiger.Area.from_url">from_url() (censaurus.tiger.Area class method)</a>
 </li>
@@ -348,8 +359,6 @@
       <li><a href="api.html#censaurus.tiger.generate_detailed_name">generate_detailed_name() (in module censaurus.tiger)</a>
 </li>
       <li><a href="api.html#censaurus.dataset.Dataset.geographies">geographies (censaurus.dataset.Dataset property)</a>
-</li>
-      <li><a href="api.html#censaurus.census_accessors.DataFrameCensusAccessor.geography">geography (censaurus.census_accessors.DataFrameCensusAccessor property)</a>
 </li>
       <li><a href="api.html#censaurus.geography.Geography">Geography (class in censaurus.geography)</a>
 </li>
@@ -423,8 +432,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.tiger.Layer.id">id (censaurus.tiger.Layer attribute)</a>
 </li>
-      <li><a href="api.html#censaurus.tiger.Area.intersect_with_cb">intersect_with_cb() (censaurus.tiger.Area method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.geography.InvalidGeographyHierarchy">InvalidGeographyHierarchy</a>
@@ -459,19 +466,21 @@
       <ul>
         <li><a href="api.html#module-censaurus.api">censaurus.api</a>
 </li>
-        <li><a href="api.html#module-censaurus.census_accessors">censaurus.census_accessors</a>
+        <li><a href="api.html#module-censaurus.cdf">censaurus.cdf</a>
 </li>
         <li><a href="api.html#module-censaurus.dataset">censaurus.dataset</a>
 </li>
         <li><a href="api.html#module-censaurus.geography">censaurus.geography</a>
 </li>
-        <li><a href="api.html#module-censaurus.recode">censaurus.recode</a>
-</li>
-        <li><a href="api.html#module-censaurus.regroup">censaurus.regroup</a>
-</li>
-        <li><a href="api.html#module-censaurus.rename">censaurus.rename</a>
-</li>
         <li><a href="api.html#module-censaurus.tiger">censaurus.tiger</a>
+</li>
+        <li><a href="api.html#module-censaurus.utils.recode">censaurus.utils.recode</a>
+</li>
+        <li><a href="api.html#module-censaurus.utils.regroup">censaurus.utils.regroup</a>
+</li>
+        <li><a href="api.html#module-censaurus.utils.rename">censaurus.utils.rename</a>
+</li>
+        <li><a href="api.html#module-censaurus.utils.transform_geometry">censaurus.utils.transform_geometry</a>
 </li>
         <li><a href="api.html#module-censaurus.variable">censaurus.variable</a>
 </li>
@@ -538,13 +547,21 @@
         <li><a href="api.html#censaurus.variable.Variable.path">(censaurus.variable.Variable attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.tiger.AreaCollection.place">place() (censaurus.tiger.AreaCollection method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.dataset.Dataset.places">places() (censaurus.dataset.Dataset method)</a>
 </li>
       <li><a href="api.html#censaurus.tiger.Area.plot">plot() (censaurus.tiger.Area method)</a>
+</li>
+      <li><a href="api.html#censaurus.api.TIGERClient.post">post() (censaurus.api.TIGERClient method)</a>
+</li>
+      <li><a href="api.html#censaurus.api.TIGERClient.post_many">post_many() (censaurus.api.TIGERClient method)</a>
+</li>
+      <li><a href="api.html#censaurus.api.TIGERClient.post_many_sync">post_many_sync() (censaurus.api.TIGERClient method)</a>
+</li>
+      <li><a href="api.html#censaurus.api.TIGERClient.post_sync">post_sync() (censaurus.api.TIGERClient method)</a>
 </li>
       <li><a href="api.html#censaurus.dataset.Projections">Projections (class in censaurus.dataset)</a>
 </li>
@@ -562,27 +579,31 @@
         <li><a href="api.html#censaurus.variable.Variable.readable_path">(censaurus.variable.Variable attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api.html#censaurus.recode.RecodeError">RecodeError</a>
+      <li><a href="api.html#censaurus.utils.recode.RecodeError">RecodeError</a>
 </li>
       <li><a href="api.html#censaurus.tiger.AreaCollection.region">region() (censaurus.tiger.AreaCollection method)</a>
 </li>
       <li><a href="api.html#censaurus.dataset.Dataset.regions">regions() (censaurus.dataset.Dataset method)</a>
 </li>
-      <li><a href="api.html#censaurus.regroup.AgeRegrouper.regroup">regroup() (censaurus.regroup.AgeRegrouper method)</a>
+      <li><a href="api.html#censaurus.utils.regroup.AgeRegrouper.regroup">regroup() (censaurus.utils.regroup.AgeRegrouper method)</a>
 
       <ul>
-        <li><a href="api.html#censaurus.regroup.Regrouper.regroup">(censaurus.regroup.Regrouper method)</a>
+        <li><a href="api.html#censaurus.utils.regroup.Regrouper.regroup">(censaurus.utils.regroup.Regrouper method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.variable.RegroupedVariable">RegroupedVariable (class in censaurus.variable)</a>
 </li>
-      <li><a href="api.html#censaurus.regroup.Regrouper">Regrouper (class in censaurus.regroup)</a>
+      <li><a href="api.html#censaurus.utils.regroup.Regrouper">Regrouper (class in censaurus.utils.regroup)</a>
 </li>
-      <li><a href="api.html#censaurus.rename.Renamer.rename">rename() (censaurus.rename.Renamer method)</a>
+      <li><a href="api.html#censaurus.cdf.CensusDataFrame.rename">rename() (censaurus.cdf.CensusDataFrame method)</a>
+
+      <ul>
+        <li><a href="api.html#censaurus.utils.rename.Renamer.rename">(censaurus.utils.rename.Renamer method)</a>
 </li>
-      <li><a href="api.html#censaurus.rename.Renamer">Renamer (class in censaurus.rename)</a>
+      </ul></li>
+      <li><a href="api.html#censaurus.utils.rename.Renamer">Renamer (class in censaurus.utils.rename)</a>
 </li>
       <li><a href="api.html#censaurus.geography.Geography.requires">requires (censaurus.geography.Geography attribute)</a>
 </li>
@@ -594,19 +615,17 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#censaurus.census_accessors.SeriesCensusAccessor">SeriesCensusAccessor (class in censaurus.census_accessors)</a>
-</li>
       <li><a href="api.html#censaurus.variable.VariableCollection.siblings_and_cousins_of">siblings_and_cousins_of() (censaurus.variable.VariableCollection method)</a>
 </li>
       <li><a href="api.html#censaurus.variable.VariableCollection.siblings_of">siblings_of() (censaurus.variable.VariableCollection method)</a>
 </li>
+      <li><a href="api.html#censaurus.utils.rename.SIMPLE_RENAMER">SIMPLE_RENAMER (in module censaurus.utils.rename)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#censaurus.rename.SIMPLE_RENAMER">SIMPLE_RENAMER (in module censaurus.rename)</a>
-</li>
       <li><a href="api.html#censaurus.tiger.AreaCollection.state">state() (censaurus.tiger.AreaCollection method)</a>
 </li>
-      <li><a href="api.html#censaurus.recode.StateRecoder">StateRecoder (class in censaurus.recode)</a>
+      <li><a href="api.html#censaurus.utils.recode.StateRecoder">StateRecoder (class in censaurus.utils.recode)</a>
 </li>
       <li><a href="api.html#censaurus.dataset.Dataset.states">states() (censaurus.dataset.Dataset method)</a>
 </li>
@@ -622,7 +641,7 @@
 </li>
       <li><a href="api.html#censaurus.api.TIGERWebAPIError">TIGERWebAPIError</a>
 </li>
-      <li><a href="api.html#censaurus.recode.StateRecoder.to_ABBR">to_ABBR() (censaurus.recode.StateRecoder method)</a>
+      <li><a href="api.html#censaurus.utils.recode.StateRecoder.to_ABBR">to_ABBR() (censaurus.utils.recode.StateRecoder method)</a>
 </li>
       <li><a href="api.html#censaurus.dataset.DatasetExplorer.to_df">to_df() (censaurus.dataset.DatasetExplorer method)</a>
 
@@ -634,15 +653,15 @@
         <li><a href="api.html#censaurus.variable.VariableCollection.to_df">(censaurus.variable.VariableCollection method)</a>
 </li>
       </ul></li>
-      <li><a href="api.html#censaurus.recode.StateRecoder.to_FIPS">to_FIPS() (censaurus.recode.StateRecoder method)</a>
+      <li><a href="api.html#censaurus.utils.recode.StateRecoder.to_FIPS">to_FIPS() (censaurus.utils.recode.StateRecoder method)</a>
 </li>
-      <li><a href="api.html#censaurus.recode.StateRecoder.to_FIPS_PADDED">to_FIPS_PADDED() (censaurus.recode.StateRecoder method)</a>
+      <li><a href="api.html#censaurus.utils.recode.StateRecoder.to_FIPS_PADDED">to_FIPS_PADDED() (censaurus.utils.recode.StateRecoder method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#censaurus.recode.StateRecoder.to_GNIS">to_GNIS() (censaurus.recode.StateRecoder method)</a>
+      <li><a href="api.html#censaurus.utils.recode.StateRecoder.to_GNIS">to_GNIS() (censaurus.utils.recode.StateRecoder method)</a>
 </li>
-      <li><a href="api.html#censaurus.recode.StateRecoder.to_GNIS_PADDED">to_GNIS_PADDED() (censaurus.recode.StateRecoder method)</a>
+      <li><a href="api.html#censaurus.utils.recode.StateRecoder.to_GNIS_PADDED">to_GNIS_PADDED() (censaurus.utils.recode.StateRecoder method)</a>
 </li>
       <li><a href="api.html#censaurus.geography.GeographyCollection.to_list">to_list() (censaurus.geography.GeographyCollection method)</a>
 
@@ -652,7 +671,7 @@
         <li><a href="api.html#censaurus.variable.VariableCollection.to_list">(censaurus.variable.VariableCollection method)</a>
 </li>
       </ul></li>
-      <li><a href="api.html#censaurus.recode.StateRecoder.to_NAME">to_NAME() (censaurus.recode.StateRecoder method)</a>
+      <li><a href="api.html#censaurus.utils.recode.StateRecoder.to_NAME">to_NAME() (censaurus.utils.recode.StateRecoder method)</a>
 </li>
       <li><a href="api.html#censaurus.tiger.tokenize_feature_name">tokenize_feature_name() (in module censaurus.tiger)</a>
 </li>
@@ -682,20 +701,14 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#censaurus.census_accessors.SeriesCensusAccessor.variable">variable (censaurus.census_accessors.SeriesCensusAccessor property)</a>
-</li>
       <li><a href="api.html#censaurus.variable.Variable">Variable (class in censaurus.variable)</a>
 </li>
       <li><a href="api.html#censaurus.variable.VariableCollection">VariableCollection (class in censaurus.variable)</a>
 </li>
       <li><a href="api.html#censaurus.variable.VariableError">VariableError</a>
 </li>
-      <li><a href="api.html#censaurus.census_accessors.DataFrameCensusAccessor.variables">variables (censaurus.census_accessors.DataFrameCensusAccessor property)</a>
-
-      <ul>
-        <li><a href="api.html#censaurus.dataset.Dataset.variables">(censaurus.dataset.Dataset property)</a>
+      <li><a href="api.html#censaurus.dataset.Dataset.variables">variables (censaurus.dataset.Dataset property)</a>
 </li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.dataset.DatasetExplorer.visualize">visualize() (censaurus.dataset.DatasetExplorer method)</a>

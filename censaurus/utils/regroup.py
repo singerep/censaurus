@@ -1,14 +1,18 @@
+from __future__ import annotations
+
 from typing import Dict, List, Iterable, Union
 from pandas import DataFrame
+from geopandas import GeoDataFrame
 from collections import defaultdict
 from re import match
 
 from censaurus.variable import RegroupedVariable
 from censaurus.utils.rename import AGE_REGEX
-from censaurus.cdf import CensusDataFrame, CensusGeoDataFrame
+
+import censaurus
 
 
-class Regrouper:
+class CensusRegrouper:
     """
     An object to handle regrouping Census variables.
 
@@ -25,10 +29,10 @@ class Regrouper:
     def __init__(self, groupings: Dict[str, Iterable[str]] = {}) -> None:
         self.groupings = groupings
 
-    def regroup(self, data: Union[CensusDataFrame, CensusGeoDataFrame]) -> Union[CensusDataFrame, CensusGeoDataFrame]:
+    def regroup(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], inplace: bool = True) -> Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame]:
         """
         Regroups the columns of the dataset. You should rename the data after a 
-        regrouping with a :class:`.Renamer` object to avoid long column names.
+        regrouping with a :class:`.CensusRenamer` object to avoid long column names.
 
         Parameters
         ==========
@@ -58,35 +62,40 @@ class Regrouper:
                                 grouped_cols[grouped_path].add(c)
                                 grouped_variables[grouped_path].append(variable)
 
+        if inplace is False:
+            data = data.copy(deep=True)
+
         for group, cols in grouped_cols.items():
-            col_places = zip(cols, range(0, len(cols)))
-            last_col = sorted(col_places, key=lambda c : c[1], reverse=True)[0][0]
-            col_name = 'g:' + ','.join(sorted(cols))
-            data[last_col] = data[list(cols)].aggregate(func='sum', axis=1)
-            data.rename(columns={last_col: col_name}, inplace=True)
-            cols.remove(last_col)
-            variables = grouped_variables[group]
-            variable_map[col_name] = RegroupedVariable(path=group, variables=variables)
-            data.drop(labels=list(cols), axis=1, inplace=True)
+            if len(cols) > 1:
+                col_places = [(c, list(data.columns).index(c)) for c in cols]
+                last_col = sorted(col_places, key=lambda c : c[1], reverse=True)[0][0]
+                col_name = 'g:' + ','.join(sorted(cols))
+                data[last_col] = data[list(cols)].aggregate(func='sum', axis=1)
+                data.rename(columns={last_col: col_name}, inplace=True)
+                cols.remove(last_col)
+                variables = grouped_variables[group]
+                variable_map[col_name] = RegroupedVariable(path=group, variables=variables)
+                data.drop(labels=list(cols), axis=1, inplace=True)
 
         for c, variable in variable_map.items():
             if c in data.columns:
                 data[c].variable = variable
 
-        return data
+        if inplace is False:
+            return data
 
-FIVE_RACE_REGROUPER = Regrouper(groupings={
+FIVE_RACE_REGROUPER = CensusRegrouper(groupings={
     'other': ['some other race alone', 'two or more races', 'american indian and alaska native alone', 'native hawaiian and other pacific islander alone']
 })
-"""A :class:`.Regrouper` object that aggregates ``some other race alone``, ``two or more 
+"""A :class:`.CensusRegrouper` object that aggregates ``some other race alone``, ``two or more 
 races``, ``american indian and alaska native alone``, ``native hawaiian and other pacific
 islander alone`` into a group called ``other``."""
 
 MAX_AGE = 120
 
-class AgeRegrouper(Regrouper):
+class AgeRegrouper(CensusRegrouper):
     """
-    A subclass of the :class:`.Regouper` class that specifically handles regrouping
+    A subclass of the :class:`.CensusRegrouper` class that specifically handles regrouping
     into new age buckets.
 
     Parameters
@@ -100,10 +109,10 @@ class AgeRegrouper(Regrouper):
     def __init__(self, age_brackets: List[str]) -> None:
         self.age_brackets = age_brackets
 
-    def regroup(self, data: Union[CensusDataFrame, CensusGeoDataFrame]) -> Union[CensusDataFrame, CensusGeoDataFrame]:
+    def regroup(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], inplace: bool = True) -> Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame]:
         """
         Regroups the columns of the dataset. Note that you should probably rename
-        the data after a regrouping with a :class:`.Renamer` object to avoid long
+        the data after a regrouping with a :class:`.CensusRenamer` object to avoid long
         column names.
 
         Parameters
@@ -172,4 +181,4 @@ class AgeRegrouper(Regrouper):
 
         self.groupings = groupings
 
-        return super().regroup(data=data)
+        return super().regroup(data=data, inplace=inplace)
