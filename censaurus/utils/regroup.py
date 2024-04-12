@@ -29,7 +29,7 @@ class CensusRegrouper:
     def __init__(self, groupings: Dict[str, Iterable[str]] = {}) -> None:
         self.groupings = groupings
 
-    def regroup(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], inplace: bool = True) -> Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame]:
+    def regroup_variables(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], inplace: bool = False) -> Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame]:
         """
         Regroups the columns of the dataset. You should rename the data after a 
         regrouping with a :class:`.CensusRenamer` object to avoid long column names.
@@ -38,6 +38,9 @@ class CensusRegrouper:
         ==========
         data : :class:`.cdf.CensusDataFrame` or :class:`.cdf.CensusGeoDataFrame`
             The data to regroup.
+        inplace : :obj:`bool` = False
+            Determines whether to modify the original dataset or create and
+            return a new one.
         """
         variables = data.variables
 
@@ -109,7 +112,7 @@ class AgeRegrouper(CensusRegrouper):
     def __init__(self, age_brackets: List[str]) -> None:
         self.age_brackets = age_brackets
 
-    def regroup(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], inplace: bool = True) -> Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame]:
+    def regroup_variables(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], inplace: bool = True) -> Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame]:
         """
         Regroups the columns of the dataset. Note that you should probably rename
         the data after a regrouping with a :class:`.CensusRenamer` object to avoid long
@@ -119,6 +122,9 @@ class AgeRegrouper(CensusRegrouper):
         ==========
         data : :class:`.cdf.CensusDataFrame` or :class:`.cdf.CensusGeoDataFrame`
             The data to regroup.
+        inplace : :obj:`bool` = False
+            Determines whether to modify the original dataset or create and
+            return a new one.
         """
         age_assignments = {}
         for bracket in self.age_brackets:
@@ -181,4 +187,4 @@ class AgeRegrouper(CensusRegrouper):
 
         self.groupings = groupings
 
-        return super().regroup(data=data, inplace=inplace)
+        return super().regroup_variables(data=data, inplace=inplace)

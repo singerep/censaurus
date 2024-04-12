@@ -8,11 +8,12 @@ Datasets
 .. automodule:: censaurus.dataset
    :members:
 
-CensusDataFrame and CensusGeoDataFrame
-======================================
+CensusDataFrames and CensusGeoDataFrames
+========================================
 
 .. automodule:: censaurus.cdf
    :members:
+   :exclude-members: rename
 
 Variables
 =========
@@ -50,8 +51,8 @@ Recoding
 .. automodule:: censaurus.utils.recode
    :members:
 
-Transform Geometry
-==================
+Transforming Geometry
+=====================
 
 .. automodule:: censaurus.utils.transform_geometry
    :members:

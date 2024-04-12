@@ -116,7 +116,7 @@
 </li>
       <li><a href="api.html#censaurus.dataset.ACSSupplemental">ACSSupplemental (class in censaurus.dataset)</a>
 </li>
-      <li><a href="api.html#censaurus.utils.rename.Renamer.add_group_prefixes">add_group_prefixes() (censaurus.utils.rename.Renamer method)</a>
+      <li><a href="api.html#censaurus.utils.rename.CensusRenamer.add_group_prefixes">add_group_prefixes() (censaurus.utils.rename.CensusRenamer method)</a>
 </li>
       <li><a href="api.html#censaurus.utils.regroup.AgeRegrouper">AgeRegrouper (class in censaurus.utils.regroup)</a>
 </li>
@@ -234,10 +234,10 @@
         <li><a href="api.html#module-censaurus.variable">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.api.CensusAPIError">CensusAPIError</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.api.CensusAPIKeyError">CensusAPIKeyError</a>
 </li>
       <li><a href="api.html#censaurus.api.CensusClient">CensusClient (class in censaurus.api)</a>
@@ -246,12 +246,26 @@
 </li>
       <li><a href="api.html#censaurus.cdf.CensusGeoDataFrame">CensusGeoDataFrame (class in censaurus.cdf)</a>
 </li>
+      <li><a href="api.html#censaurus.utils.regroup.CensusRegrouper">CensusRegrouper (class in censaurus.utils.regroup)</a>
+</li>
+      <li><a href="api.html#censaurus.utils.rename.CensusRenamer">CensusRenamer (class in censaurus.utils.rename)</a>
+</li>
       <li><a href="api.html#censaurus.cdf.CensusSeries">CensusSeries (class in censaurus.cdf)</a>
 </li>
       <li><a href="api.html#censaurus.variable.VariableCollection.children_of">children_of() (censaurus.variable.VariableCollection method)</a>
 </li>
-      <li><a href="api.html#censaurus.tiger.Area.clip_to_cb">clip_to_cb() (censaurus.tiger.Area method)</a>
+      <li><a href="api.html#censaurus.cdf.CensusGeoDataFrame.clip_to_cb">clip_to_cb() (censaurus.cdf.CensusGeoDataFrame method)</a>
+
+      <ul>
+        <li><a href="api.html#censaurus.tiger.Area.clip_to_cb">(censaurus.tiger.Area method)</a>
 </li>
+      </ul></li>
+      <li><a href="api.html#censaurus.cdf.CensusGeoDataFrame.compare_regions">compare_regions() (censaurus.cdf.CensusGeoDataFrame method)</a>
+
+      <ul>
+        <li><a href="api.html#censaurus.utils.transform_geometry.compare_regions">(in module censaurus.utils.transform_geometry)</a>
+</li>
+      </ul></li>
       <li><a href="api.html#censaurus.variable.RegroupedVariable.concept">concept (censaurus.variable.RegroupedVariable attribute)</a>
 
       <ul>
@@ -359,6 +373,8 @@
       <li><a href="api.html#censaurus.tiger.generate_detailed_name">generate_detailed_name() (in module censaurus.tiger)</a>
 </li>
       <li><a href="api.html#censaurus.dataset.Dataset.geographies">geographies (censaurus.dataset.Dataset property)</a>
+</li>
+      <li><a href="api.html#censaurus.cdf.CensusDataFrame.geography">geography (censaurus.cdf.CensusDataFrame attribute)</a>
 </li>
       <li><a href="api.html#censaurus.geography.Geography">Geography (class in censaurus.geography)</a>
 </li>
@@ -579,32 +595,44 @@
         <li><a href="api.html#censaurus.variable.Variable.readable_path">(censaurus.variable.Variable attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api.html#censaurus.cdf.CensusDataFrame.recode_states">recode_states() (censaurus.cdf.CensusDataFrame method)</a>
+</li>
       <li><a href="api.html#censaurus.utils.recode.RecodeError">RecodeError</a>
 </li>
+      <li><a href="api.html#censaurus.cdf.CensusGeoDataFrame.recompose_states">recompose_states() (censaurus.cdf.CensusGeoDataFrame method)</a>
+
+      <ul>
+        <li><a href="api.html#censaurus.utils.transform_geometry.recompose_states">(in module censaurus.utils.transform_geometry)</a>
+</li>
+      </ul></li>
       <li><a href="api.html#censaurus.tiger.AreaCollection.region">region() (censaurus.tiger.AreaCollection method)</a>
 </li>
       <li><a href="api.html#censaurus.dataset.Dataset.regions">regions() (censaurus.dataset.Dataset method)</a>
 </li>
-      <li><a href="api.html#censaurus.utils.regroup.AgeRegrouper.regroup">regroup() (censaurus.utils.regroup.AgeRegrouper method)</a>
+      <li><a href="api.html#censaurus.cdf.CensusDataFrame.regroup_variables">regroup_variables() (censaurus.cdf.CensusDataFrame method)</a>
 
       <ul>
-        <li><a href="api.html#censaurus.utils.regroup.Regrouper.regroup">(censaurus.utils.regroup.Regrouper method)</a>
+        <li><a href="api.html#censaurus.utils.regroup.AgeRegrouper.regroup_variables">(censaurus.utils.regroup.AgeRegrouper method)</a>
+</li>
+        <li><a href="api.html#censaurus.utils.regroup.CensusRegrouper.regroup_variables">(censaurus.utils.regroup.CensusRegrouper method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.variable.RegroupedVariable">RegroupedVariable (class in censaurus.variable)</a>
 </li>
-      <li><a href="api.html#censaurus.utils.regroup.Regrouper">Regrouper (class in censaurus.utils.regroup)</a>
-</li>
-      <li><a href="api.html#censaurus.cdf.CensusDataFrame.rename">rename() (censaurus.cdf.CensusDataFrame method)</a>
+      <li><a href="api.html#censaurus.cdf.CensusGeoDataFrame.remove_water">remove_water() (censaurus.cdf.CensusGeoDataFrame method)</a>
 
       <ul>
-        <li><a href="api.html#censaurus.utils.rename.Renamer.rename">(censaurus.utils.rename.Renamer method)</a>
+        <li><a href="api.html#censaurus.tiger.Area.remove_water">(censaurus.tiger.Area method)</a>
 </li>
       </ul></li>
-      <li><a href="api.html#censaurus.utils.rename.Renamer">Renamer (class in censaurus.utils.rename)</a>
+      <li><a href="api.html#censaurus.cdf.CensusDataFrame.rename_variables">rename_variables() (censaurus.cdf.CensusDataFrame method)</a>
+
+      <ul>
+        <li><a href="api.html#censaurus.utils.rename.CensusRenamer.rename_variables">(censaurus.utils.rename.CensusRenamer method)</a>
 </li>
+      </ul></li>
       <li><a href="api.html#censaurus.geography.Geography.requires">requires (censaurus.geography.Geography attribute)</a>
 </li>
       <li><a href="api.html#censaurus.api.AsyncLoopHandler.run">run() (censaurus.api.AsyncLoopHandler method)</a>
@@ -707,8 +735,12 @@
 </li>
       <li><a href="api.html#censaurus.variable.VariableError">VariableError</a>
 </li>
-      <li><a href="api.html#censaurus.dataset.Dataset.variables">variables (censaurus.dataset.Dataset property)</a>
+      <li><a href="api.html#censaurus.cdf.CensusDataFrame.variables">variables (censaurus.cdf.CensusDataFrame attribute)</a>
+
+      <ul>
+        <li><a href="api.html#censaurus.dataset.Dataset.variables">(censaurus.dataset.Dataset property)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#censaurus.dataset.DatasetExplorer.visualize">visualize() (censaurus.dataset.DatasetExplorer method)</a>

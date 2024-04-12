@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from shapely import affinity, union_all
 from geopandas import GeoDataFrame
-from typing import Dict, Tuple, Union
+from typing import Dict, Tuple, Union, Literal
 from geopandas import GeoDataFrame
 
 import censaurus
@@ -33,7 +33,7 @@ CONTINENTAL_EA_BELOW = {
 }
 
 CONTINENTAL_SCALED_BELOW = {
-    '02': (0.4, 700000, -4750000, 45),
+    '02': (0.35, 700000, -4750000, 45),
     '15': (1, 4800000, -1100000, 45),
     '72': (1, -2500000, 300000, 0)
 }
@@ -45,25 +45,48 @@ CONTINENTAL_EA_OUTSIDE = {
 }
 
 CONTINENTAL_SCALED_OUTSIDE = {
-    '02': (0.4, 550000, -1750000, 45),
+    '02': (0.35, 550000, -1750000, 45),
     '15': (1, 3100000, -75000, 45),
     '72': (1, -1300000, 200000, 0)
 }
 
-def make_contiguous(data: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], state_col: str = 'state', geometry_col: str = 'geometry', position: str = 'below', preserve_area: bool = False, custom_transformations: Dict[str, Tuple] = None, inplace: bool = False) -> Union[censaurus.CensusGeoDataFrame, GeoDataFrame] | None:
-    if custom_transformations:
-        transformations = custom_transformations
+def recompose_states(data: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], state_col: str = 'state', geometry_col: str = 'geometry', position: str = Literal['below', 'outside'], preserve_area: bool = False, inplace: bool = False) -> Union[censaurus.CensusGeoDataFrame, GeoDataFrame] | None:
+    """
+    Shift the geographies of Alaska, Hawaii, and Puerto Rico so that they appear
+    nearer to the contiguous United States.
+    
+    Inspired by Kyle Walker's `shift_geometry <https://github.com/walkerke/tigris/blob/master/R/shift_geometry.R>`_
+    function in the ``tigris`` R package and the `geoAlbersUSA <https://d3js.org/d3-geo/conic#geoAlbersUsa>`_
+    projection in the ``d3`` library.
+
+    Parameters
+    ==========
+    state_col : :obj:`str` = 'state'
+        The dataset's state column. Should be in padded FIPS format. See the
+        :meth:`.CensusDataFrame.recode` for automatically recoding your data to this
+        format.
+    geometry_col : :obj:`str` = 'geometry'
+        The dataset's geometry column.
+    position : :obj:`str` = Literal['below', 'outside']
+        Determines whether Alaska, Hawaii, and Puerto Rico should be position below
+        our outside of the contiguous United States.
+    preserve_area : :obj:`bool` = False
+        Determines whether Alaska, Hawaii, and Puerto Rico should be rescaled,
+        or whether their original area should be maintained.
+    inplace : :obj:`bool` = False
+        Determines whether to modify the original dataset or create and return a new 
+        one.
+    """
+    if position == 'below' and preserve_area is True:
+        transformations = CONTINENTAL_EA_BELOW
+    elif position == 'below' and preserve_area is False:
+        transformations = CONTINENTAL_SCALED_BELOW
+    elif position == 'outside' and preserve_area is True:
+        transformations = CONTINENTAL_EA_OUTSIDE
+    elif position == 'outside' and preserve_area is False:
+        transformations = CONTINENTAL_SCALED_OUTSIDE
     else:
-        if position == 'below' and preserve_area is True:
-            transformations = CONTINENTAL_EA_BELOW
-        elif position == 'below' and preserve_area is False:
-            transformations = CONTINENTAL_SCALED_BELOW
-        elif position == 'outside' and preserve_area is True:
-            transformations = CONTINENTAL_EA_OUTSIDE
-        elif position == 'outside' and preserve_area is False:
-            transformations = CONTINENTAL_SCALED_OUTSIDE
-        else:
-            raise ValueError('Must set position to either below or outside, and must set preserve_area to True or False, or you may use custom_transformations.')
+        raise ValueError('Must set position to either below or outside, and must set preserve_area to True or False, or you may use custom_transformations.')
 
     original_crs = data.crs
 
@@ -81,6 +104,23 @@ def make_contiguous(data: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], sta
     
 
 def compare_regions(data: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], comparison_col: str, geometry_col: str, inplace: bool = False) -> Union[censaurus.CensusGeoDataFrame, GeoDataFrame] | None:
+    """
+    Transform a dataset's geometries so that two or more geographic regions can be
+    visually compared.
+    
+    Rows are grouped by the specified ``comparison_col``, and geometries are
+    repositioned and rescaled so that groups appear in a horizontal line.
+
+    Parameters
+    ==========
+    comparison_col : :obj:`str`
+        The column used to partition rows up into groups.
+    geometry_col : :obj:`str` = 'geometry'
+        The dataset's geometry column.
+    inplace : :obj:`bool` = False
+        Determines whether to modify the original dataset or create and return a new 
+        one.
+    """
     comparison_groups = sorted(list(data[comparison_col].unique()))
 
     group_centroids = {}

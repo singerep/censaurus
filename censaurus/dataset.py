@@ -379,7 +379,7 @@ class Dataset:
         if features_within is not None:
             if 'GEO_ID' in df.columns:
                 df['GEOID'] = df['GEO_ID'].apply(lambda g : g.split('US')[1] if g != '0100000US' else g)
-                df_id_cols = [col if col != 'GEO_ID' else 'GEOID' for col in df_id_cols]
+                df_id_cols = [col if col != 'GEO_ID' else 'GEOID' for col in df.columns]
             df_fw_id_cols = list(set.intersection(set(df_id_cols), set(features_within.columns)))
             if 'NAME' in df_fw_id_cols:
                 df_fw_id_cols.remove('NAME')

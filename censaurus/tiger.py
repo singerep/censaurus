@@ -203,8 +203,10 @@ class Area:
 
     def clip_to_cb(self) -> None:
         """
-        Intersects the geometric boundary of the geographic area with the cartographic
-        boundary of the United States.
+        Intersect the geographical boundaries of the  with the
+        `Cartographic Boundaries <https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html>`_
+        of the United States, which is a simplified representation of the United States
+        boundary meant for thematic visualization.
         """
         if self.geometry is None:
             self._set_attributes()
@@ -212,8 +214,28 @@ class Area:
             US_CARTOGRAPHIC._set_attributes()
         self.geometry = intersection(self.geometry, US_CARTOGRAPHIC.geometry)
 
-    def remove_water(self, min_area: float = None, min_area_pct: float = None, top_n: int = None, top_pct: float = None, keep_internal: bool = False):
-        water_geom = _water_within_geometry(geometry=self.geometry, min_area=min_area, min_area_pct=min_area_pct, top_n=top_n, top_pct=top_pct, keep_internal=keep_internal)
+    def remove_water(self, min_area: float = None, min_area_pct: float = None, top_n: int = None, top_pct: float = None, remove_internal: bool = False):
+        """
+        Remove water geometries from within the area.
+
+        Parameters
+        ==========
+        min_area : :obj:`float` = None
+            Remove matching water geometries that are at least this square area (in 
+            meters squared).
+        min_area_pct : :obj:`float` = None
+            Remove matching water geometries that are at least this percentage of the 
+            total area of geometries in the area.
+        top_n : :obj:`int` = None
+            Remove this many of the largest matching water geometries.
+        top_pct : :obj:`float` = None
+            Remove this percentage of the largest matching water geometries.
+        remove_internal : :obj:`bool` = False
+            Determines whether or not to remove water geometries that are strictly
+            internal to the geographical boundaries of the area. For example, when this
+            parameter is False, strictly internal lakes will not be removed.
+        """
+        water_geom = _water_within_geometry(geometry=self.geometry, min_area=min_area, min_area_pct=min_area_pct, top_n=top_n, top_pct=top_pct, remove_internal=remove_internal)
 
         if water_geom is not None:
             self.geometry = self.geometry.difference(water_geom)
@@ -1176,7 +1198,7 @@ class AreaCollection:
         return self.area(geoid=geoid, layer_name='Census ZIP Code Tabulation Areas', cb=cb)
 
 
-def _water_within_geometry(geometry: Union[Polygon, MultiPolygon], min_area: float = None, min_area_pct: float = None, top_n: int = None, top_pct: float = None, keep_internal: bool = False) -> Union[Polygon, MultiPolygon]:
+def _water_within_geometry(geometry: Union[Polygon, MultiPolygon], min_area: float = None, min_area_pct: float = None, top_n: int = None, top_pct: float = None, remove_internal: bool = False) -> Union[Polygon, MultiPolygon]:
     if sum([v is not None for v in [min_area, min_area_pct, top_n, top_pct]]) != 1:
         raise ValueError('Must specify exactly one of: min_area, min_area_pct, top_n, top_pct')
 
@@ -1192,7 +1214,7 @@ def _water_within_geometry(geometry: Union[Polygon, MultiPolygon], min_area: flo
     else:
         where_condition = '1=1'
 
-    if keep_internal is False:
+    if remove_internal is False:
         # internal_water_types = ['Inlt', 'Sea', 'Strait', 'Lk', 'Reservoir', 'Ocean', 'Bay', 'Hbr', 'Chnnl', 'Lks', 'Waterway'] # all water types: {'Flowage', 'Run', 'Strm', 'Inlt', None, 'Br', 'Tank', 'Brk', 'Fls', 'Byu', 'Sea', 'Strait', 'Slough', 'Cv', 'Psge', 'Outlet', 'Lk', 'Reservoir', 'Ocean', 'Bay', 'Millpond', 'Riv', 'Aqueduct', 'Prong', 'Frk', 'Ditch', 'Pond', 'Marsh', 'Bog', 'Hbr', 'Chnnl', 'Holw', 'Lks', 'Crk', 'Lagoon', 'Spg', 'Swamp', 'Waterway', 'Cnl', 'Draw', 'Ponds'}
         internal_water_types = ['Flowage', 'Run', 'Strm', 'Br', 'Tank', 'Brk', 'Fls', 'Byu', 'Slough', 'Cv', 'Psge', 'Outlet', 'Millpond', 'Aqueduct', 'Prong', 'Frk', 'Ditch', 'Pond', 'Marsh', 'Bog', 'Holw', 'Crk', 'Lagoon', 'Spg', 'Swamp', 'Cnl', 'Draw', 'Ponds']
         where_condition += ' AND (SUFTYPEABRV NOT IN (' + ','.join([f"'{t}'" for t in internal_water_types]) + ') OR SUFTYPEABRV IS NULL)'
@@ -1203,7 +1225,7 @@ def _water_within_geometry(geometry: Union[Polygon, MultiPolygon], min_area: flo
         water_geoms = water['geometry'].values
         water_union = union_all(water_geoms)
 
-        if keep_internal is False:
+        if remove_internal is False:
             bounding_polygon = box(*geometry.bounds)
             difference = bounding_polygon.difference(geometry)
 

@@ -78,6 +78,9 @@ class StateRecoder:
             The data with a column to recode.
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
+        inplace : :obj:`bool` = False
+            Determines whether to modify the original dataset or create and return a new
+            one.
         """
         return self._to_new(data=data, new_type='FIPS', state_col=state_col, inplace=inplace)
 
@@ -92,6 +95,9 @@ class StateRecoder:
             The data with a column to recode.
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
+        inplace : :obj:`bool` = False
+            Determines whether to modify the original dataset or create and return a new
+            one.
         """
         return self._to_new(data=data, new_type='FIPS_PADDED', state_col=state_col, inplace=inplace)
 
@@ -106,6 +112,9 @@ class StateRecoder:
             The data with a column to recode.
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
+        inplace : :obj:`bool` = False
+            Determines whether to modify the original dataset or create and return a new
+            one.
         """
         return self._to_new(data=data, new_type='ABBR', state_col=state_col, inplace=inplace)
 
@@ -120,6 +129,9 @@ class StateRecoder:
             The data with a column to recode.
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
+        inplace : :obj:`bool` = False
+            Determines whether to modify the original dataset or create and return a new
+            one.
         """
         return self._to_new(data=data, new_type='NAME', state_col=state_col, inplace=inplace)
 
@@ -134,6 +146,9 @@ class StateRecoder:
             The data with a column to recode.
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
+        inplace : :obj:`bool` = False
+            Determines whether to modify the original dataset or create and return a new
+            one.
         """
         return self._to_new(data=data, new_type='GNIS', state_col=state_col, inplace=inplace)
 
@@ -148,5 +163,8 @@ class StateRecoder:
             The data with a column to recode.
         state_col : :obj:`str` = 'state'
             The column in the dataset that list states.
+        inplace : :obj:`bool` = False
+            Determines whether to modify the original dataset or create and return a new
+            one.
         """
         return self._to_new(data=data, new_type='GNIS_PADDED', state_col=state_col, inplace=inplace)

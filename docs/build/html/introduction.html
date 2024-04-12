@@ -267,7 +267,7 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <a class="reference internal" href="api.html#censaurus.utils.rename.SIMPLE_RENAMER" title="censaurus.utils.rename.SIMPLE_RENAMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIMPLE_RENAMER</span></code></a> can be customized to meet your needs: you can change the separator, add prefixes for specific groups, or add custom renaming functions. You can also create your own renamer from scratch using the <a class="reference internal" href="api.html#censaurus.utils.rename.Renamer" title="censaurus.utils.rename.Renamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code></a> class.</p>
+<p>The <a class="reference internal" href="api.html#censaurus.utils.rename.SIMPLE_RENAMER" title="censaurus.utils.rename.SIMPLE_RENAMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIMPLE_RENAMER</span></code></a> can be customized to meet your needs: you can change the separator, add prefixes for specific groups, or add custom renaming functions. You can also create your own renamer from scratch using the <code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code> class.</p>
 </div>
 <p>Next, if the Census data you requested is too granular for your needs, you can use the regrouping tools built into <code class="docutils literal notranslate"><span class="pre">censaurus</span></code> to automatically aggregate your data into new, custom buckets. Here is an example where the fine-grained Census age groups are collapsed into more general ones:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">censaurus.dataset</span> <span class="kn">import</span> <span class="n">ACS5</span>
@@ -324,7 +324,7 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>For regrouping variables based on attributes other than age, you can use the generic <a class="reference internal" href="api.html#censaurus.utils.regroup.Regrouper" title="censaurus.utils.regroup.Regrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Regrouper</span></code></a> class.</p>
+<p>For regrouping variables based on attributes other than age, you can use the generic <code class="xref py py-class docutils literal notranslate"><span class="pre">Regrouper</span></code> class.</p>
 </div>
 <p>Finally, the <code class="xref py py-class docutils literal notranslate"><span class="pre">Recoder</span></code> class allows user to recode state names and identifiers to and from various formats (FIPS, GNIS, etc.).</p>
 <p><code class="docutils literal notranslate"><span class="pre">censaurus</span></code> adds custom <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.Series</span></code> accessors to make this renaming, regrouping, and recoding possible.</p>

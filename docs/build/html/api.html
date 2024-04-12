@@ -6,10 +6,10 @@
 <meta property="og:type" content="object" />
 <meta property="og:url" content="https://censaurus.readthedocs.io/en/latest/api.html" />
 <meta property="og:site_name" content="censaurus" />
-<meta property="og:description" content="Datasets: CensusDataFrame and CensusGeoDataFrame: Variables: Geography: TIGER and Geometry: Renaming: Regrouping: Recoding: Transform Geometry: Census and TIGERWeb APIs:" />
+<meta property="og:description" content="Datasets: CensusDataFrames and CensusGeoDataFrames: Variables: Geography: TIGER and Geometry: Renaming: Regrouping: Recoding: Transforming Geometry: Census and TIGERWeb APIs:" />
 <meta property="og:image" content="https://github.com/singerep/censaurus/blob/main/docs/source/censaurus_logo_bg_white.png" />
 <meta property="og:image:alt" content="censaurus logo" />
-<meta name="description" content="Datasets: CensusDataFrame and CensusGeoDataFrame: Variables: Geography: TIGER and Geometry: Renaming: Regrouping: Recoding: Transform Geometry: Census and TIGERWeb APIs:" />
+<meta name="description" content="Datasets: CensusDataFrames and CensusGeoDataFrames: Variables: Geography: TIGER and Geometry: Renaming: Regrouping: Recoding: Transforming Geometry: Census and TIGERWeb APIs:" />
 <meta name="twitter:image:src" content="https://github.com/singerep/censaurus/blob/main/docs/source/censaurus_logo_bg_white.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="censaurus: Not just another Census data tool. Seriously.">
@@ -62,14 +62,14 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-censaurus.dataset">Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.cdf">CensusDataFrame and CensusGeoDataFrame</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.cdf">CensusDataFrames and CensusGeoDataFrames</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-censaurus.variable">Variables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-censaurus.geography">Geography</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-censaurus.tiger">TIGER and Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-censaurus.utils.rename">Renaming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-censaurus.utils.regroup">Regrouping</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-censaurus.utils.recode">Recoding</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.utils.transform_geometry">Transform Geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-censaurus.utils.transform_geometry">Transforming Geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-censaurus.api">Census and TIGERWeb APIs</a></li>
 </ul>
 </li>
@@ -1339,115 +1339,88 @@ are making more than 500 requests per day.</p>
 
 </section>
 <section id="module-censaurus.cdf">
-<span id="censusdataframe-and-censusgeodataframe"></span><h2>CensusDataFrame and CensusGeoDataFrame<a class="headerlink" href="#module-censaurus.cdf" title="Permalink to this heading"></a></h2>
+<span id="censusdataframes-and-censusgeodataframes"></span><h2>CensusDataFrames and CensusGeoDataFrames<a class="headerlink" href="#module-censaurus.cdf" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.cdf.CensusDataFrame">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.cdf.</span></span><span class="sig-name descname"><span class="pre">CensusDataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geography</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#censaurus.geography.Geography" title="censaurus.geography.Geography"><span class="pre">Geography</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusDataFrame" title="Permalink to this definition"></a></dt>
-<dd><p>A CensusDataFrame object is a pandas.DataFrame that stores additional information
+<dd><p>An adapted <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> object that stores additional information
 about the variables and geography associated with the data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="censaurus.cdf.CensusDataFrame.geography">
+<span class="sig-name descname"><span class="pre">geography</span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusDataFrame.geography" title="Permalink to this definition"></a></dt>
+<dd><p>The geography level associated with the <a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusDataFrame</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#censaurus.geography.Geography" title="censaurus.geography.Geography"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geography</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="censaurus.cdf.CensusDataFrame.variables">
+<span class="sig-name descname"><span class="pre">variables</span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusDataFrame.variables" title="Permalink to this definition"></a></dt>
+<dd><p>The variable collection associated with the <a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusDataFrame</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableCollection</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py" id="censaurus.cdf.CensusDataFrame.rename">
-<span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusDataFrame.rename" title="Permalink to this definition"></a></dt>
-<dd><p>Rename columns or index labels.</p>
-<p>Function / dict values must be unique (1-to-1). Labels not contained in
-a dict / Series will be left as-is. Extra labels listed don’t throw an
-error.</p>
-<p>See the <span class="xref std std-ref">user guide</span> for more.</p>
+<dt class="sig sig-object py" id="censaurus.cdf.CensusDataFrame.rename_variables">
+<span class="sig-name descname"><span class="pre">rename_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">census_renamer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#censaurus.utils.rename.CensusRenamer" title="censaurus.utils.rename.CensusRenamer"><span class="pre">CensusRenamer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusDataFrame.rename_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Rename variables according to a <a class="reference internal" href="#censaurus.utils.rename.CensusRenamer" title="censaurus.utils.rename.CensusRenamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRenamer</span></code></a> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mapper</strong> (<em>dict-like</em><em> or </em><em>function</em>) – Dict-like or function transformations to apply to
-that axis’ values. Use either <code class="docutils literal notranslate"><span class="pre">mapper</span></code> and <code class="docutils literal notranslate"><span class="pre">axis</span></code> to
-specify the axis to target with <code class="docutils literal notranslate"><span class="pre">mapper</span></code>, or <code class="docutils literal notranslate"><span class="pre">index</span></code> and
-<code class="docutils literal notranslate"><span class="pre">columns</span></code>.</p></li>
-<li><p><strong>index</strong> (<em>dict-like</em><em> or </em><em>function</em>) – Alternative to specifying axis (<code class="docutils literal notranslate"><span class="pre">mapper,</span> <span class="pre">axis=0</span></code>
-is equivalent to <code class="docutils literal notranslate"><span class="pre">index=mapper</span></code>).</p></li>
-<li><p><strong>columns</strong> (<em>dict-like</em><em> or </em><em>function</em>) – Alternative to specifying axis (<code class="docutils literal notranslate"><span class="pre">mapper,</span> <span class="pre">axis=1</span></code>
-is equivalent to <code class="docutils literal notranslate"><span class="pre">columns=mapper</span></code>).</p></li>
-<li><p><strong>axis</strong> (<em>{0</em><em> or </em><em>'index'</em><em>, </em><em>1</em><em> or </em><em>'columns'}</em><em>, </em><em>default 0</em>) – Axis to target with <code class="docutils literal notranslate"><span class="pre">mapper</span></code>. Can be either the axis name
-(‘index’, ‘columns’) or number (0, 1). The default is ‘index’.</p></li>
-<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>default True</em>) – Also copy underlying data.</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether to modify the DataFrame rather than creating a new one.
-If True then value of copy is ignored.</p></li>
-<li><p><strong>level</strong> (<em>int</em><em> or </em><em>level name</em><em>, </em><em>default None</em>) – In case of a MultiIndex, only rename labels in the specified
-level.</p></li>
-<li><p><strong>errors</strong> (<em>{'ignore'</em><em>, </em><em>'raise'}</em><em>, </em><em>default 'ignore'</em>) – If ‘raise’, raise a <cite>KeyError</cite> when a dict-like <cite>mapper</cite>, <cite>index</cite>,
-or <cite>columns</cite> contains labels that are not present in the Index
-being transformed.
-If ‘ignore’, existing keys will be renamed and extra keys will be
-ignored.</p></li>
+<li><p><strong>census_renamer</strong> (<a class="reference internal" href="#censaurus.utils.rename.CensusRenamer" title="censaurus.utils.rename.CensusRenamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRenamer</span></code></a>) – The CensusRenamer to use to carry out the renamings. Read the
+<a class="reference internal" href="#censaurus.utils.rename.CensusRenamer" title="censaurus.utils.rename.CensusRenamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRenamer</span></code></a> documentation for more information.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original CensusDataFrame or create
+and return a new one.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DataFrame with the renamed axis labels or None if <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DataFrame or None</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>KeyError</strong> – If any of the labels is not found in the selected axis and
-    “errors=’raise’”.</p>
-</dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.rename_axis</span></code></dt><dd><p>Set the name of the axis.</p>
-</dd>
-</dl>
-</div>
-<p class="rubric">Examples</p>
-<p><code class="docutils literal notranslate"><span class="pre">DataFrame.rename</span></code> supports two calling conventions</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">(index=index_mapper,</span> <span class="pre">columns=columns_mapper,</span> <span class="pre">...)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">(mapper,</span> <span class="pre">axis={'index',</span> <span class="pre">'columns'},</span> <span class="pre">...)</span></code></p></li>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.cdf.CensusDataFrame.regroup_variables">
+<span class="sig-name descname"><span class="pre">regroup_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">census_regrouper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#censaurus.utils.regroup.CensusRegrouper" title="censaurus.utils.regroup.CensusRegrouper"><span class="pre">CensusRegrouper</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusDataFrame.regroup_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Regroup variables according to a <a class="reference internal" href="#censaurus.utils.regroup.CensusRegrouper" title="censaurus.utils.regroup.CensusRegrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRegrouper</span></code></a> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>census_regrouper</strong> (<a class="reference internal" href="#censaurus.utils.regroup.CensusRegrouper" title="censaurus.utils.regroup.CensusRegrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRegrouper</span></code></a>) – The CensusRegrouper to use to carry out the regroupings. Read the
+<a class="reference internal" href="#censaurus.utils.regroup.CensusRegrouper" title="censaurus.utils.regroup.CensusRegrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRegrouper</span></code></a> documentation for more information.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original CensusDataFrame or create
+and return a new one.</p></li>
 </ul>
-<p>We <em>highly</em> recommend using keyword arguments to clarify your
-intent.</p>
-<p>Rename columns using a mapping:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">})</span>
-<span class="go">   a  c</span>
-<span class="go">0  1  4</span>
-<span class="go">1  2  5</span>
-<span class="go">2  3  6</span>
-</pre></div>
-</div>
-<p>Rename index using a mapping:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">})</span>
-<span class="go">   A  B</span>
-<span class="go">x  1  4</span>
-<span class="go">y  2  5</span>
-<span class="go">z  3  6</span>
-</pre></div>
-</div>
-<p>Cast index labels to a different type:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">index</span>
-<span class="go">RangeIndex(start=0, stop=3, step=1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
-<span class="go">Index([&#39;0&#39;, &#39;1&#39;, &#39;2&#39;], dtype=&#39;object&#39;)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">},</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">)</span>
-<span class="gt">Traceback (most recent call last):</span>
-<span class="gr">KeyError</span>: <span class="n">[&#39;C&#39;] not found in axis</span>
-</pre></div>
-</div>
-<p>Using axis-style parameters:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
-<span class="go">   a  b</span>
-<span class="go">0  1  4</span>
-<span class="go">1  2  5</span>
-<span class="go">2  3  6</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>
-<span class="go">   A  B</span>
-<span class="go">0  1  4</span>
-<span class="go">2  2  5</span>
-<span class="go">4  3  6</span>
-</pre></div>
-</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.cdf.CensusDataFrame.recode_states">
+<span class="sig-name descname"><span class="pre">recode_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'FIPS'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'FIPS_PADDED'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ABBR'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'NAME'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'GNIS'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'GNIS_PADDED'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusDataFrame.recode_states" title="Permalink to this definition"></a></dt>
+<dd><p>Recode state labels to various formats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>format</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal['FIPS',</span> <span class="pre">'FIPS_PADDED',</span> <span class="pre">'ABBR',</span> <span class="pre">'NAME',</span> <span class="pre">'GNIS',</span> <span class="pre">'GNIS_PADDED']</span></code>) – <p>The desired new label format. Format options are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">FIPS</span></code>: FIPS codes with no zero-padding (1, 2, 4, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FIPS_PADDED</span></code>: FIPS codes with two-digit zero-padding (01, 02, 04, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ABBR</span></code>: state abbreviations (AL, AK, AZ, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NAME</span></code>: full state names (Alabama, Alaska, Arizona, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GNIS</span></code>: Geographic Names Information System codes (1779775, 1785533, 1779777 etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GNIS_PADDED</span></code>: Geographic Names Information System codes with seven-digit zero-padding (1779775, 1785533, 1779777 etc.)</p></li>
+</ul>
+</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original CensusDataFrame or create
+and return a new one.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1455,12 +1428,99 @@ intent.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.cdf.CensusSeries">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.cdf.</span></span><span class="sig-name descname"><span class="pre">CensusSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusSeries" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>An adapted <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.Series</span></code> object that stores additional information
+about the Census variable that corresponds to the data.</p>
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.cdf.CensusGeoDataFrame">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.cdf.</span></span><span class="sig-name descname"><span class="pre">CensusGeoDataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geography</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#censaurus.geography.Geography" title="censaurus.geography.Geography"><span class="pre">Geography</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">areas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#censaurus.tiger.AreaCollection" title="censaurus.tiger.AreaCollection"><span class="pre">AreaCollection</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusGeoDataFrame" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="censaurus.cdf.CensusGeoDataFrame.clip_to_cb">
+<span class="sig-name descname"><span class="pre">clip_to_cb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">censaurus.cdf.CensusGeoDataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusGeoDataFrame.clip_to_cb" title="Permalink to this definition"></a></dt>
+<dd><p>Intersect the geographical boundaries of the CensusGeoDataFrame with the
+<a class="reference external" href="https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html">Cartographic Boundaries</a>
+of the United States, which is a simplified representation of the United States
+boundary meant for thematic visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original CensusGeoDataFrame or
+create and return a new one.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.cdf.CensusGeoDataFrame.remove_water">
+<span class="sig-name descname"><span class="pre">remove_water</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_area_pct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_pct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_internal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">censaurus.cdf.CensusGeoDataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusGeoDataFrame.remove_water" title="Permalink to this definition"></a></dt>
+<dd><p>Remove water geometries from within the geographical boundaries of the
+CensusGeoDataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>min_area</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = None) – Remove matching water geometries that are at least this square area (in
+meters squared).</p></li>
+<li><p><strong>min_area_pct</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = None) – Remove matching water geometries that are at least this percentage of the
+total area of geometries in the CensusDataFrame.</p></li>
+<li><p><strong>top_n</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = None) – Remove this many of the largest matching water geometries.</p></li>
+<li><p><strong>top_pct</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = None) – Remove this percentage of the largest matching water geometries.</p></li>
+<li><p><strong>remove_internal</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not to remove water geometries that are strictly
+internal to the geographical boundaries of the CensusGeoDataFrame. For
+example, when this parameter is False, strictly internal lakes will not be
+removed.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original CensusGeoDataFrame or
+create and return a new one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.cdf.CensusGeoDataFrame.recompose_states">
+<span class="sig-name descname"><span class="pre">recompose_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">typing.Literal['below',</span> <span class="pre">'outside']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">censaurus.cdf.CensusGeoDataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusGeoDataFrame.recompose_states" title="Permalink to this definition"></a></dt>
+<dd><p>Shift the geographies of Alaska, Hawaii, and Puerto Rico so that they appear
+nearer to the contiguous United States.</p>
+<p>Inspired by Kyle Walker’s <a class="reference external" href="https://github.com/walkerke/tigris/blob/master/R/shift_geometry.R">shift_geometry</a>
+function in the <code class="docutils literal notranslate"><span class="pre">tigris</span></code> R package and the <a class="reference external" href="https://d3js.org/d3-geo/conic#geoAlbersUsa">geoAlbersUSA</a>
+projection in the <code class="docutils literal notranslate"><span class="pre">d3</span></code> library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The CensusGeoDataFrame’s state column. Should be in padded FIPS format. See
+the <code class="xref py py-meth docutils literal notranslate"><span class="pre">CensusDataFrame.recode()</span></code> for automatically recoding your data to
+this format.</p></li>
+<li><p><strong>geometry_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘geometry’) – The CensusGeoDataFrame’s geometry column.</p></li>
+<li><p><strong>position</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = Literal[‘below’, ‘outside’]) – Determines whether Alaska, Hawaii, and Puerto Rico should be position below
+our outside of the contiguous United States.</p></li>
+<li><p><strong>preserve_area</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether Alaska, Hawaii, and Puerto Rico should be rescaled,
+or whether their original area should be maintained.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original CensusGeoDataFrame or
+create and return a new one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.cdf.CensusGeoDataFrame.compare_regions">
+<span class="sig-name descname"><span class="pre">compare_regions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comparison_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">censaurus.cdf.CensusGeoDataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusGeoDataFrame.compare_regions" title="Permalink to this definition"></a></dt>
+<dd><p>Transform a CensusGeoDataFrame’s geometries so that two or more geographic regions can be
+visually compared.</p>
+<p>Rows are grouped by the specified <code class="docutils literal notranslate"><span class="pre">comparison_col</span></code>, and geometries are
+repositioned and rescaled so that groups appear in a horizontal line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comparison_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The column used to partition rows up into groups.</p></li>
+<li><p><strong>geometry_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘geometry’) – The CensusGeoDataFrame’s geometry column.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original CensusGeoDataFrame or
+create and return a new one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 <section id="module-censaurus.variable">
@@ -1535,7 +1595,7 @@ objects.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.variable.</span></span><span class="sig-name descname"><span class="pre">RegroupedVariable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><span class="pre">Variable</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/variable.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.variable.RegroupedVariable" title="Permalink to this definition"></a></dt>
 <dd><p>An object that represents a group of <a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a> objects after a regrouping
 has occurred. Not to be confused with an actual Census group. To learn more about
-custom regrouping, see <a class="reference internal" href="#censaurus.utils.regroup.Regrouper" title="censaurus.utils.regroup.Regrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Regrouper</span></code></a>.</p>
+custom regrouping, see <code class="xref py py-class docutils literal notranslate"><span class="pre">Regrouper</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2304,8 +2364,31 @@ from TIGERWeb. Otherwise, this should be None.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.tiger.Area.clip_to_cb">
 <span class="sig-name descname"><span class="pre">clip_to_cb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/tiger.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.tiger.Area.clip_to_cb" title="Permalink to this definition"></a></dt>
-<dd><p>Intersects the geometric boundary of the geographic area with the cartographic
-boundary of the United States.</p>
+<dd><p>Intersect the geographical boundaries of the  with the
+<a class="reference external" href="https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html">Cartographic Boundaries</a>
+of the United States, which is a simplified representation of the United States
+boundary meant for thematic visualization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.tiger.Area.remove_water">
+<span class="sig-name descname"><span class="pre">remove_water</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_area_pct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_pct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_internal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/tiger.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.tiger.Area.remove_water" title="Permalink to this definition"></a></dt>
+<dd><p>Remove water geometries from within the area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>min_area</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = None) – Remove matching water geometries that are at least this square area (in
+meters squared).</p></li>
+<li><p><strong>min_area_pct</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = None) – Remove matching water geometries that are at least this percentage of the
+total area of geometries in the area.</p></li>
+<li><p><strong>top_n</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code> = None) – Remove this many of the largest matching water geometries.</p></li>
+<li><p><strong>top_pct</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code> = None) – Remove this percentage of the largest matching water geometries.</p></li>
+<li><p><strong>remove_internal</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether or not to remove water geometries that are strictly
+internal to the geographical boundaries of the area. For example, when this
+parameter is False, strictly internal lakes will not be removed.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2858,8 +2941,8 @@ intersected with the cartographic boundary of the United States.</p></li>
 <section id="module-censaurus.utils.rename">
 <span id="renaming"></span><h2>Renaming<a class="headerlink" href="#module-censaurus.utils.rename" title="Permalink to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="censaurus.utils.rename.Renamer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.utils.rename.</span></span><span class="sig-name descname"><span class="pre">Renamer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">separator:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'|',</span> <span class="pre">default_rename_function:</span> <span class="pre">~typing.Callable[[str],</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">Renamer.&lt;lambda&gt;&gt;,</span> <span class="pre">replacements:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">{},</span> <span class="pre">custom_match_functions:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~typing.Callable[[~re.Match,</span> <span class="pre">str],</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">{},</span> <span class="pre">group_prefixes:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">{}</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/rename.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.rename.Renamer" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="censaurus.utils.rename.CensusRenamer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.utils.rename.</span></span><span class="sig-name descname"><span class="pre">CensusRenamer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">separator:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'|',</span> <span class="pre">default_rename_function:</span> <span class="pre">~typing.Callable[[str],</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">CensusRenamer.&lt;lambda&gt;&gt;,</span> <span class="pre">replacements:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">{},</span> <span class="pre">custom_match_functions:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~typing.Callable[[~re.Match,</span> <span class="pre">str],</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">{},</span> <span class="pre">group_prefixes:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">{}</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/rename.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.rename.CensusRenamer" title="Permalink to this definition"></a></dt>
 <dd><p>An object that handles renaming Census variable names in datasets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2882,9 +2965,9 @@ behavior).</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="censaurus.utils.rename.Renamer.add_group_prefixes">
-<span class="sig-name descname"><span class="pre">add_group_prefixes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_prefixes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/rename.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.rename.Renamer.add_group_prefixes" title="Permalink to this definition"></a></dt>
-<dd><p>Adds additional group prefixes to an existing <a class="reference internal" href="#censaurus.utils.rename.Renamer" title="censaurus.utils.rename.Renamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code></a>.</p>
+<dt class="sig sig-object py" id="censaurus.utils.rename.CensusRenamer.add_group_prefixes">
+<span class="sig-name descname"><span class="pre">add_group_prefixes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_prefixes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/rename.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.rename.CensusRenamer.add_group_prefixes" title="Permalink to this definition"></a></dt>
+<dd><p>Adds additional group prefixes to an existing <a class="reference internal" href="#censaurus.utils.rename.CensusRenamer" title="censaurus.utils.rename.CensusRenamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRenamer</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>group_prefixes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = {}) – The groups and prefixes to add.</p>
@@ -2893,12 +2976,16 @@ behavior).</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="censaurus.utils.rename.Renamer.rename">
-<span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/rename.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.rename.Renamer.rename" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="censaurus.utils.rename.CensusRenamer.rename_variables">
+<span class="sig-name descname"><span class="pre">rename_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/rename.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.rename.CensusRenamer.rename_variables" title="Permalink to this definition"></a></dt>
 <dd><p>Renames the columns of the dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data to rename.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data to rename.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and
+return a new one.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -2907,8 +2994,8 @@ behavior).</p></li>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="censaurus.utils.rename.SIMPLE_RENAMER">
-<span class="sig-prename descclassname"><span class="pre">censaurus.utils.rename.</span></span><span class="sig-name descname"><span class="pre">SIMPLE_RENAMER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;censaurus.utils.rename.Renamer</span> <span class="pre">object&gt;</span></em><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/rename.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.rename.SIMPLE_RENAMER" title="Permalink to this definition"></a></dt>
-<dd><p>A <a class="reference internal" href="#censaurus.utils.rename.Renamer" title="censaurus.utils.rename.Renamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code></a> object that renames variables in a simple way. Has custom match
+<span class="sig-prename descclassname"><span class="pre">censaurus.utils.rename.</span></span><span class="sig-name descname"><span class="pre">SIMPLE_RENAMER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;censaurus.utils.rename.CensusRenamer</span> <span class="pre">object&gt;</span></em><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/rename.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.rename.SIMPLE_RENAMER" title="Permalink to this definition"></a></dt>
+<dd><p>A <a class="reference internal" href="#censaurus.utils.rename.CensusRenamer" title="censaurus.utils.rename.CensusRenamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRenamer</span></code></a> object that renames variables in a simple way. Has custom match
 functions to handle: age, race, variable types, inflation, and incomes.</p>
 </dd></dl>
 
@@ -2916,8 +3003,8 @@ functions to handle: age, race, variable types, inflation, and incomes.</p>
 <section id="module-censaurus.utils.regroup">
 <span id="regrouping"></span><h2>Regrouping<a class="headerlink" href="#module-censaurus.utils.regroup" title="Permalink to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="censaurus.utils.regroup.Regrouper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.utils.regroup.</span></span><span class="sig-name descname"><span class="pre">Regrouper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">groupings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/regroup.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.regroup.Regrouper" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="censaurus.utils.regroup.CensusRegrouper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.utils.regroup.</span></span><span class="sig-name descname"><span class="pre">CensusRegrouper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">groupings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/regroup.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.regroup.CensusRegrouper" title="Permalink to this definition"></a></dt>
 <dd><p>An object to handle regrouping Census variables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2930,13 +3017,17 @@ replaces as <code class="docutils literal notranslate"><span class="pre">white_o
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="censaurus.utils.regroup.Regrouper.regroup">
-<span class="sig-name descname"><span class="pre">regroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/regroup.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.regroup.Regrouper.regroup" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="censaurus.utils.regroup.CensusRegrouper.regroup_variables">
+<span class="sig-name descname"><span class="pre">regroup_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/regroup.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.regroup.CensusRegrouper.regroup_variables" title="Permalink to this definition"></a></dt>
 <dd><p>Regroups the columns of the dataset. You should rename the data after a
-regrouping with a <a class="reference internal" href="#censaurus.utils.rename.Renamer" title="censaurus.utils.rename.Renamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code></a> object to avoid long column names.</p>
+regrouping with a <a class="reference internal" href="#censaurus.utils.rename.CensusRenamer" title="censaurus.utils.rename.CensusRenamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRenamer</span></code></a> object to avoid long column names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdf.CensusDataFrame</span></code></a> or <a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdf.CensusGeoDataFrame</span></code></a>) – The data to regroup.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdf.CensusDataFrame</span></code></a> or <a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdf.CensusGeoDataFrame</span></code></a>) – The data to regroup.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and
+return a new one.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -2945,8 +3036,8 @@ regrouping with a <a class="reference internal" href="#censaurus.utils.rename.Re
 
 <dl class="py data">
 <dt class="sig sig-object py" id="censaurus.utils.regroup.FIVE_RACE_REGROUPER">
-<span class="sig-prename descclassname"><span class="pre">censaurus.utils.regroup.</span></span><span class="sig-name descname"><span class="pre">FIVE_RACE_REGROUPER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;censaurus.utils.regroup.Regrouper</span> <span class="pre">object&gt;</span></em><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/regroup.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.regroup.FIVE_RACE_REGROUPER" title="Permalink to this definition"></a></dt>
-<dd><p>A <a class="reference internal" href="#censaurus.utils.regroup.Regrouper" title="censaurus.utils.regroup.Regrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Regrouper</span></code></a> object that aggregates <code class="docutils literal notranslate"><span class="pre">some</span> <span class="pre">other</span> <span class="pre">race</span> <span class="pre">alone</span></code>, <code class="docutils literal notranslate"><span class="pre">two</span> <span class="pre">or</span> <span class="pre">more</span>
+<span class="sig-prename descclassname"><span class="pre">censaurus.utils.regroup.</span></span><span class="sig-name descname"><span class="pre">FIVE_RACE_REGROUPER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;censaurus.utils.regroup.CensusRegrouper</span> <span class="pre">object&gt;</span></em><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/regroup.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.regroup.FIVE_RACE_REGROUPER" title="Permalink to this definition"></a></dt>
+<dd><p>A <a class="reference internal" href="#censaurus.utils.regroup.CensusRegrouper" title="censaurus.utils.regroup.CensusRegrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRegrouper</span></code></a> object that aggregates <code class="docutils literal notranslate"><span class="pre">some</span> <span class="pre">other</span> <span class="pre">race</span> <span class="pre">alone</span></code>, <code class="docutils literal notranslate"><span class="pre">two</span> <span class="pre">or</span> <span class="pre">more</span>
 <span class="pre">races</span></code>, <code class="docutils literal notranslate"><span class="pre">american</span> <span class="pre">indian</span> <span class="pre">and</span> <span class="pre">alaska</span> <span class="pre">native</span> <span class="pre">alone</span></code>, <code class="docutils literal notranslate"><span class="pre">native</span> <span class="pre">hawaiian</span> <span class="pre">and</span> <span class="pre">other</span> <span class="pre">pacific</span>
 <span class="pre">islander</span> <span class="pre">alone</span></code> into a group called <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p>
 </dd></dl>
@@ -2954,7 +3045,7 @@ regrouping with a <a class="reference internal" href="#censaurus.utils.rename.Re
 <dl class="py class">
 <dt class="sig sig-object py" id="censaurus.utils.regroup.AgeRegrouper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">censaurus.utils.regroup.</span></span><span class="sig-name descname"><span class="pre">AgeRegrouper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_brackets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/regroup.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.regroup.AgeRegrouper" title="Permalink to this definition"></a></dt>
-<dd><p>A subclass of the <code class="xref py py-class docutils literal notranslate"><span class="pre">Regouper</span></code> class that specifically handles regrouping
+<dd><p>A subclass of the <a class="reference internal" href="#censaurus.utils.regroup.CensusRegrouper" title="censaurus.utils.regroup.CensusRegrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRegrouper</span></code></a> class that specifically handles regrouping
 into new age buckets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2965,14 +3056,18 @@ be of the form <code class="docutils literal notranslate"><span class="pre">&lt;
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="censaurus.utils.regroup.AgeRegrouper.regroup">
-<span class="sig-name descname"><span class="pre">regroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/regroup.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.regroup.AgeRegrouper.regroup" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="censaurus.utils.regroup.AgeRegrouper.regroup_variables">
+<span class="sig-name descname"><span class="pre">regroup_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/regroup.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.regroup.AgeRegrouper.regroup_variables" title="Permalink to this definition"></a></dt>
 <dd><p>Regroups the columns of the dataset. Note that you should probably rename
-the data after a regrouping with a <a class="reference internal" href="#censaurus.utils.rename.Renamer" title="censaurus.utils.rename.Renamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Renamer</span></code></a> object to avoid long
+the data after a regrouping with a <a class="reference internal" href="#censaurus.utils.rename.CensusRenamer" title="censaurus.utils.rename.CensusRenamer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusRenamer</span></code></a> object to avoid long
 column names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdf.CensusDataFrame</span></code></a> or <a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdf.CensusGeoDataFrame</span></code></a>) – The data to regroup.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdf.CensusDataFrame</span></code></a> or <a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdf.CensusGeoDataFrame</span></code></a>) – The data to regroup.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and
+return a new one.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -3003,7 +3098,7 @@ column names.</p>
 </div></blockquote>
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.utils.recode.StateRecoder.to_FIPS">
-<span class="sig-name descname"><span class="pre">to_FIPS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_FIPS" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_FIPS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_FIPS" title="Permalink to this definition"></a></dt>
 <dd><p>Recodes states as FIPS codes (1, 2, 4, etc.). Attempts to infer the
 original state format.</p>
 <dl class="field-list simple">
@@ -3011,6 +3106,8 @@ original state format.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
 <li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and return a new
+one.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3018,7 +3115,7 @@ original state format.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.utils.recode.StateRecoder.to_FIPS_PADDED">
-<span class="sig-name descname"><span class="pre">to_FIPS_PADDED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_FIPS_PADDED" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_FIPS_PADDED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_FIPS_PADDED" title="Permalink to this definition"></a></dt>
 <dd><p>Recodes states as two-digit zero-padded FIPS codes (01, 02, 04, etc.).
 Attempts to infer the original state format.</p>
 <dl class="field-list simple">
@@ -3026,6 +3123,8 @@ Attempts to infer the original state format.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
 <li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and return a new
+one.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3033,7 +3132,7 @@ Attempts to infer the original state format.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.utils.recode.StateRecoder.to_ABBR">
-<span class="sig-name descname"><span class="pre">to_ABBR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_ABBR" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_ABBR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_ABBR" title="Permalink to this definition"></a></dt>
 <dd><p>Recodes states as abbreviations (AL, AK, AZ, etc.). Attempts to infer the
 original state format.</p>
 <dl class="field-list simple">
@@ -3041,6 +3140,8 @@ original state format.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
 <li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and return a new
+one.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3048,7 +3149,7 @@ original state format.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.utils.recode.StateRecoder.to_NAME">
-<span class="sig-name descname"><span class="pre">to_NAME</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_NAME" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_NAME</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_NAME" title="Permalink to this definition"></a></dt>
 <dd><p>Recodes states as full names (Alabama, Alaska, Arizona, etc.). Attempts to infer
 the original state format.</p>
 <dl class="field-list simple">
@@ -3056,6 +3157,8 @@ the original state format.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
 <li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and return a new
+one.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3063,7 +3166,7 @@ the original state format.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.utils.recode.StateRecoder.to_GNIS">
-<span class="sig-name descname"><span class="pre">to_GNIS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_GNIS" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_GNIS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_GNIS" title="Permalink to this definition"></a></dt>
 <dd><p>Recodes states as GNIS codes (1779775, 1785533, 1779777 etc.). Attempts to
 infer the original state format.</p>
 <dl class="field-list simple">
@@ -3071,6 +3174,8 @@ infer the original state format.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
 <li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and return a new
+one.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3078,7 +3183,7 @@ infer the original state format.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.utils.recode.StateRecoder.to_GNIS_PADDED">
-<span class="sig-name descname"><span class="pre">to_GNIS_PADDED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_GNIS_PADDED" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_GNIS_PADDED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusDataFrame" title="censaurus.cdf.CensusDataFrame"><span class="pre">CensusDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/recode.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.recode.StateRecoder.to_GNIS_PADDED" title="Permalink to this definition"></a></dt>
 <dd><p>Recodes states as GNIS codes (1779775, 1785533, 1779777 etc.). Attempts to
 infer the original state format.</p>
 <dl class="field-list simple">
@@ -3086,6 +3191,8 @@ infer the original state format.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – The data with a column to recode.</p></li>
 <li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The column in the dataset that list states.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and return a new
+one.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3095,7 +3202,52 @@ infer the original state format.</p>
 
 </section>
 <section id="module-censaurus.utils.transform_geometry">
-<span id="transform-geometry"></span><h2>Transform Geometry<a class="headerlink" href="#module-censaurus.utils.transform_geometry" title="Permalink to this heading"></a></h2>
+<span id="transforming-geometry"></span><h2>Transforming Geometry<a class="headerlink" href="#module-censaurus.utils.transform_geometry" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="censaurus.utils.transform_geometry.recompose_states">
+<span class="sig-prename descclassname"><span class="pre">censaurus.utils.transform_geometry.</span></span><span class="sig-name descname"><span class="pre">recompose_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">typing.Literal['below',</span> <span class="pre">'outside']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/transform_geometry.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.transform_geometry.recompose_states" title="Permalink to this definition"></a></dt>
+<dd><p>Shift the geographies of Alaska, Hawaii, and Puerto Rico so that they appear
+nearer to the contiguous United States.</p>
+<p>Inspired by Kyle Walker’s <a class="reference external" href="https://github.com/walkerke/tigris/blob/master/R/shift_geometry.R">shift_geometry</a>
+function in the <code class="docutils literal notranslate"><span class="pre">tigris</span></code> R package and the <a class="reference external" href="https://d3js.org/d3-geo/conic#geoAlbersUsa">geoAlbersUSA</a>
+projection in the <code class="docutils literal notranslate"><span class="pre">d3</span></code> library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘state’) – The dataset’s state column. Should be in padded FIPS format. See the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">CensusDataFrame.recode()</span></code> for automatically recoding your data to this
+format.</p></li>
+<li><p><strong>geometry_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘geometry’) – The dataset’s geometry column.</p></li>
+<li><p><strong>position</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = Literal[‘below’, ‘outside’]) – Determines whether Alaska, Hawaii, and Puerto Rico should be position below
+our outside of the contiguous United States.</p></li>
+<li><p><strong>preserve_area</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether Alaska, Hawaii, and Puerto Rico should be rescaled,
+or whether their original area should be maintained.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and return a new
+one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="censaurus.utils.transform_geometry.compare_regions">
+<span class="sig-prename descclassname"><span class="pre">censaurus.utils.transform_geometry.</span></span><span class="sig-name descname"><span class="pre">compare_regions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparison_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/transform_geometry.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.transform_geometry.compare_regions" title="Permalink to this definition"></a></dt>
+<dd><p>Transform a dataset’s geometries so that two or more geographic regions can be
+visually compared.</p>
+<p>Rows are grouped by the specified <code class="docutils literal notranslate"><span class="pre">comparison_col</span></code>, and geometries are
+repositioned and rescaled so that groups appear in a horizontal line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comparison_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The column used to partition rows up into groups.</p></li>
+<li><p><strong>geometry_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘geometry’) – The dataset’s geometry column.</p></li>
+<li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and return a new
+one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-censaurus.api">
 <span id="census-and-tigerweb-apis"></span><h2>Census and TIGERWeb APIs<a class="headerlink" href="#module-censaurus.api" title="Permalink to this heading"></a></h2>
@@ -3194,7 +3346,7 @@ set of query parameters to supply to the Census API.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.api.CensusClient.get_many">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url_params_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Response</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/api.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.api.CensusClient.get_many" title="Permalink to this definition"></a></dt>
-<dd><p>Make a more than one request to the Census API asynchronously.</p>
+<dd><p>Make more than one request to the Census API asynchronously.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>url_params_list</strong> (array-like of <code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – An array-like of tuples, where each tuple consists of a URL to request and a set

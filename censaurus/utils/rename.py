@@ -87,7 +87,7 @@ class CensusRenamer:
         
         return self.separator.join([t for t in tokens if t])
 
-    def rename(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], inplace: bool = True) -> Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame]:
+    def rename_variables(self, data: Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame], inplace: bool = False) -> Union[censaurus.CensusDataFrame, censaurus.CensusGeoDataFrame]:
         """
         Renames the columns of the dataset.
 
@@ -95,10 +95,9 @@ class CensusRenamer:
         ==========
         data : :class:`pandas.DataFrame`
             The data to rename.
-
-        inplace : :obj:`bool` = True
-            Determines whether variables are renamed in place, or whether this function
-            should return a new dataset, leaving the original unchanged.
+        inplace : :obj:`bool` = False
+            Determines whether to modify the original dataset or create and
+            return a new one.
         """
         column_map = {}
         for c in data.columns:

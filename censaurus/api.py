@@ -149,7 +149,7 @@ class CensusClient(AsyncClient):
 
     async def get_many(self, url_params_list: Iterable[Tuple[str, Dict[str, str]]] = []) -> List[Response]:
         """
-        Make a more than one request to the Census API asynchronously.
+        Make more than one request to the Census API asynchronously.
 
         Parameters
         ==========
