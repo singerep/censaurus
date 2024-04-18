@@ -1,4 +1,4 @@
-from typing import List, Dict, Set, Union, Callable, Tuple
+from typing import List, Dict, Set, Union, Literal, Tuple
 from collections import defaultdict
 from queue import Queue
 from os import path
@@ -706,7 +706,7 @@ class VariableCollection:
 
         return self._mask(parents)
 
-    def filter_by_term(self, term: Union[str, List[str]], by: str = 'label') -> 'VariableCollection':
+    def filter_by_term(self, term: Union[str, List[str]], by: Literal['label', 'concept'] = 'label') -> 'VariableCollection':
         """
         Returns a new :class:`.VariableCollection` consisting of all variables
         that match the search. Can filter by each variable's label or by the
@@ -716,10 +716,10 @@ class VariableCollection:
         ==========
         term : :obj:`str` or :obj:`list` of :obj:`str`
             The search string or strings.
-        by : :obj:`str` = 'label'
+        by : :obj:`Literal['label', 'concept'] ` = 'label'
             If ``by`` is 'label', then variables will be filtered by their labels.
-            Otherwise, ``by`` should be 'concept', and variables will be filtered
-            by the concepts of their groups.
+            If ``by`` is 'concept', variables will be filtered by the concepts of their
+            groups.
         """
         if isinstance(term, str):
             term = [term]

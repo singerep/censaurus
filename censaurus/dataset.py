@@ -1,4 +1,4 @@
-from typing import Union, Dict, List, Set
+from typing import Union, Dict, List, Set, Literal
 from pandas import DataFrame, to_numeric, json_normalize, merge, concat
 from numpy import nan
 from json.decoder import JSONDecodeError
@@ -86,7 +86,7 @@ class DatasetExplorer:
         
         return self._mask(url_extensions=url_extensions)
 
-    def filter_by_term(self, term: Union[str, List[str]], by: str = 'title') -> 'DatasetExplorer':
+    def filter_by_term(self, term: Union[str, List[str]], by: Literal['title', 'description'] = 'title') -> 'DatasetExplorer':
         """
         Returns a new :class:`.DatasetExplorer` consisting of all datasets that match 
         the search. Can filter by each dataset's title or description.
@@ -95,10 +95,9 @@ class DatasetExplorer:
         ==========
         term : :obj:`str` or :obj:`list` of :obj:`str`
             The search string or strings.
-        by : :obj:`str` = 'title'
+        by : :obj:`Literal['title', 'description']` = 'title'
             If ``by`` is 'title', then datasets will be filtered by their titles.
-            Otherwise, ``by`` should be 'description', and datasets will be filtered
-            by their descriptions.
+            If ``by`` is 'description', datasets will be filtered by their descriptions.
         """
         if isinstance(term, str):
             term = [term]

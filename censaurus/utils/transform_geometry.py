@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from shapely import affinity, union_all
+from shapely import affinity, union_all, difference
 from geopandas import GeoDataFrame
-from typing import Dict, Tuple, Union, Literal
-from geopandas import GeoDataFrame
+from typing import Dict, Tuple, Union, Literal, List
+from pandas import Series
+from pandas.api.types import is_numeric_dtype
 
 import censaurus
 
@@ -172,3 +173,165 @@ def compare_regions(data: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], com
 
     if inplace:
         return data
+
+def _crosswalk_by_area(source: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], destination: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], count_columns: List[str]) -> GeoDataFrame:    
+    S = source.copy()
+    S = S[count_columns + [S.geometry.name]]
+    S['S_area'] = S.area
+    
+    destination['D_id'] = destination.index
+    D = destination.copy()
+
+    X : GeoDataFrame = S.overlay(right=D, how='intersection', keep_geom_type=False) # removes areas that are outside both geometries; this makes sense because no data!
+    X['weight'] = X.area/X['S_area']
+    X[count_columns] = X[count_columns].multiply(X['weight'], axis="index")
+
+    D_prime = X.groupby('D_id', as_index=False)[count_columns].sum()
+    destination_prime = destination.merge(D_prime, on='D_id', how='inner').drop(labels=['D_id'], axis=1)
+
+    return destination_prime
+
+def _crosswalk_by_weight(source: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], destination: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], weight_col: str, count_columns: List[str]) -> GeoDataFrame:    
+    source['S_id'] = source.index
+    S = source.copy()
+    S = S[count_columns + [S.geometry.name] + ['S_id']]
+    S['S_area'] = S.area
+    
+    destination['D_id'] = destination.index
+    D = destination.copy()
+    D['D_area'] = D.area
+
+    X : GeoDataFrame = S.overlay(right=D, how='intersection', keep_geom_type=False) # removes areas that are outside both geometries; this makes sense because no data!
+    X['X_area'] = X.area
+    X['weight'] = X[weight_col]*(X['X_area']/X['D_area'])
+
+    S_weights = X.groupby('S_id', as_index=False)[['weight', 'X_area']].sum().rename(columns={'weight': 'S_weight', 'X_area': 'S_weighted_area'})
+
+    X = X.merge(S_weights, on='S_id', how='inner')
+    X['weight'] = (X['weight']/X['S_weight'])*(X['S_weighted_area']/X['S_area'])
+
+    X[count_columns] = X[count_columns].multiply(X['weight'], axis="index")
+
+    D_prime = X.groupby('D_id', as_index=False)[count_columns].sum()
+    destination_prime = destination.merge(D_prime, on='D_id', how='inner').drop(labels=['D_id'], axis=1)
+
+    return destination_prime
+    
+
+def crosswalk(source: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], destination: Union[censaurus.CensusGeoDataFrame, GeoDataFrame], weight_col: str = None, count_columns: List[str] = None, count_placement: Literal['right', 'left'] = 'right') -> Union[censaurus.CensusGeoDataFrame, GeoDataFrame]:
+    """
+    Estimate count variables (such as total population, number of homeowners, etc.) for 
+    geographic units in a ``destination`` dataset by computing a crosswalk from
+    geographic units in a ``source`` dataset where those count variables are specified.
+
+    The general framework to compute crosswalks is as follows.
+
+    **Setup and notation**
+
+    * We are given the source layer :math:`S` (indexed by :math:`i`) and the destination 
+      layer :math:`D` (indexed by :math:`j`).
+    
+    * We use :math:`C_u` to refer to the vector of count variables corresponding to
+      a specified geographic unit :math:`u`. Note: the count vectors are already 
+      specified for each source unit :math:`S_i`, while our goal is to estimate the 
+      count vectors for each destination unit :math:`D_j`.
+
+    * *Optional*: We use :math:`W_u` to refer to the weight (such as population count)
+      of a specified geographic unit :math:`W_u`. If a weighted crosswalk is desired, 
+      the weight of each destination unit :math:`W_{D_j}` must be specified.
+
+    * We use :math:`\| u \|` to denote the area of a specific geographic unit :math:`u`.
+
+    **Algorithm**
+
+    #. Intersect the source layer :math:`S` with the destination layer :math:`D` to
+       create a cross layer :math:`X` (indexed by :math:`i, j`) where :math:`X_{i, j}` 
+       is the intersection between :math:`S_i` and :math:`D_j`.
+
+    #. Estimate :math:`\\hat{C}_{X_{i,j}}` for each unit in the cross layer.
+
+       If weights are not supplied, :math:`\\hat{C}_{X_{i,j}}` is computed using a naive
+       areal approach.
+
+         .. math::
+
+            \\hat{C}_{X_{i,j}} = \\frac{\| X_{i,j} \|}{\| S_i \|} \\cdot C_{S_i}
+
+       If weights are supplied, :math:`\\hat{C}_{X_{i,j}}` is computed using a weighted
+       approach.
+
+         .. math::
+
+            \\hat{C}_{X_{i,j}} = \\frac{W_{X_{i,j}}}{\\sum\\limits_{X_{i',j'} \in S_i} W_{X_{i',j'}}} \\cdot \\frac{\\sum\\limits_{X_{i',j'} \in S_i} \| X_{i',j'} \|}{\| S_i \|} \\cdot C_{S_i}
+
+       where
+
+         .. math::
+
+            W_{X_{i,j}} = \\frac{\| X_{i,j} \|}{\| D_j \|} \\cdot W_{D_j}
+
+    #. Estimate :math:`\\hat{C}_{D_{j}}` for each unit in the destination layer by
+       aggregating estimated count vectors in the cross layer.
+
+         .. math::
+
+            \\hat{C}_{D_j} = \\sum\\limits_{X_{i,j} \in D_j} \\hat{C}_{X_{i,j}}
+
+    Parameters
+    ==========
+    source : :class:`.CensusGeoDataFrame` or :obj:`.GeoDataFrame`
+        The source geographic dataset. This dataset should have columns corresponding
+        to various count variables that should be crosswalked.
+    destination : :class:`.CensusGeoDataFrame` or :obj:`.GeoDataFrame`
+        The destination geographic dataset. If ``weight_col`` is specified, this dataset
+        should have a column corresponding to the specified variable.
+    weight_col : :obj:`str` = None
+        If a ``weight_col`` is supplied, the crosswalk is computed using the weighted
+        approach. Otherwise, the crosswalk is computed using the naive areal approach.
+    count_columns : list of :obj:`str` = None
+        If supplied, only the specified count variables are crosswalked. If 
+        ``count_columns`` is not supplied, the count variables to crosswalk are assumed
+        to be all numeric columns in the ``source`` dataset (if the ``source`` is a 
+        :obj:`.GeoDataFrame`) or all numeric columns that have an associated 
+        :class:`.Variable` (if the ``source`` is a :class:`.CensusGeoDataFrame`).
+    count_placement : :obj:`Literal['right', 'left']` = 'right'
+        Determines whether or not to place the new estimated count variables on the
+        right side or left side of the ``destination`` dataset.
+    """
+    if source.crs != destination.crs:
+        raise ValueError('The source and to datasets should have the same coordinate reference system!')
+
+    if count_placement not in ['right', 'left']:
+        raise ValueError("The count_placement must be either 'right' or 'left'.")
+
+    source_shape = union_all(source.geometry.values)
+    destination_shape = union_all(destination.geometry.values)
+    if not source_shape.contains(destination_shape):
+        d = difference(destination_shape, source_shape)
+        print(f'Warning: {round(d.area/destination_shape.area, 2)}% of your destination dataset lies outside of your source dataset. This area will be removed during the crosswalk.')
+
+    if count_columns is None:
+        if isinstance(source, censaurus.CensusGeoDataFrame):
+            count_columns = [c for c in source.columns if is_numeric_dtype(source[c]) and c in source._variable_map]
+        else:
+            count_columns = [c for c in source.columns if is_numeric_dtype(source[c])]
+        
+        # TODO: add a message here about what columns are selected, etc.
+
+    if weight_col:
+        destination_prime = _crosswalk_by_weight(source=source, destination=destination, weight_col=weight_col, count_columns=count_columns)
+    else:
+        destination_prime = _crosswalk_by_area(source=source, destination=destination, count_columns=count_columns)
+
+    if count_placement == 'left':
+        col_order = count_columns + [c for c in destination_prime.columns if c not in count_columns]
+    else:
+        col_order = [c for c in destination_prime.columns if c not in count_columns] +  count_columns
+
+    if isinstance(source, censaurus.CensusDataFrame):
+        if isinstance(destination, censaurus.CensusDataFrame):
+            destination_prime = censaurus.CensusDataFrame(destination_prime, geography=destination.geography, variables=source.variables)
+        else:
+            destination_prime = censaurus.CensusDataFrame(destination_prime, geography=None, variables=source.variables)
+
+    return destination_prime[col_order]

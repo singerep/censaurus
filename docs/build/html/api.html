@@ -30,6 +30,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -137,16 +138,15 @@ the year range.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.dataset.DatasetExplorer.filter_by_term">
-<span class="sig-name descname"><span class="pre">filter_by_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'title'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><span class="pre">DatasetExplorer</span></a></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.DatasetExplorer.filter_by_term" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">filter_by_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'title'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'description'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'title'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><span class="pre">DatasetExplorer</span></a></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/dataset.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.dataset.DatasetExplorer.filter_by_term" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a new <a class="reference internal" href="#censaurus.dataset.DatasetExplorer" title="censaurus.dataset.DatasetExplorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetExplorer</span></code></a> consisting of all datasets that match
 the search. Can filter by each dataset’s title or description.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>term</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The search string or strings.</p></li>
-<li><p><strong>by</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘title’) – If <code class="docutils literal notranslate"><span class="pre">by</span></code> is ‘title’, then datasets will be filtered by their titles.
-Otherwise, <code class="docutils literal notranslate"><span class="pre">by</span></code> should be ‘description’, and datasets will be filtered
-by their descriptions.</p></li>
+<li><p><strong>by</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal['title',</span> <span class="pre">'description']</span></code> = ‘title’) – If <code class="docutils literal notranslate"><span class="pre">by</span></code> is ‘title’, then datasets will be filtered by their titles.
+If <code class="docutils literal notranslate"><span class="pre">by</span></code> is ‘description’, datasets will be filtered by their descriptions.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1477,7 +1477,7 @@ create and return a new one.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.cdf.CensusGeoDataFrame.recompose_states">
-<span class="sig-name descname"><span class="pre">recompose_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">typing.Literal['below',</span> <span class="pre">'outside']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">censaurus.cdf.CensusGeoDataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusGeoDataFrame.recompose_states" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">recompose_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'state'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'geometry'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'below'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'outside'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'below'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">censaurus.cdf.CensusGeoDataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusGeoDataFrame.recompose_states" title="Permalink to this definition"></a></dt>
 <dd><p>Shift the geographies of Alaska, Hawaii, and Puerto Rico so that they appear
 nearer to the contiguous United States.</p>
 <p>Inspired by Kyle Walker’s <a class="reference external" href="https://github.com/walkerke/tigris/blob/master/R/shift_geometry.R">shift_geometry</a>
@@ -1490,7 +1490,7 @@ projection in the <code class="docutils literal notranslate"><span class="pre">d
 the <code class="xref py py-meth docutils literal notranslate"><span class="pre">CensusDataFrame.recode()</span></code> for automatically recoding your data to
 this format.</p></li>
 <li><p><strong>geometry_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘geometry’) – The CensusGeoDataFrame’s geometry column.</p></li>
-<li><p><strong>position</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = Literal[‘below’, ‘outside’]) – Determines whether Alaska, Hawaii, and Puerto Rico should be position below
+<li><p><strong>position</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal['below',</span> <span class="pre">'outside']</span></code> = ‘below’) – Determines whether Alaska, Hawaii, and Puerto Rico should be position below
 our outside of the contiguous United States.</p></li>
 <li><p><strong>preserve_area</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether Alaska, Hawaii, and Puerto Rico should be rescaled,
 or whether their original area should be maintained.</p></li>
@@ -1515,6 +1515,82 @@ repositioned and rescaled so that groups appear in a horizontal line.</p>
 <li><p><strong>geometry_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘geometry’) – The CensusGeoDataFrame’s geometry column.</p></li>
 <li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original CensusGeoDataFrame or
 create and return a new one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="censaurus.cdf.CensusGeoDataFrame.crosswalk">
+<span class="sig-name descname"><span class="pre">crosswalk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_placement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'right'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'left'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'right'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/cdf.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.cdf.CensusGeoDataFrame.crosswalk" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate count variables (such as total population, number of homeowners, etc.)
+for geographic units in a <code class="docutils literal notranslate"><span class="pre">destination</span></code> dataset by computing a crosswalk from
+geographic units in the called (<code class="docutils literal notranslate"><span class="pre">source</span></code>) dataset where those count variables
+are specified.</p>
+<p>The general framework to compute crosswalks is as follows.</p>
+<p><strong>Setup and notation</strong></p>
+<ul class="simple">
+<li><p>We are given the source layer <span class="math notranslate nohighlight">\(S\)</span> (indexed by <span class="math notranslate nohighlight">\(i\)</span>) and the</p></li>
+</ul>
+<p>destination layer <span class="math notranslate nohighlight">\(D\)</span> (indexed by <span class="math notranslate nohighlight">\(j\)</span>).</p>
+<ul class="simple">
+<li><p>We use <span class="math notranslate nohighlight">\(C_u\)</span> to refer to the vector of count variables corresponding to</p></li>
+</ul>
+<p>a specified geographic unit <span class="math notranslate nohighlight">\(u\)</span>. Note: the count vectors are already
+specified for each source unit <span class="math notranslate nohighlight">\(S_i\)</span>, while our goal is to estimate the
+count vectors for each destination unit <span class="math notranslate nohighlight">\(D_j\)</span>.</p>
+<ul class="simple">
+<li><p><em>Optional</em>: We use <span class="math notranslate nohighlight">\(W_u\)</span> to refer to the weight (such as population</p></li>
+</ul>
+<p>count) of a specified geographic unit <span class="math notranslate nohighlight">\(W_u\)</span>. If a weighted crosswalk is
+desired, the weight of each destination unit <span class="math notranslate nohighlight">\(W_{D_j}\)</span> must be specified.</p>
+<ul class="simple">
+<li><p>We use <span class="math notranslate nohighlight">\(\| u \|\)</span> to denote the area of a specific geographic unit
+<span class="math notranslate nohighlight">\(u\)</span>.</p></li>
+</ul>
+<p><strong>Algorithm</strong></p>
+<p>#. Intersect the source layer <span class="math notranslate nohighlight">\(S\)</span> with the destination layer <span class="math notranslate nohighlight">\(D\)</span> to
+create a cross layer <span class="math notranslate nohighlight">\(X\)</span> (indexed by <span class="math notranslate nohighlight">\(i, j\)</span>) where <span class="math notranslate nohighlight">\(X_{i, j}\)</span>
+is the intersection between <span class="math notranslate nohighlight">\(S_i\)</span> and <span class="math notranslate nohighlight">\(D_j\)</span>.</p>
+<ol class="arabic simple">
+<li><p>Estimate <span class="math notranslate nohighlight">\(\hat{C}_{X_{i,j}}\)</span> for each unit in the cross layer.</p></li>
+</ol>
+<p>If weights are not supplied, <span class="math notranslate nohighlight">\(\hat{C}_{X_{i,j}}\)</span> is computed using a
+naive areal approach.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\hat{C}_{X_{i,j}} = \frac{\| X_{i,j} \|}{\| S_i \|} \cdot C_{S_i}\]</div>
+</div></blockquote>
+<p>If weights are supplied, <span class="math notranslate nohighlight">\(\hat{C}_{X_{i,j}}\)</span> is computed using a weighted
+approach.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\hat{C}_{X_{i,j}} = \frac{W_{X_{i,j}}}{\sum\limits_{X_{i',j'} \in S_i} W_{X_{i',j'}}} \cdot \frac{\sum\limits_{X_{i',j'} \in S_i} \| X_{i',j'} \|}{\| S_i \|} \cdot C_{S_i}\]</div>
+</div></blockquote>
+<p>where</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[W_{X_{i,j}} = \frac{\| X_{i,j} \|}{\| D_j \|} \cdot W_{D_j}\]</div>
+</div></blockquote>
+<p>#. Estimate <span class="math notranslate nohighlight">\(\hat{C}_{D_{j}}\)</span> for each unit in the destination layer by
+aggregating estimated count vectors in the cross layer.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\hat{C}_{D_j} = \sum\limits_{X_{i,j} \in D_j} \hat{C}_{X_{i,j}}\]</div>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>destination</strong> (<a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusGeoDataFrame</span></code></a> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">GeoDataFrame</span></code>) – The destination geographic dataset. If <code class="docutils literal notranslate"><span class="pre">weight_col</span></code> is specified, this
+dataset should have a column corresponding to the specified variable.</p></li>
+<li><p><strong>weight_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – If a <code class="docutils literal notranslate"><span class="pre">weight_col</span></code> is supplied, the crosswalk is computed using the
+weighted approach. Otherwise, the crosswalk is computed using the naive
+areal approach.</p></li>
+<li><p><strong>count_columns</strong> (list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – If supplied, only the specified count variables are crosswalked. If
+<code class="docutils literal notranslate"><span class="pre">count_columns</span></code> is not supplied, the count variables to crosswalk are
+assumed all numeric columns that have an associated <a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a>.</p></li>
+<li><p><strong>count_placement</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal['right',</span> <span class="pre">'left']</span></code> = ‘right’) – Determines whether or not to place the new estimated count variables on the
+right side or left side of the <code class="docutils literal notranslate"><span class="pre">destination</span></code> dataset.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1957,7 +2033,7 @@ returned <a class="reference internal" href="#censaurus.variable.VariableCollect
 
 <dl class="py method">
 <dt class="sig sig-object py" id="censaurus.variable.VariableCollection.filter_by_term">
-<span class="sig-name descname"><span class="pre">filter_by_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'label'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/variable.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.variable.VariableCollection.filter_by_term" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">filter_by_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'label'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'concept'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'label'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><span class="pre">VariableCollection</span></a></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/variable.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.variable.VariableCollection.filter_by_term" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a new <a class="reference internal" href="#censaurus.variable.VariableCollection" title="censaurus.variable.VariableCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableCollection</span></code></a> consisting of all variables
 that match the search. Can filter by each variable’s label or by the
 concept of each variable’s group.</p>
@@ -1965,9 +2041,9 @@ concept of each variable’s group.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>term</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>) – The search string or strings.</p></li>
-<li><p><strong>by</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘label’) – If <code class="docutils literal notranslate"><span class="pre">by</span></code> is ‘label’, then variables will be filtered by their labels.
-Otherwise, <code class="docutils literal notranslate"><span class="pre">by</span></code> should be ‘concept’, and variables will be filtered
-by the concepts of their groups.</p></li>
+<li><p><strong>by</strong> (:obj:<a href="#id20"><span class="problematic" id="id21">`</span></a>Literal[‘label’, ‘concept’] ` = ‘label’) – If <code class="docutils literal notranslate"><span class="pre">by</span></code> is ‘label’, then variables will be filtered by their labels.
+If <code class="docutils literal notranslate"><span class="pre">by</span></code> is ‘concept’, variables will be filtered by the concepts of their
+groups.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3243,6 +3319,79 @@ repositioned and rescaled so that groups appear in a horizontal line.</p>
 <li><p><strong>geometry_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = ‘geometry’) – The dataset’s geometry column.</p></li>
 <li><p><strong>inplace</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code> = False) – Determines whether to modify the original dataset or create and return a new
 one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="censaurus.utils.transform_geometry.crosswalk">
+<span class="sig-prename descclassname"><span class="pre">censaurus.utils.transform_geometry.</span></span><span class="sig-name descname"><span class="pre">crosswalk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_placement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'right'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'left'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'right'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><span class="pre">CensusGeoDataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/singerep/censaurus/blob/main/censaurus/utils/transform_geometry.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#censaurus.utils.transform_geometry.crosswalk" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate count variables (such as total population, number of homeowners, etc.) for
+geographic units in a <code class="docutils literal notranslate"><span class="pre">destination</span></code> dataset by computing a crosswalk from
+geographic units in a <code class="docutils literal notranslate"><span class="pre">source</span></code> dataset where those count variables are specified.</p>
+<p>The general framework to compute crosswalks is as follows.</p>
+<p><strong>Setup and notation</strong></p>
+<ul class="simple">
+<li><p>We are given the source layer <span class="math notranslate nohighlight">\(S\)</span> (indexed by <span class="math notranslate nohighlight">\(i\)</span>) and the destination
+layer <span class="math notranslate nohighlight">\(D\)</span> (indexed by <span class="math notranslate nohighlight">\(j\)</span>).</p></li>
+<li><p>We use <span class="math notranslate nohighlight">\(C_u\)</span> to refer to the vector of count variables corresponding to
+a specified geographic unit <span class="math notranslate nohighlight">\(u\)</span>. Note: the count vectors are already
+specified for each source unit <span class="math notranslate nohighlight">\(S_i\)</span>, while our goal is to estimate the
+count vectors for each destination unit <span class="math notranslate nohighlight">\(D_j\)</span>.</p></li>
+<li><p><em>Optional</em>: We use <span class="math notranslate nohighlight">\(W_u\)</span> to refer to the weight (such as population count)
+of a specified geographic unit <span class="math notranslate nohighlight">\(W_u\)</span>. If a weighted crosswalk is desired,
+the weight of each destination unit <span class="math notranslate nohighlight">\(W_{D_j}\)</span> must be specified.</p></li>
+<li><p>We use <span class="math notranslate nohighlight">\(\| u \|\)</span> to denote the area of a specific geographic unit <span class="math notranslate nohighlight">\(u\)</span>.</p></li>
+</ul>
+<p><strong>Algorithm</strong></p>
+<ol class="arabic">
+<li><p>Intersect the source layer <span class="math notranslate nohighlight">\(S\)</span> with the destination layer <span class="math notranslate nohighlight">\(D\)</span> to
+create a cross layer <span class="math notranslate nohighlight">\(X\)</span> (indexed by <span class="math notranslate nohighlight">\(i, j\)</span>) where <span class="math notranslate nohighlight">\(X_{i, j}\)</span>
+is the intersection between <span class="math notranslate nohighlight">\(S_i\)</span> and <span class="math notranslate nohighlight">\(D_j\)</span>.</p></li>
+<li><p>Estimate <span class="math notranslate nohighlight">\(\hat{C}_{X_{i,j}}\)</span> for each unit in the cross layer.</p>
+<p>If weights are not supplied, <span class="math notranslate nohighlight">\(\hat{C}_{X_{i,j}}\)</span> is computed using a naive
+areal approach.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\hat{C}_{X_{i,j}} = \frac{\| X_{i,j} \|}{\| S_i \|} \cdot C_{S_i}\]</div>
+</div></blockquote>
+<p>If weights are supplied, <span class="math notranslate nohighlight">\(\hat{C}_{X_{i,j}}\)</span> is computed using a weighted
+approach.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\hat{C}_{X_{i,j}} = \frac{W_{X_{i,j}}}{\sum\limits_{X_{i',j'} \in S_i} W_{X_{i',j'}}} \cdot \frac{\sum\limits_{X_{i',j'} \in S_i} \| X_{i',j'} \|}{\| S_i \|} \cdot C_{S_i}\]</div>
+</div></blockquote>
+<p>where</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[W_{X_{i,j}} = \frac{\| X_{i,j} \|}{\| D_j \|} \cdot W_{D_j}\]</div>
+</div></blockquote>
+</li>
+<li><p>Estimate <span class="math notranslate nohighlight">\(\hat{C}_{D_{j}}\)</span> for each unit in the destination layer by
+aggregating estimated count vectors in the cross layer.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\hat{C}_{D_j} = \sum\limits_{X_{i,j} \in D_j} \hat{C}_{X_{i,j}}\]</div>
+</div></blockquote>
+</li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusGeoDataFrame</span></code></a> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">GeoDataFrame</span></code>) – The source geographic dataset. This dataset should have columns corresponding
+to various count variables that should be crosswalked.</p></li>
+<li><p><strong>destination</strong> (<a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusGeoDataFrame</span></code></a> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">GeoDataFrame</span></code>) – The destination geographic dataset. If <code class="docutils literal notranslate"><span class="pre">weight_col</span></code> is specified, this dataset
+should have a column corresponding to the specified variable.</p></li>
+<li><p><strong>weight_col</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – If a <code class="docutils literal notranslate"><span class="pre">weight_col</span></code> is supplied, the crosswalk is computed using the weighted
+approach. Otherwise, the crosswalk is computed using the naive areal approach.</p></li>
+<li><p><strong>count_columns</strong> (list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code> = None) – If supplied, only the specified count variables are crosswalked. If
+<code class="docutils literal notranslate"><span class="pre">count_columns</span></code> is not supplied, the count variables to crosswalk are assumed
+to be all numeric columns in the <code class="docutils literal notranslate"><span class="pre">source</span></code> dataset (if the <code class="docutils literal notranslate"><span class="pre">source</span></code> is a
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">GeoDataFrame</span></code>) or all numeric columns that have an associated
+<a class="reference internal" href="#censaurus.variable.Variable" title="censaurus.variable.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a> (if the <code class="docutils literal notranslate"><span class="pre">source</span></code> is a <a class="reference internal" href="#censaurus.cdf.CensusGeoDataFrame" title="censaurus.cdf.CensusGeoDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">CensusGeoDataFrame</span></code></a>).</p></li>
+<li><p><strong>count_placement</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal['right',</span> <span class="pre">'left']</span></code> = ‘right’) – Determines whether or not to place the new estimated count variables on the
+right side or left side of the <code class="docutils literal notranslate"><span class="pre">destination</span></code> dataset.</p></li>
 </ul>
 </dd>
 </dl>

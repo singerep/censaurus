@@ -9,13 +9,13 @@ from geopandas import GeoDataFrame, GeoSeries
 from geopandas.base import is_geometry_type
 from shapely import union_all
 from shapely.geometry import box, MultiPolygon, Polygon
-from typing import Union, overload, Literal, Dict, Tuple
+from typing import Union, overload, Literal, Dict, Tuple, List
 from pandas._typing import Axis, Level, IgnoreRaise, Renamer
 
 from censaurus.utils.rename import CensusRenamer
 from censaurus.utils.recode import StateRecoder
 from censaurus.utils.regroup import CensusRegrouper
-from censaurus.utils.transform_geometry import recompose_states, compare_regions
+from censaurus.utils.transform_geometry import recompose_states, compare_regions, crosswalk
 
 
 # Logic for subclassing heavily inspired by the Geopandas library (GeoDataFrame and GeoSeries)
@@ -332,7 +332,7 @@ class CensusGeoDataFrame(GeoDataFrame, CensusDataFrame):
             c['geometry'] = c.difference(water_geom)
             return c
 
-    def recompose_states(self, state_col: str = 'state', geometry_col: bool = 'geometry', position: str = Literal['below', 'outside'], preserve_area: bool = False, inplace: bool = False) -> CensusGeoDataFrame | None:
+    def recompose_states(self, state_col: str = 'state', geometry_col: bool = 'geometry', position: Literal['below', 'outside'] = 'below', preserve_area: bool = False, inplace: bool = False) -> CensusGeoDataFrame | None:
         """
         Shift the geographies of Alaska, Hawaii, and Puerto Rico so that they appear
         nearer to the contiguous United States.
@@ -349,7 +349,7 @@ class CensusGeoDataFrame(GeoDataFrame, CensusDataFrame):
             this format.
         geometry_col : :obj:`str` = 'geometry'
             The CensusGeoDataFrame's geometry column.
-        position : :obj:`str` = Literal['below', 'outside']
+        position : :obj:`Literal['below', 'outside']` = 'below'
             Determines whether Alaska, Hawaii, and Puerto Rico should be position below
             our outside of the contiguous United States.
         preserve_area : :obj:`bool` = False
@@ -380,3 +380,83 @@ class CensusGeoDataFrame(GeoDataFrame, CensusDataFrame):
             create and return a new one.
         """
         return compare_regions(self, comparison_col=comparison_col, geometry_col=geometry_col, inplace=inplace)
+
+    def crosswalk(self, destination: Union[CensusGeoDataFrame, GeoDataFrame], weight_col: str = None, count_columns: List[str] = None, count_placement: Literal['right', 'left'] = 'right') -> Union[CensusGeoDataFrame, GeoDataFrame]:
+        """
+        Estimate count variables (such as total population, number of homeowners, etc.) 
+        for geographic units in a ``destination`` dataset by computing a crosswalk from
+        geographic units in the called (``source``) dataset where those count variables
+        are specified.
+
+        The general framework to compute crosswalks is as follows.
+
+        **Setup and notation**
+
+        * We are given the source layer :math:`S` (indexed by :math:`i`) and the 
+        destination layer :math:`D` (indexed by :math:`j`).
+        
+        * We use :math:`C_u` to refer to the vector of count variables corresponding to
+        a specified geographic unit :math:`u`. Note: the count vectors are already 
+        specified for each source unit :math:`S_i`, while our goal is to estimate the 
+        count vectors for each destination unit :math:`D_j`.
+
+        * *Optional*: We use :math:`W_u` to refer to the weight (such as population 
+        count) of a specified geographic unit :math:`W_u`. If a weighted crosswalk is 
+        desired, the weight of each destination unit :math:`W_{D_j}` must be specified.
+
+        * We use :math:`\| u \|` to denote the area of a specific geographic unit 
+          :math:`u`.
+
+        **Algorithm**
+
+        #. Intersect the source layer :math:`S` with the destination layer :math:`D` to
+        create a cross layer :math:`X` (indexed by :math:`i, j`) where :math:`X_{i, j}` 
+        is the intersection between :math:`S_i` and :math:`D_j`.
+
+        #. Estimate :math:`\\hat{C}_{X_{i,j}}` for each unit in the cross layer.
+
+        If weights are not supplied, :math:`\\hat{C}_{X_{i,j}}` is computed using a 
+        naive areal approach.
+
+            .. math::
+
+                \\hat{C}_{X_{i,j}} = \\frac{\| X_{i,j} \|}{\| S_i \|} \\cdot C_{S_i}
+
+        If weights are supplied, :math:`\\hat{C}_{X_{i,j}}` is computed using a weighted
+        approach.
+
+            .. math::
+
+                \\hat{C}_{X_{i,j}} = \\frac{W_{X_{i,j}}}{\\sum\\limits_{X_{i',j'} \in S_i} W_{X_{i',j'}}} \\cdot \\frac{\\sum\\limits_{X_{i',j'} \in S_i} \| X_{i',j'} \|}{\| S_i \|} \\cdot C_{S_i}
+
+        where
+
+            .. math::
+
+                W_{X_{i,j}} = \\frac{\| X_{i,j} \|}{\| D_j \|} \\cdot W_{D_j}
+
+        #. Estimate :math:`\\hat{C}_{D_{j}}` for each unit in the destination layer by
+        aggregating estimated count vectors in the cross layer.
+
+            .. math::
+
+                \\hat{C}_{D_j} = \\sum\\limits_{X_{i,j} \in D_j} \\hat{C}_{X_{i,j}}
+
+        Parameters
+        ==========
+        destination : :class:`.CensusGeoDataFrame` or :obj:`.GeoDataFrame`
+            The destination geographic dataset. If ``weight_col`` is specified, this 
+            dataset should have a column corresponding to the specified variable.
+        weight_col : :obj:`str` = None
+            If a ``weight_col`` is supplied, the crosswalk is computed using the 
+            weighted approach. Otherwise, the crosswalk is computed using the naive 
+            areal approach.
+        count_columns : list of :obj:`str` = None
+            If supplied, only the specified count variables are crosswalked. If 
+            ``count_columns`` is not supplied, the count variables to crosswalk are 
+            assumed all numeric columns that have an associated :class:`.Variable`.
+        count_placement : :obj:`Literal['right', 'left']` = 'right'
+            Determines whether or not to place the new estimated count variables on the
+            right side or left side of the ``destination`` dataset.
+        """
+        return crosswalk(source=self, destination=destination, weight_col=weight_col, count_columns=count_columns, count_placement=count_placement)
